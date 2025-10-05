@@ -5,10 +5,14 @@ import styles from "./App.module.css";
 // 외부 페이지 컴포넌트 import
 import Home from "./pages/Home/Home";
 import Mail from "./pages/Mail/Mail";
+import MailView from "./pages/Mail/MailView";
+import MailWrite from "./pages/Mail/MailWrite";
 import Board from "./pages/Board/Board";
 import Schedule from "./pages/Schedule/Schedule";
 import SharedMail from "./pages/SharedMail/SharedMail";
+import SharedMailWrite from "./pages/SharedMail/SharedMailWrite";
 import Contacts from "./pages/Contacts/Contacts";
+import ContactsAdd from "./pages/Contacts/ContactsAdd";
 import Messenger from "./pages/Messenger/Messenger";
 import WorkExpense from "./pages/WorkExpense/WorkExpense";
 import EApproval from "./pages/EApproval/EApproval";
@@ -58,10 +62,14 @@ function App() {
             <Routes>
               <Route path="/*" element={<Home />} />
               <Route path="/mail/*" element={<Mail />} />
+              <Route path="/mailview/*" element={<MailView />} /> {/* Mail 보는 페이지 추가 10.05 박민규  */}
+              <Route path="/mailwrite/*" element={<MailWrite />} /> {/* Mail 쓰는 페이지 추가 10.05 박민규 */}
               <Route path="/board/*" element={<Board />} />
               <Route path="/schedule/*" element={<Schedule />} />
               <Route path="/sharedMail/*" element={<SharedMail />} />
+              <Route path="/sharedMailWrite/*" element={<SharedMailWrite />} /> {/* 공유Mail 쓰는 페이지 추가 10.05 박민규 */}
               <Route path="/contacts/*" element={<Contacts />} />
+              <Route path="/contactsadd/*" element={<ContactsAdd />} />
               <Route path="/messenger/*" element={<Messenger />} />
               <Route path="/workExpense/*" element={<WorkExpense />} />
               <Route path="/eApproval/*" element={<EApproval />} />

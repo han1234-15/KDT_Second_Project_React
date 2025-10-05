@@ -1,0 +1,139 @@
+* {
+    box-sizing: border-box;
+
+}
+
+div {
+    border: 1px solid black;
+}
+
+.container {
+
+    width: 100%;
+    height: 100%;
+    font-size: 25px;
+
+
+}
+
+
+/* 메인 */
+.main {
+
+    width: 80%;
+    height: 100%;
+    float: left;
+
+}
+
+.mainHeader {
+    width: 100%;
+    height: 10%;
+
+
+}
+
+.mainHeadertag {
+
+    width: 20%;
+    height: 100%;
+    float: left;
+
+    display: flex;
+    /* Flexbox 활성화 */
+    align-items: center;
+    /* 세로 중앙 정렬 */
+    justify-content: center;
+    /* 가로 중앙 정렬 */
+    text-align: center;
+    border: none;
+}
+
+.mainBody {
+    width: 100%;
+    height: 90%;
+}
+
+.mainBodybox {
+    width: 100%;
+    height: 10%;
+}
+
+.mainBodybox:hover{
+    cursor: pointer;
+    color: blue;
+}
+
+.mainBodytag {
+
+    width: 20%;
+    height: 100%;
+    float: left;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: none;
+}
+
+/* 오른쪽 바 */
+.rightbar {
+
+    width: 20%;
+    height: 100%;
+    float: left;
+}
+
+
+.rightbarHeader {
+    width: 100%;
+    height: 10%;
+    border: none;
+}
+
+.createbtn {
+    width: 100%;
+    height: 100%;
+    display: block;
+    /* 블록처럼 쌓이게 */
+    font-size: 35px;
+    margin: 2px 0;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    /* 밑줄 제거 */
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 500;
+
+
+}
+
+.createbtn:hover {
+    cursor: pointer;
+}
+
+
+.rightbarBody {
+    width: 100%;
+    height: 90%;
+}
+
+.rightbarBodytag {
+
+    width: 100%;
+    height: 10%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+
+}
+
+.rightbarBodytag:hover {
+    cursor: pointer;
+    background-color: lightgray;
+}
