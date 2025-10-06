@@ -10,7 +10,7 @@ const Contacts = () => {
 
 
         window.open(
-            "/contactsadd",
+            "/contacts/add",
             "ContactsAdd", // 새 창 이름
             "width=1400,height=800,resizable=yes,scrollbars=yes"
         )

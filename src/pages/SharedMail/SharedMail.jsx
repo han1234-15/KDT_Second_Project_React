@@ -7,7 +7,7 @@ const SharedMail = () => {
 
     const handleNewSharedMail = () => {
         window.open(
-             "/sharedMailWrite",
+             "/sharedmail/write",
             "NewSharedMail",
             "width=1200,height=800,resizable=yes,scrollbars=yes"
         )
