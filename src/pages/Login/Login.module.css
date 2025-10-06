@@ -1,0 +1,106 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f8f9fb;
+    font-family: "Pretendard", sans-serif;
+}
+
+.card {
+    width: 400px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    padding: 40px 30px;
+    text-align: center;
+}
+
+.logo {
+    font-size: 22px;
+    margin-bottom: 30px;
+    color: #333;
+    font-weight: 600;
+}
+
+
+.highlight {
+    color: #6a1b9a;
+    /* 기본 글자색. 그라디언트가 지원되지 않으면 fallback 색상으로 사용 */
+    background: linear-gradient(45deg, #8e44ad, #2196f3);
+    /* 45도 방향으로 보라색 → 파랑 그라디언트 */
+    -webkit-background-clip: text;
+    /* 배경을 글자 영역에만 클리핑 */
+    -webkit-text-fill-color: transparent;
+    /* 글자 자체 색상을 투명으로 만들어 배경이 보이게 함 */
+    font-size: 50px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.inputGroup {
+    position: relative;
+}
+
+.icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #6a1b9a;
+}
+
+.inputGroup input {
+    width: 100%;
+    padding: 12px 12px 12px 38px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.inputGroup input:focus {
+    outline: none;
+    border-color: #6a1b9a;
+    box-shadow: 0 0 0 2px rgba(106, 27, 154, 0.15);
+}
+
+.button {
+    background: linear-gradient(45deg, #8e44ad, #2196f3);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.button:hover {
+    opacity: 0.9;
+}
+
+.footer {
+    margin-top: 20px;
+    font-size: 13px;
+}
+
+.footer a {
+    color: #6a1b9a;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+.copy {
+    margin-top: 40px;
+    color: #aaa;
+    font-size: 12px;
+}

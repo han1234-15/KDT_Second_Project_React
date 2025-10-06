@@ -3,9 +3,6 @@
 
 }
 
-div {
-    border: 1px solid black;
-}
 
 .container {
 
@@ -59,7 +56,7 @@ div {
     height: 10%;
 }
 
-.mainBodybox:hover{
+.mainBodybox:hover {
     cursor: pointer;
     color: blue;
 }
