@@ -7,7 +7,6 @@ const MailRoute = () => {
 
     return (
 
-
         <Routes>
             <Route path="/" element={<Mail />} />
             <Route path="mailview" element={<MailView />} /> {/* Mail 보는 페이지 추가 10.05 박민규  */}
