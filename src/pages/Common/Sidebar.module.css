@@ -1,27 +1,45 @@
-.sidebar {
-    width: 200px;
-    background-color: #ecf0f1;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    gap: 10px;
+.menubar {
+  
+  position: relative; /* ✅ side 내부 기준 */
+  width: 60%;         /* ✅ side 영역의 절반만 차지 */
+  margin: 0 auto;     /* ✅ 가운데 정렬 */
+  top: 70px;              /* fixed 제거했으므로 필요 없음 */
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-height: calc(100vh - 200px);
 }
 
-.sidebarButton {
-    display: block;
-    /* 블록처럼 쌓이게 */
-    padding: 10px 15px;
-    margin: 2px 0;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    /* 밑줄 제거 */
-    border-radius: 4px;
-    text-align: center;
-    font-weight: 500;
-    transition: background-color 0.2s;
+/* 각 메뉴 버튼 */
+.menu {
+  display: flex;
+  flex-direction: column; /* ✅ 아이콘 위, 글자 아래 */
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 0;
+  color: #555;
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: 12px;
+  margin: 4px 0;
+  transition: all 0.2s ease-in-out;
+  width: 100%;
 }
 
-.sidebarButton:hover {
-    background-color: #0056b3;
+/* Hover 효과 */
+.menu:hover {
+  background: linear-gradient(90deg, #8e44ad15, #2196f315);
+  color: #2196f3;
+  transform: translateX(3px);
+}
+
+/* 아이콘 크기 */
+.menu :global(svg) {
+  font-size: 18px;
 }

@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import styles from "./Header.module.css";
 import useAuthStore from "../../store/authStore";
+import logo from "../../assets/images/logo.png";
+import { Button } from "antd";
 
 const Header = () => {
     const logout = useAuthStore(state => state.logout);
@@ -16,11 +18,14 @@ const Header = () => {
 
     return (
         <div className={styles.header}>
-            <h1>My App</h1>
-            <div>
-                <Link to="/">Home</Link>
+            <div className={styles.logo}>
+            <img src={logo} alt="로고" />
+            <span>INFINITY</span> 
             </div>
-            <button onClick={handleClick}>로그아웃 임시</button>
+            {/* <div>
+                <Link to="/">Home</Link>
+            </div> */}
+            <button onClick={handleClick}>로그아웃</button>
         </div>
     );
 };
