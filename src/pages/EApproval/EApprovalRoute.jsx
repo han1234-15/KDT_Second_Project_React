@@ -16,7 +16,9 @@ const EApprovalRoute = () => {
       {/* 기본 경로 → 전체 문서 (A) */}
       <Route path="*" element={<EApproval />} />
 
-      <Route path="/detail/:seq" element={<EApprovalDetail/>}/>
+
+ 
+      <Route path="detail/:seq" element={<EApprovalDetail />} />
     </Routes>
   );
 };

@@ -12,6 +12,7 @@ function EApproval() {
 
   // 상태 코드 → 한글 이름 매핑
   const statusMap = {
+    show:"전체",
     pending: "승인 대기",
     in_progress: "진행 중",
     rejected: "반려",
@@ -24,13 +25,13 @@ function EApproval() {
 
   // 데이터 로드
   useEffect(() => {
-    const url = `http://10.5.5.11/Eapproval/${status}`;
+    const url = `http://10.5.5.11/Eapproval/${status ==="show"?"A":status}`;
     axios
       .get(url)
       .then((res) => {
         let data=res.data;
 
-        if(status==="A"){
+        if(status==="A" || status==="show"){
             data=data.filter(
             (doc)=>doc.status !=="TEMP"
             );
@@ -47,8 +48,10 @@ function EApproval() {
 
   // 메뉴 탭
   const tabCodes = [
-    { code: "A", label: "전체" },
+    { code: "show", label: "전체" },
     { code: "rejected", label: "반려" },
+    { code:"pass",label:"기안"},
+    { code:"b", label:"결재"}
   ];
 
   const foldertabCodes = [
@@ -160,11 +163,11 @@ function EApproval() {
             docs.map((doc) => (
              <tr key={doc.seq}>
     <td>{doc.seq}</td>
-    <td
-        className="title-cell"
-        style={{ cursor: "pointer", color: "#0077cc", textDecoration: "underline" }}
-        onClick={() => navigate(`/Eapproval/detail/${doc.seq}`)}
-        >
+   <td
+  className="title-cell"
+  style={{ cursor: "pointer", color: "#0077cc", textDecoration: "underline" }}
+  onClick={() => navigate(`/Eapproval/detail/${doc.seq}`)}
+                >
      {doc.title}
     </td>
     <td>{doc.writer}</td>

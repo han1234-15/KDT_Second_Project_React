@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./styles/ApprovalWrite.css";
+import approveImg from "./images/승인.jpg";
+import rejectImg from "./images/반려.png";
 
 function EApprovalWrite() {
+  const [showModal,setShowModal]=useState(false);
+  const [approvalResult,setApprovalResult]=useState(null);
+
   const navigate = useNavigate();
 
   // 문서 종류별 양식 옵션
@@ -59,6 +64,13 @@ function EApprovalWrite() {
         navigate("/Eapproval/A")
      })
      .catch(()=>alert("임시 저장 실패"));
+  };
+
+  const handleApprovlClick=()=>setShowModal(true);
+
+  const handleApprovalDecision=(result)=>{
+    setApprovalResult(result);
+    setShowModal(false);
   }
 
   // 문서 선택 여부
@@ -157,7 +169,24 @@ function EApprovalWrite() {
                 <tr>
                   <td className="label">결재</td>
                   {approvers.map((a, i) => (
-                    <td key={i} className="empty"></td>
+                    <td key={i} className="empty">
+                      {a ==="대표이사" &&(
+                        <>
+                        {!approvalResult &&(
+                        <button className="approve-btn" onClick={handleApprovlClick}>
+                          결재
+                        </button>
+                        )}
+
+                        {approvalResult ==="approve" &&(
+                          <img src={approveImg} alt="승인" className="stamp"></img>
+                        )}
+                        {approvalResult ==="reject" &&(
+                          <img src={rejectImg} alt="반려" className="stamp"></img>
+                        )}
+                        </>
+                      )}
+                    </td>
                   ))}
                 </tr>
                 <tr>
@@ -181,6 +210,35 @@ function EApprovalWrite() {
               </tbody>
             </table>
           </div>
+        {/* === 모달 === */}
+          {showModal && (
+            <div className="modal-overlay">
+              <div className="modal">
+                <h4>결재 처리</h4>
+                <p>결재를 승인하시겠습니까, 반려하시겠습니까?</p>
+                <div className="modal-buttons">
+                  <button
+                    className="approve"
+                    onClick={() => handleApprovalDecision("approve")}
+                  >
+                    승인
+                  </button>
+                  <button
+                    className="reject"
+                    onClick={() => handleApprovalDecision("reject")}
+                  >
+                    반려
+                  </button>
+                  <button
+                    className="cancel"
+                    onClick={() => setShowModal(false)}
+                  >
+                    취소
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* 제목 */}
           <div className="input-block">

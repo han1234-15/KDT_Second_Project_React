@@ -2,9 +2,10 @@
 .approval-container {
   width: 100%;
   min-height: 100vh;
-  background-color: #f7f7f7;
+  background-color: #FAFAFB; /* ✅ 부드러운 화이트톤 배경 */
   padding: 20px;
   font-family: "Pretendard", sans-serif;
+  color: #000; /* 기본 텍스트 */
 }
 
 /* 헤더 */
@@ -12,22 +13,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #e9e9e9;
+  background-color: #F2F2F6; /* 살짝 회색 섞인 상단 */
   padding: 15px 20px;
-  border-radius: 6px;
+  border-radius: 8px;
+  border: 1px solid #E4E6EA;
+  color:#000;
 }
 
 .write-button {
-  background-color: #4a90e2;
-  color: white;
+  background-color: #7A70F0; /* ✅ 홈페이지 포인트 퍼플 */
+  color: #fff;
   border: none;
-  padding: 8px 14px;
-  border-radius: 4px;
+  padding: 8px 16px;
+  border-radius: 6px;
   cursor: pointer;
   transition: 0.2s;
+  font-weight: 500;
 }
 .write-button:hover {
-  background-color: #357bd8;
+  background-color: #6356E5; /* hover 시 약간 진한 퍼플 */
 }
 
 /* 탭 */
@@ -35,20 +39,25 @@
   display: flex;
   gap: 8px;
   margin: 20px 0;
+  color:#000;
 }
 
 .tab-button {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px 14px;
   cursor: pointer;
   font-size: 14px;
   background-color: white;
   color: #333;
   transition: 0.2s;
 }
+.tab-button:hover {
+  background-color: #F0F0FF;
+  color: #6356E5;
+}
 .tab-button.active {
-  background-color: #4a90e2;
+  background-color: #7A70F0;
   color: white;
 }
 
@@ -56,105 +65,67 @@
 .approval-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: #FFFFFF;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
   overflow: hidden;
+  color:#000;
 }
 
 .approval-table th {
-  background-color: #f1f1f1;
+  background-color: #F5F6FA;
   padding: 10px;
   font-weight: 600;
   text-align: center;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #E4E6EA;
+  color: #000;
 }
 
 .approval-table td {
   text-align: center;
-  color: #555;
+  color: #000;
   padding: 14px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #EEE;
 }
 
 .empty-msg {
   text-align: center;
-  color: #999;
+  color: #777;
   padding: 20px;
 }
 
 /* 폼 */
 .approval-form {
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: #FFFFFF;
+  border: 1px solid #E4E6EA;
   border-radius: 8px;
   padding: 20px;
   margin: 20px 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color:#000;
 }
 
 .form-group label {
   font-weight: 600;
   margin-bottom: 6px;
+  color: #000;
 }
 
 .form-group input,
 .form-group textarea {
-  border: 1px solid #ccc;
+  border: 1px solid #CCC;
   border-radius: 6px;
   padding: 8px;
   font-size: 14px;
+  background-color: #FAFAFA;
+  color: #000;
 }
 
-.form-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.submit-btn {
-  background-color: #4a90e2;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-
-.cancel-btn {
-  background-color: #ccc;
-  color: #333;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-
-/* ------------------------------
-   ⬇️ 메뉴 영역 (문서함 / 진행 중 문서)
--------------------------------- */
-.menu-row {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  margin: 20px 0;
-}
-
-.menu-section {
-  position: relative;
-}
-
-/* 폴더 버튼 */
+/* 메뉴 영역 */
 .menu-main-btn {
   width: 220px;
-  background: #f5f5f5;
-  border: 1px solid #ddd;
+  background: #F5F5FA;
+  border: 1px solid #DDD;
   padding: 10px 14px;
   border-radius: 8px;
   font-weight: 600;
@@ -162,42 +133,15 @@
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  transition: background 0.3s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+  color: #000;
 }
 .menu-main-btn:hover {
-  background: #eaf2ff;
-}
-
-/* 화살표 */
-.arrow {
-  transition: transform 0.3s;
-}
-.arrow.open {
-  transform: rotate(180deg);
+  background: #ECEBFF;
+  color: #6356E5;
 }
 
 /* 서브메뉴 */
-.submenu {
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-left: 8px;
-  animation: fadeIn 0.2s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .submenu-btn {
   background: white;
   border: none;
@@ -206,12 +150,18 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
+  color: #333;
 }
 .submenu-btn:hover {
-  background: #eef5ff;
-  color: #007bff;
+  background: #F0F0FF;
+  color: #6356E5;
 }
 .submenu-btn.active {
-  background: #007bff;
+  background: #7A70F0;
   color: white;
+}
+
+.approval-container button:not(.write-button),
+.approval-container .menu-main-btn {
+  color: #000 !important;
 }

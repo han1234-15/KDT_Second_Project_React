@@ -42,10 +42,6 @@ function EApprovalDetail() {
             <td>{new Date(doc.writeDate).toLocaleString("ko-KR")}</td>
           </tr>
           <tr>
-            <th>상태</th>
-            <td>{doc.status}</td>
-          </tr>
-          <tr>
             <th>내용</th>
             <td className="content">{doc.comments}</td>
           </tr>
