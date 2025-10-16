@@ -1,0 +1,126 @@
+.approval-write-container {
+  width: 900px;
+  margin: 30px auto;
+  font-family: "Pretendard", sans-serif;
+  font-size: 14px;
+  color: #333;
+}
+
+.top-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.top-buttons button {
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.top-buttons button:hover {
+  background: #f0f0f0;
+}
+
+.section-title {
+  font-weight: 600;
+  margin: 10px 0 5px;
+}
+
+.base-table,
+.approval-line-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+.base-table th,
+.base-table td,
+.approval-line-table th,
+.approval-line-table td {
+  border: 1px solid #ddd;
+  padding: 8px 10px;
+}
+
+.base-table th {
+  background: #f5f5f5;
+  width: 150px;
+  text-align: left;
+}
+
+.approval-line-table th {
+  background: #fafafa;
+  font-weight: 500;
+}
+
+.approval-line-table .label {
+  background: #f9f9f9;
+  text-align: center;
+  width: 80px;
+}
+
+.approval-line-table input {
+  width: 98%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.docview-btn {
+  margin-left: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.docview-btn:hover {
+  background: #005fcc;
+}
+
+.input-block {
+  margin-bottom: 15px;
+}
+
+.input-block label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.input-block input,
+.input-block textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.bottom-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.bottom-buttons .cancel {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.bottom-buttons .submit {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.bottom-buttons .submit:hover {
+  background: #005fcc;
+}
