@@ -7,7 +7,7 @@
 
     width: 100%;
     height: 100%;
-    font-size: 20px;
+    font-size: 15px;
 
 
 }
@@ -24,8 +24,22 @@
 
 .mainHeader {
     width: 100%;
-    height: 10%;
+    height: 20%;
 
+}
+
+
+
+.mainHeadertop {
+
+    height: 60%;
+    font-size: 30px;
+}
+
+.mainHeaderbottom {
+
+    height: 40%;
+    margin-top: 10px;
 
 }
 
@@ -34,7 +48,6 @@
     width: 20%;
     height: 100%;
     float: left;
-
     display: flex;
     /* Flexbox 활성화 */
     align-items: center;
@@ -47,16 +60,36 @@
 
 .mainBody {
     width: 100%;
-    height: 90%;
+    height: 80%;
 }
 
 
+.mainBodyHeader{
+    width: 100%;
+    height: 5%;
+}
+
+.mainBodylist {
+    width: 100%;
+    height: 95%;
+}
+
+.mainBodycheckbox {
+    width: 10%;
+    height: 100%;
+      float: left;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: none;
+}
+
 .mainBodytag {
 
-    width: 20%;
-    height: 10%;
+    width: 18%;
+    height: 100%;
     float: left;
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -69,7 +102,6 @@
     height: 10%;
     background-color: #007bff;
     color: white;
-
 
 }
 
@@ -96,27 +128,13 @@
 
 
 
-/* 오른쪽 바 */
-.rightbar {
-
-    width: 20%;
-    height: 100%;
-    float: left;
-}
-
-
-.rightbarHeader {
-    width: 100%;
-    height: 10%;
-    border: none;
-}
 
 .createbtn {
-    width: 100%;
-    height: 100%;
+    width: 10%;
+    height: 60%;
     display: block;
     /* 블록처럼 쌓이게 */
-    font-size: 35px;
+    font-size: 15px;
     margin: 2px 0;
     background-color: #007bff;
     color: white;
@@ -125,7 +143,7 @@
     border-radius: 10px;
     text-align: center;
     font-weight: 500;
-
+    float: right;
 
 }
 
@@ -133,26 +151,3 @@
     cursor: pointer;
 }
 
-
-.rightbarBody {
-    width: 100%;
-    height: 90%;
-}
-
-.rightbarBodytag {
-
-    width: 100%;
-    height: 10%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-
-
-}
-
-.rightbarBodytag:hover {
-    cursor: pointer;
-    background-color: lightgray;
-}
