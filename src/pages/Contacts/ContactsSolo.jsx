@@ -7,7 +7,8 @@ const ContactsSolo = () => {
 
     const Navigate = useNavigate();
 
-    const [contacts, setContacts] = useState([]);
+    const [contacts, setContacts] = useState([]); // 주소록 데이터 관리
+    const [searchName, setSearchName] = useState(""); // 검색어 상태
     const [checkedList, setCheckedList] = useState([]); // 체크 상태 관리
     const [allChecked, setAllChecked] = useState(false); // 전체 체크 상태
 
@@ -22,14 +23,14 @@ const ContactsSolo = () => {
 
     // 주소록 삭제
     const handleContactsDelete = () => {
-        axios.delete("http://10.5.5.12/contacts", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
+        axios.delete("http://10.5.5.20/contacts", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
             setContacts(prev => prev.filter(contact => !checkedList.includes(contact.seq)));
         });
     }
 
     // 공유 주소록으로 이동
     const handleContactsUpdateTypeMulti = () => {
-        axios.put("http://10.5.5.12/contacts", { seqList: checkedList, type: "multi" }, { withCredentials: true })
+        axios.put("http://10.5.5.20/contacts", { seqList: checkedList, type: "multi" }, { withCredentials: true })
             .then(resp => {
                 setContacts(prev => prev.map(contact =>
                     checkedList.includes(contact.seq)
@@ -79,16 +80,17 @@ const ContactsSolo = () => {
             "width=1400,height=800,resizable=yes,scrollbars=yes"
         )
     }
-    // 개인 주소록 리스트 
-    const handleDefaultGet = () => {
-
-        axios.get("http://10.5.5.12/contacts?type=solo", { withCredentials: true }).then(resp => {
+    // 주소록 검색 +리스트 
+    const handleContactsList = () => {
+        const params = {};
+        if (searchName) params.name = searchName;
+        axios.get("http://10.5.5.20/contacts?type=solo", { params, withCredentials: true }).then(resp => {
             setContacts(prev => resp.data);
         });
     }
     // 페이지 로딩시 리스트 출력
     useEffect(() => {
-        handleDefaultGet();
+        handleContactsList();
     }, []);
 
 
@@ -107,22 +109,23 @@ const ContactsSolo = () => {
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
                     개인 주소록 <br />
-                    <button onClick={handleContacts}>전체 주소록</button>
-                    <button onClick={handleContactsMulti}>공유 주소록</button>
-
+                    <button onClick={handleContacts} className={styles.headerbutton}>전체 주소록</button>
+                    <button onClick={handleContactsMulti} className={styles.headerbutton}>공유 주소록</button>
+                    <button className={styles.createbtn} onClick={handleContactsAdd}> 주소록 추가 </button>
                 </div>
 
                 {/* 주소록 헤더 2 */}
                 <div className={styles.mainHeaderbottom} >
                     {checkedList.length === 0 ? (
                         <>
-                            <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}></input>
-                            <button>검색</button>
-                            <button className={styles.createbtn} onClick={handleContactsAdd}> 주소록 추가 </button>
+                            <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
+                                onChange={(e) => setSearchName(e.target.value)}></input>
+                            <button onClick={handleContactsList}>검색</button>
+
                         </>) : (
                         <>
-                            <button onClick={handleContactsDelete}> 삭제 </button>
-                            <button onClick={handleContactsUpdateTypeMulti}> 공유 주소록으로 이동 </button>
+                            <button onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
+                            <button onClick={handleContactsUpdateTypeMulti} style={{ margin: "10px" }}> 공유 주소록으로 </button>
                         </>
                     )}
                 </div>

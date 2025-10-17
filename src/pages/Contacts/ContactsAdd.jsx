@@ -27,7 +27,7 @@ const ContactsAdd = () => {
             phone: String(Contacts.phone)  // 문자열 강제
         };
 
-        axios.post("http://10.5.5.12/contacts", payload, {
+        axios.post("http://10.5.5.20/contacts", payload, {
             headers: { "Content-Type": "application/json" }
         }).then((res) => {
             setContacts(res.data);
