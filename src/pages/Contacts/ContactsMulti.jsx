@@ -123,6 +123,7 @@ const ContactsMulti = () => {
                     공유 주소록 <br />
                     <button onClick={handleContacts} className={styles.headerbutton}>전체 주소록</button>
                     <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button>
+                      <button className={styles.createbtn} onClick={handleContactsAdd}> 주소록 추가 </button>
 
                 </div>
 
@@ -133,11 +134,14 @@ const ContactsMulti = () => {
                             <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
                                 onChange={(e) => setSearchName(e.target.value)}></input>
                             <button onClick={handleContactsList}>검색</button>
-                            <button className={styles.createbtn} onClick={handleContactsAdd}> 주소록 추가 </button>
+                           
                         </>) : (
                         <>
-                            <button onClick={handleContactsDelete}> 삭제 </button>
-                            <button onClick={handleContactsUpdateTypeSingle}> 개인 주소록으로 이동 </button>
+                          
+                            <button onClick={handleContactsDelete} style={{margin:"10px"}}> 삭제 </button>
+                            <button onClick={handleContactsUpdateTypeSingle} style={{margin:"10px"}}> 개인 주소록으로 </button>
+                           
+                         
                         </>
                     )}
                 </div>

@@ -42,7 +42,7 @@ const MailSent = () => {
         navigate("/mail/mailview", { state: { mail: mailItem } }); // 클릭 시 Mailview 페이지로 이동
     };
 
-      // 메일 삭제
+    // 메일 삭제
     const handleMailDelete = () => {
         axios.delete("http://10.5.5.12/mail", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
             setMail(prev => prev.filter(mail => !checkedList.includes(mail.seq)));
@@ -89,7 +89,7 @@ const MailSent = () => {
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
                     보낸 메일함 :  {mail.length}개의 메일 <br />
-                    <button onClick={handleMailWrite} className={styles.headerbutton}>메일쓰기</button>
+                    <button onClick={handleMailWrite} className={styles.createbtn}>메일쓰기</button>
                     <button onClick={handleMail} className={styles.headerbutton}>받은 메일함</button>
                 </div>
 
@@ -100,7 +100,7 @@ const MailSent = () => {
 
                         </>) : (
                         <>
-                                <button onClick={handleMailDelete} > 삭제 </button>
+                            <button onClick={handleMailDelete} style={{ margin: "10px" }}> 삭제 </button>
 
                         </>
                     )}

@@ -34,10 +34,10 @@ const Contacts = () => {
     const handleContactsList = () => {
         const params = {};
         if (searchName) params.name = searchName;
-        axios.get("http://10.5.5.12/contacts", {params, withCredentials: true }).then(resp => {
+        axios.get("http://10.5.5.12/contacts", { params, withCredentials: true }).then(resp => {
             setContacts(prev => resp.data);
         });
-    } 
+    }
 
     // 페이지 로딩시 리스트 출력
     useEffect(() => {
@@ -124,6 +124,7 @@ const Contacts = () => {
                     전체 주소록 <br />
                     <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button>
                     <button onClick={handleContactsMulti} className={styles.headerbutton}>공유 주소록</button>
+                    <button className={styles.createbtn} onClick={handleContactsAdd}> 주소록 추가 </button>
 
                 </div>
 
@@ -134,12 +135,12 @@ const Contacts = () => {
                             <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
                                 onChange={(e) => setSearchName(e.target.value)}></input>
                             <button onClick={handleContactsList}>검색</button>
-                            <button className={styles.createbtn} onClick={handleContactsAdd}> 주소록 추가 </button>
+
                         </>) : (
                         <>
-                            <button onClick={handleContactsDelete}> 삭제 </button>
-                            <button onClick={handleContactsUpdateTypeSingle}> 개인 주소록으로 이동 </button>
-                            <button onClick={handleContactsUpdateTypeMulti}> 공유 주소록으로 이동 </button>
+                            <button onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
+                            <button onClick={handleContactsUpdateTypeSingle} style={{ margin: "10px" }}> 개인 주소록으로 </button>
+                            <button onClick={handleContactsUpdateTypeMulti} style={{ margin: "10px" }}> 공유 주소록으로 </button>
                         </>
                     )}
                 </div>

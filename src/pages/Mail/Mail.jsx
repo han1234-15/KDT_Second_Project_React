@@ -81,7 +81,7 @@ const Mail = () => {
                 {/* 메일 헤더 1 */}
                 <div className={styles.mainHeadertop} >
                     받은 메일함 :  {mail.length}개의 메일 <br />
-                    <button onClick={handleMailWrite} className={styles.headerbutton}>메일쓰기</button>
+                    <button onClick={handleMailWrite} className={styles.createbtn}>메일쓰기</button>
                     <button onClick={handleMailSent} className={styles.headerbutton}>보낸 메일함</button>
                 </div>
 
@@ -93,7 +93,7 @@ const Mail = () => {
 
                         </>) : (
                         <>
-                            <button onClick={handleMailDelete} > 삭제 </button>
+                            <button onClick={handleMailDelete} style={{ margin: "10px"}}> 삭제 </button>
 
                         </>
                     )}
