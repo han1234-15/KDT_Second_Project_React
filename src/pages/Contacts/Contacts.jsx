@@ -32,7 +32,7 @@ const Contacts = () => {
 
     // 주소록 검색 +리스트 
     const handleContactsList = () => {
-
+        const params = {};
   
         if (searchName) params.name = searchName;
         axios.get("http://10.5.5.12/contacts", { params, withCredentials: true }).then(resp => {
