@@ -9,6 +9,7 @@ import { color } from "framer-motion";
 const MailWrite = () => {
 
 
+<<<<<<< HEAD
   const Navigate = useNavigate();
   const fileRef = useRef();
   const [files, setFiles] = useState([]);
@@ -64,6 +65,24 @@ const MailWrite = () => {
   };
 
 
+=======
+     const [mail, setMail] = useState(
+          { user_id: "김이사(임시)", senderId: "김준표(임시)", recipientId: "", title: "", fileContent: "", content: "" }
+      );
+  
+      const handlechange = (e) => {
+          setMail(prev => ({ ...prev, [e.target.name]: e.target.value }))
+      }
+      //메일 작성
+      const handleMailWrite = () => {
+          axios.post("http://10.5.5.20/mail",mail, {
+            headers: { "Content-Type": "application/json" }
+        }).then((res) => {
+            setMail(res.data);
+            Navigate("/mail");
+        });
+      }
+>>>>>>> 75a3f64507444005020ae06b42dfffc00c7a645f
 
 
   return (
