@@ -28,6 +28,10 @@
 
 }
 
+.headerbutton{
+    font-size: 15px;
+    margin: 10px;
+}
 
 
 .mainHeadertop {
@@ -144,6 +148,7 @@
     text-align: center;
     font-weight: 500;
     float: right;
+    margin-right: 50px;
 
 }
 

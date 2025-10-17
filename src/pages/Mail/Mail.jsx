@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 const Mail = () => {
 
     const [mail, setMail] = useState([]);
+    const [checkedList, setCheckedList] = useState([]); // 체크 상태 관리
+    const [allChecked, setAllChecked] = useState(false); // 전체 체크 상태
 
     const navigate = useNavigate();
 
@@ -15,14 +17,14 @@ const Mail = () => {
     const handleMailWrite = () => {
         navigate("mailwrite");
     }
-
+ 
     const handleMailSent = () => {
-         navigate("mailsent");
+        navigate("mailsent");
     }
 
     //받은 메일 리스트 출력
     const handleMailList = () => {
-        axios.get("http://10.5.5.12/mail", { withCredentials: true }).then(resp => {
+        axios.get("http://10.5.5.20/mail", { withCredentials: true }).then(resp => {
             setMail(prev => resp.data);
         });
     }
@@ -33,9 +35,37 @@ const Mail = () => {
 
     // 메일 보기(클릭)
     const handleMailView = (mailItem) => {
-       navigate("mailview", { state: { mail: mailItem } }); // 클릭 시 Mailview 페이지로 이동
+        navigate("mailview", { state: { mail: mailItem } }); // 클릭 시 Mailview 페이지로 이동
     };
 
+    // 메일 삭제
+    const handleMailDelete = () => {
+        axios.delete("http://10.5.5.12/mail", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
+            setMail(prev => prev.filter(mail => !checkedList.includes(mail.seq)));
+        });
+    }
+
+    // 전체 체크박스 선택
+    const handleAllcheckbox = () => {
+        if (!allChecked) {
+            // 모든 체크
+            setCheckedList(mail.map(contact => contact.seq));
+            setAllChecked(true);
+        } else {
+            // 모두 해제
+            setCheckedList([]);
+            setAllChecked(false);
+        }
+    }
+
+    // 개별 체크박스 선택
+    const handleSingleCheck = (seq) => {
+        if (checkedList.includes(seq)) {
+            setCheckedList(checkedList.filter(id => id !== seq));
+        } else {
+            setCheckedList([...checkedList, seq]);
+        }
+    }
 
     return (<div className={styles.container}>
 
@@ -50,22 +80,32 @@ const Mail = () => {
 
                 {/* 메일 헤더 1 */}
                 <div className={styles.mainHeadertop} >
-                   받은 메일함 :  {mail.length}개의 메일 <br />
-                    <button onClick={handleMailWrite}>메일쓰기</button>
-                    <button onClick={handleMailSent}>보낸 메일함</button>
+                    받은 메일함 :  {mail.length}개의 메일 <br />
+                    <button onClick={handleMailWrite} className={styles.createbtn}>메일쓰기</button>
+                    <button onClick={handleMailSent} className={styles.headerbutton}>보낸 메일함</button>
                 </div>
 
                 {/* 메일 헤더 2 */}
                 <div className={styles.mainHeaderbottom} >
 
-                    <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
+                    {checkedList.length === 0 ? (
+                        <>
+
+                        </>) : (
+                        <>
+                            <button onClick={handleMailDelete} style={{ margin: "10px"}}> 삭제 </button>
+
+                        </>
+                    )}
+
+                    {/* <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
                         <label style={{ marginTop: "15px" }}>
                             <input type="checkbox" /> 모든 메일
                         </label>
                         <label style={{ marginTop: "15px" }}>
                             <input type="checkbox" /> 중요 메일
                         </label>
-                    </div>
+                    </div> */}
 
                 </div>
 
@@ -77,7 +117,7 @@ const Mail = () => {
             <div className={styles.mainBody}>
 
                 <div className={styles.mainBodyHeader}>
-                    <div className={styles.mainBodycheckbox}><input type="checkbox" /></div>
+                    <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                     <div className={styles.mainBodytag}>발신인</div>
                     <div className={styles.mainBodytagTitle}>제목</div>
                     <div className={styles.mainBodytag}>발신날짜</div>
@@ -89,13 +129,13 @@ const Mail = () => {
                 <div className={styles.mainBodylist}>
 
                     {mail.map(e =>
-                        
-                            <div key={e.seq} className={styles.mainBodylistbox} onClick={() => handleMailView(e)} >
-                                <div className={styles.mainBodycheckbox}><input type="checkbox" /></div>
-                                <div className={styles.mainBodytag}>{e.senderId}</div>
-                                <div className={styles.mainBodytagTitle}>{e.title}</div>
-                                <div className={styles.mainBodytag}>{e.sendDate}</div>
-                                <div className={styles.mainBodytag}>{e.fileContent}</div>
+
+                        <div key={e.seq} className={styles.mainBodylistbox} >
+                            <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
+                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.senderId}</div>
+                            <div className={styles.mainBodytagTitle} onClick={() => handleMailView(e)} >{e.title}</div>
+                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.sendDateStr}</div>
+                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.fileContent}</div>
                         </div>)}
                 </div>
 
