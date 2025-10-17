@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./Login.module.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import useAuthStore from "../../store/authStore";
+import logo from "../../assets/images/logo.png";
 
 export default function Login() {
     const [form, setForm] = useState({ id: "", pw: "" });
@@ -24,7 +25,7 @@ export default function Login() {
         <div className={styles.container}>
             <div className={styles.card}>
                 <h1 className={styles.logo}>
-                    <div><img src="/logo_puple.png" /></div>
+                    <div><img src={logo} /></div>
                     <span className={styles.highlight}>INFINITY</span>
                 </h1>
                 <form onSubmit={handleSubmit} className={styles.form}>
