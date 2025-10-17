@@ -72,6 +72,7 @@ function App() {
               <Route path="/task/*" element={<TaskRoute />} />
               <Route path="/management/*" element={<ManagementRoute />} />
               <Route path="*" element={<h2>404 Not Found</h2>} />
+              
             </Routes>
           </div>
         </div>
