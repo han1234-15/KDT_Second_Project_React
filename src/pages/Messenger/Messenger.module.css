@@ -119,6 +119,8 @@
   color: #555;
   font-size: 14px;
   transition: 0.3s;
+  text-decoration: none; /* ✅ 밑줄 제거 */
+  color: inherit;   
 }
 
 .menuBtn i {
@@ -130,6 +132,8 @@
 
 .menuBtn:hover {
   transform: scale(1.1);
+   text-decoration: none;
+
 }
 
 .active {

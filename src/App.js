@@ -15,6 +15,10 @@ import EApprovalRoute from "./pages/EApproval/EApprovalRoute";
 import NoteRoute from "./pages/Note/NoteRoute";
 import TaskRoute from "./pages/Task/TaskRoute";
 import ManagementRoute from "./pages/Management/ManagementRoute";
+import Login from "./pages/Login/Login";
+import Messenger from "./pages/Messenger/Messenger"; // ✅ 메신저 본체 추가 import
+
+// ===== 공통 컴포넌트 =====
 import Header from "./pages/Common/Header";
 import Sidebar from "./pages/Common/Sidebar";
 import useAuthStore from "./store/authStore";
@@ -50,33 +54,43 @@ function App() {
   // 로그인이 되어 있으면 url 링크에 맞춰서 동작.
   return (
     <BrowserRouter>
-      <div className={styles.container}>
-        <Header />  {/* pages/Common 폴더에 Header.jsx있음 */}
-        <div className={styles.main}>
-          <div className={styles.side}>
-          <Sidebar /> {/* pages/Common 폴더에 Sidebar.jsx있음 */}
-          </div>
-          <div className={styles.content}>
-            <Routes>
+      <Routes>
+        {/* ✅ 메신저 팝업 전용 라우트 */}
+      <Route path="/messenger-popup/*" element={<Messenger />} />
 
-              <Route path="/*" element={<Home />} />
-              <Route path="/mail/*" element={<MailRoute />} />
-              <Route path="/board/*" element={<BoardRoute />} />
-              <Route path="/schedule/*" element={<ScheduleRoute />} />
-              <Route path="/sharedmail/*" element={<SharedMailRoute />} />
-              <Route path="/contacts/*" element={<ContactsRoute />} />
-              <Route path="/messenger/*" element={<MessengerRoute />} />
-              <Route path="/workExpense/*" element={<WorkExpenseRoute />} />
-              <Route path="/eApproval/*" element={<EApprovalRoute />} />
-              <Route path="/note/*" element={<NoteRoute />} />
-              <Route path="/task/*" element={<TaskRoute />} />
-              <Route path="/management/*" element={<ManagementRoute />} />
-              <Route path="*" element={<h2>404 Not Found</h2>} />
-              
-            </Routes>
-          </div>
-        </div>
-      </div>
+
+        {/* ✅ 일반 그룹웨어 레이아웃 */}
+        <Route
+          path="/*"
+          element={
+            <div className={styles.container}>
+              <Header /> {/* pages/Common 폴더에 Header.jsx */}
+              <div className={styles.main}>
+                <div className={styles.side}>
+                  <Sidebar /> {/* pages/Common 폴더에 Sidebar.jsx */}
+                </div>
+                <div className={styles.content}>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/mail/*" element={<MailRoute />} />
+                    <Route path="/board/*" element={<BoardRoute />} />
+                    <Route path="/schedule/*" element={<ScheduleRoute />} />
+                    <Route path="/sharedmail/*" element={<SharedMailRoute />} />
+                    <Route path="/contacts/*" element={<ContactsRoute />} />
+                    <Route path="/messenger/*" element={<MessengerRoute />} />
+                    <Route path="/workExpense/*" element={<WorkExpenseRoute />} />
+                    <Route path="/eApproval/*" element={<EApprovalRoute />} />
+                    <Route path="/note/*" element={<NoteRoute />} />
+                    <Route path="/task/*" element={<TaskRoute />} />
+                    <Route path="/management/*" element={<ManagementRoute />} />
+                    <Route path="*" element={<h2>404 Not Found</h2>} />
+                  </Routes>
+                </div>
+              </div>
+            </div>
+          }
+        />
+      </Routes>
     </BrowserRouter>
   );
 }

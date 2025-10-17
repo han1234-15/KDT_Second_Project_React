@@ -52,9 +52,12 @@ const Sidebar = () => {
     const left = window.screen.width - width - 40;
     const top = window.screen.height - height - 100;
 
-    // token을 쿼리스트링으로 전달 (새 창에서 로그인 유지)
+    // ✅ token을 쿼리스트링으로 전달
+    const url = `${window.location.origin}/messenger-popup?token=${token}`;
+    console.log("✅ Messenger popup URL:", url);
+
     window.open(
-      `${window.location.origin}/messenger-popup?token=${token}`,
+      url,
       "MessengerPopup",
       `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no,status=no`
     );
