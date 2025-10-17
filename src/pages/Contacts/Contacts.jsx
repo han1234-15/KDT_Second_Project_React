@@ -32,7 +32,7 @@ const Contacts = () => {
     // 전체 주소록 리스트 
     const handleContactsList = () => {
 
-        axios.get("http://10.5.5.12/contacts", { withCredentials: true }).then(resp => {
+        axios.get("http://10.5.5.20/contacts", { withCredentials: true }).then(resp => {
             setContacts(prev => resp.data);
         });
     }
@@ -43,14 +43,14 @@ const Contacts = () => {
 
     // 주소록 삭제
     const handleContactsDelete = () => {
-        axios.delete("http://10.5.5.12/contacts", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
+        axios.delete("http://10.5.5.20/contacts", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
             setContacts(prev => prev.filter(contact => !checkedList.includes(contact.seq)));
         });
     }
 
     // 공유 주소록으로 이동
     const handleContactsUpdateTypeMulti = () => {
-        axios.put("http://10.5.5.12/contacts", { seqList: checkedList, type: "multi" }, { withCredentials: true })
+        axios.put("http://10.5.5.20/contacts", { seqList: checkedList, type: "multi" }, { withCredentials: true })
             .then(resp => {
                 setContacts(prev => prev.map(contact =>
                     checkedList.includes(contact.seq)
@@ -62,7 +62,7 @@ const Contacts = () => {
 
     // 개인 주소록으로 이동
     const handleContactsUpdateTypeSingle = () => {
-        axios.put("http://10.5.5.12/contacts", { seqList: checkedList, type: "solo" }, { withCredentials: true })
+        axios.put("http://10.5.5.20/contacts", { seqList: checkedList, type: "solo" }, { withCredentials: true })
             .then(resp => {
                 setContacts(prev => prev.map(contact =>
                     checkedList.includes(contact.seq)
