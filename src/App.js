@@ -50,10 +50,12 @@ function App() {
   // 로그인이 되어 있으면 url 링크에 맞춰서 동작.
   return (
     <BrowserRouter>
-      <div className={styles.appWrapper}>
+      <div className={styles.container}>
         <Header />  {/* pages/Common 폴더에 Header.jsx있음 */}
-        <div className={styles.container}>
+        <div className={styles.main}>
+          <div className={styles.side}>
           <Sidebar /> {/* pages/Common 폴더에 Sidebar.jsx있음 */}
+          </div>
           <div className={styles.content}>
             <Routes>
 
