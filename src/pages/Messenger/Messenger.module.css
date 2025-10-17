@@ -1,0 +1,211 @@
+/* ===== 전체 레이아웃 ===== */
+.messengerContainer {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  grid-template-rows: 50px 80px 1fr;
+  grid-template-areas:
+    "header header"
+    "profile profile"
+    "sidebar chatList";
+  height: 100vh;
+  background: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border: none;
+}
+
+/* ===== 상단 ===== */
+.header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+}
+
+.logo {
+  height: 30px;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: bold;
+  background: linear-gradient(45deg, #8e44ad, #2196f3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===== 프로필 카드 ===== */
+.profileCard {
+  grid-area: profile;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: #fff;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  transform: translateZ(0);
+  border-bottom: 1px solid #ddd;
+}
+
+.profileImg {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #8e44ad, #2196f3);
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(142, 68, 173, 0.15);
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: none;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ✅ 테두리 제거 핵심 */
+.profileInfo * {
+  all: unset;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.2;
+}
+
+.profileName {
+  font-weight: 600;
+  font-size: 15px;
+  color: #222;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+.profileStatus {
+  font-size: 12px;
+  color: #777;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+/* ===== 사이드바 ===== */
+.sidebar {
+  grid-area: sidebar;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 10px;
+  gap: 25px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== 메뉴 버튼 ===== */
+.menuBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.menuBtn i {
+  font-size: 22px;
+  background: linear-gradient(45deg, #8e44ad, #2196f3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.menuBtn:hover {
+  transform: scale(1.1);
+}
+
+.active {
+  text-shadow: 0 0 10px rgba(142, 68, 173, 0.6);
+}
+
+/* ===== 채팅방 목록 ===== */
+.chatList {
+  grid-area: chatList;
+  background: #fff;
+  border-left: 1px solid #eee;
+  padding: 20px 25px;
+  overflow-y: auto;
+}
+
+.chatList ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chatList li {
+  font-size: 15px;
+  color: #333;
+  padding: 10px 0;
+  border-bottom: 1px solid #f2f2f2;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.chatList li span {
+  color: #999;
+  font-size: 13px;
+  margin-left: 5px;
+}
+
+.chatList li:hover {
+  color: #8e44ad;
+  transform: translateX(5px);
+}
+
+/* ===== 폰트 부드럽게 ===== */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 기본적으로 모든 스크롤 숨김 ===== */
+* {
+  scrollbar-width: none; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+}
+
+/* 트랙(배경)과 화살표 전부 제거 */
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* thumb(스크롤 손잡이)은 처음엔 투명 */
+*::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+  transition: background 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+}
+
+/* 스크롤 중일 때 보여주기 (scrolling 클래스 추가될 때) */
+.scrolling *::-webkit-scrollbar-thumb {
+  background: rgba(142, 68, 173, 0.45);
+  opacity: 1;
+}
