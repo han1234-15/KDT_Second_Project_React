@@ -4,17 +4,18 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 
-const ContactsAdd = () => {
+const ContactsAddMulti = () => {
 
     const Navigate = useNavigate();
 
-    const handleInsertMulti = () => {
-        Navigate("/contacts/addmulti");
+    const [Contacts, setContacts] = useState(
+        { user_id: "김이사(임시)", name: "", phone: ``, email: "", type: "multi", team: "", jobRank: "" }
+    );
+
+    const handleInsertSolo = () => {
+        Navigate("/contacts/add");
     }
 
-    const [Contacts, setContacts] = useState(
-        { user_id: "김이사(임시)", name: "", phone: "", email: "", type: "solo", team: "", jobRank: "" }
-    );
 
     const handlechange = (e) => {
 
@@ -35,7 +36,6 @@ const ContactsAdd = () => {
         });
     };
 
-
     const handleOut = () => {
         window.close();
     }
@@ -44,9 +44,9 @@ const ContactsAdd = () => {
     return (
 
         <div className={styles.container}>
-            <button onClick={handleInsertMulti}>공용주소록 </button>
+            <button onClick={handleInsertSolo}>개인주소록 </button>
             <div className={styles.mainHeader} style={{ fontSize: "40px", backgroundColor: "#007bff", color: "white" }}>
-                개인 주소록 추가
+                공용 주소록 추가
             </div>
 
             <div className={styles.mainBody}>
@@ -93,4 +93,4 @@ const ContactsAdd = () => {
 }
 
 
-export default ContactsAdd;
+export default ContactsAddMulti;

@@ -3,43 +3,22 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
-const Contacts = () => {
+const ContactsMulti = () => {
 
     const Navigate = useNavigate();
 
-    const [contacts, setContacts] = useState([]); // 주소록 데이터 관리
+    const [contacts, setContacts] = useState([]);
     const [checkedList, setCheckedList] = useState([]); // 체크 상태 관리
     const [allChecked, setAllChecked] = useState(false); // 전체 체크 상태
 
+    // 전체 주소록
+    const handleContacts = () => {
+        Navigate("/contacts");
+    }
     // 개인 주소록
     const handleContactsSolo = () => {
-        Navigate("solo");
+        Navigate("/contacts/solo");
     }
-    // 공유 주소록
-    const handleContactsMulti = () => {
-        Navigate("multi");
-    }
-
-    // 주소록 추가 
-    const handleContactsAdd = () => {
-        window.open(
-            "/contacts/add",
-            "ContactsAdd", // 새 창 이름
-            "width=1400,height=800,resizable=yes,scrollbars=yes"
-        )
-    }
-
-    // 전체 주소록 리스트 
-    const handleContactsList = () => {
-
-        axios.get("http://10.5.5.12/contacts", { withCredentials: true }).then(resp => {
-            setContacts(prev => resp.data);
-        });
-    }
-    // 페이지 로딩시 리스트 출력
-    useEffect(() => {
-        handleContactsList();
-    }, []);
 
     // 주소록 삭제
     const handleContactsDelete = () => {
@@ -48,17 +27,7 @@ const Contacts = () => {
         });
     }
 
-    // 공유 주소록으로 이동
-    const handleContactsUpdateTypeMulti = () => {
-        axios.put("http://10.5.5.12/contacts", { seqList: checkedList, type: "multi" }, { withCredentials: true })
-            .then(resp => {
-                setContacts(prev => prev.map(contact =>
-                    checkedList.includes(contact.seq)
-                        ? { ...contact, type: "multi" }
-                        : contact
-                ));
-            });
-    }
+
 
     // 개인 주소록으로 이동
     const handleContactsUpdateTypeSingle = () => {
@@ -104,6 +73,27 @@ const Contacts = () => {
     }
 
 
+    // 주소록 추가 
+    const handleContactsAdd = () => {
+        window.open(
+            "/contacts/add",
+            "ContactsAdd", // 새 창 이름
+            "width=1400,height=800,resizable=yes,scrollbars=yes"
+        )
+    }
+    // 전체 주소록 리스트 
+    const handleDefaultGet = () => {
+
+        axios.get("http://10.5.5.12/contacts?type=multi", { withCredentials: true }).then(resp => {
+            setContacts(prev => resp.data);
+        });
+    }
+    // 페이지 로딩시 리스트 출력
+    useEffect(() => {
+        handleDefaultGet();
+    }, []);
+
+
 
     return (<div className={styles.container}>
 
@@ -118,9 +108,9 @@ const Contacts = () => {
 
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
-                    전체 주소록 <br />
+                    공유 주소록 <br />
+                    <button onClick={handleContacts}>전체 주소록</button>
                     <button onClick={handleContactsSolo}>개인 주소록</button>
-                    <button onClick={handleContactsMulti}>공유 주소록</button>
 
                 </div>
 
@@ -135,7 +125,6 @@ const Contacts = () => {
                         <>
                             <button onClick={handleContactsDelete}> 삭제 </button>
                             <button onClick={handleContactsUpdateTypeSingle}> 개인 주소록으로 이동 </button>
-                            <button onClick={handleContactsUpdateTypeMulti}> 공유 주소록으로 이동 </button>
                         </>
                     )}
                 </div>
@@ -146,16 +135,17 @@ const Contacts = () => {
 
             {/* 주소록 바디 여기가 계속 변하는곳 Route */}
             <div className={styles.mainBody}>
+
+
+
                 <div className={styles.mainBodyHeader}>
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                     <div className={styles.mainBodytag}>성함</div>
                     <div className={styles.mainBodytag}>전화번호</div>
-                    <div className={styles.mainBodytag}>이메일</div>
+                    <div className={styles.mainBodytag}>이메일 </div>
                     <div className={styles.mainBodytag}>부서</div>
                     <div className={styles.mainBodytag}>직급</div>
                 </div>
-
-
                 <hr></hr>
 
                 {/* 주소록 출력  */}
@@ -189,4 +179,4 @@ const Contacts = () => {
     );
 }
 
-export default Contacts;
+export default ContactsMulti;

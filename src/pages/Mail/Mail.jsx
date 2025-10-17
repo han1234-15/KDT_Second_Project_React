@@ -1,89 +1,120 @@
 import styles from "./Mail.module.css";
 import { useNavigate, BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from 'react';
 
 
 const Mail = () => {
 
+    const [mail, setMail] = useState([]);
+
     const navigate = useNavigate();
 
-    // 메일 클릭 시 이후 만들기
-    const handleMailView = () => {
-        navigate("mailview"); // 클릭 시 Mailview 페이지로 이동
+
+    // 메일 작성란 이동
+    const handleMailWrite = () => {
+        navigate("mailwrite");
+    }
+
+    const handleMailSent = () => {
+         navigate("mailsent");
+    }
+
+    //받은 메일 리스트 출력
+    const handleMailList = () => {
+        axios.get("http://10.5.5.12/mail", { withCredentials: true }).then(resp => {
+            setMail(prev => resp.data);
+        });
+    }
+    // 페이지 로딩시 리스트 출력
+    useEffect(() => {
+        handleMailList();
+    }, []);
+
+    // 메일 보기(클릭)
+    const handleMailView = (mailItem) => {
+       navigate("mailview", { state: { mail: mailItem } }); // 클릭 시 Mailview 페이지로 이동
     };
 
 
-    const handleMailWrite = () => {
-
-        navigate("mailwrite");
+    return (<div className={styles.container}>
 
 
-    }
+        {/* 메인 주소록창 */}
+        <div className={styles.main}>
 
-    return (
-
-        <div className={styles.container}>
-
-
-            {/* 메인창 */}
-            <div className={styles.main}>
-
-                {/*  헤더  */}
-                <div className={styles.mainHeader}>
-                    <div className={styles.mainHeadertag}>보내신 분</div>
-                    <div className={styles.mainHeadertag}>제목</div>
-                    <div className={styles.mainHeadertag}>이메일</div>
-                    <div className={styles.mainHeadertag}>팀</div>
-                    <div className={styles.mainHeadertag}>직급</div>
-                </div> {/* 헤더  */}
+            {/* 메일 헤더  */}
+            <div className={styles.mainHeader}>
 
 
-                {/* 바디 여기가 계속 변하는곳 Route */}
-                <div className={styles.mainBody} onClick={handleMailView}>
 
-                    {/* 메일 출력  */}
-                    <div className={styles.mainBodybox}>
-                        <div className={styles.mainBodytag}>박민규</div>
-                        <div className={styles.mainBodytag}>안녕하세요 대리님!</div>
-                        <div className={styles.mainBodytag}>pwrmin@naver.com</div>
-                        <div className={styles.mainBodytag}>마케팅1팀</div>
-                        <div className={styles.mainBodytag}>사원</div>
+                {/* 메일 헤더 1 */}
+                <div className={styles.mainHeadertop} >
+                   받은 메일함 :  {mail.length}개의 메일 <br />
+                    <button onClick={handleMailWrite}>메일쓰기</button>
+                    <button onClick={handleMailSent}>보낸 메일함</button>
+                </div>
+
+                {/* 메일 헤더 2 */}
+                <div className={styles.mainHeaderbottom} >
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
+                        <label style={{ marginTop: "15px" }}>
+                            <input type="checkbox" /> 모든 메일
+                        </label>
+                        <label style={{ marginTop: "15px" }}>
+                            <input type="checkbox" /> 중요 메일
+                        </label>
                     </div>
-                </div>  {/* 바디 */}
-
-            </div> {/* 메인창  */}
-
-            {/* 오른쪽 바 */}
-            <div className={styles.rightbar}>
-
-                {/* bar 헤더 */}
-                <div className={styles.rightbarHeader}>
-                    {/* 메일 추가 */}
-                    <button className={styles.createbtn} onClick={handleMailWrite}> 메일 쓰기 </button>
-                </div>
-
-                {/* 주소록 bar 바디 */}
-                <div className={styles.rightbarBody}>
-
-                    {/* 주소록 종류 출력  */}
-                    <div className={styles.rightbarBodytag}> 전체 메일함 </div>
-                    <div className={styles.rightbarBodytag}>받은 메일함 </div>
-                    <div className={styles.rightbarBodytag}> 보낸 메일함 </div>
 
                 </div>
 
-            </div>
+
+            </div> {/* 메일 헤더  */}
+            <hr></hr>
+
+            {/* 메일 양식 */}
+            <div className={styles.mainBody}>
+
+                <div className={styles.mainBodyHeader}>
+                    <div className={styles.mainBodycheckbox}><input type="checkbox" /></div>
+                    <div className={styles.mainBodytag}>발신인</div>
+                    <div className={styles.mainBodytagTitle}>제목</div>
+                    <div className={styles.mainBodytag}>발신날짜</div>
+                    <div className={styles.mainBodytag}>첨부파일</div><br></br>
+                </div>
+                <hr></hr>
+
+                {/* 메일 출력  */}
+                <div className={styles.mainBodylist}>
+
+                    {mail.map(e =>
+                        
+                            <div key={e.seq} className={styles.mainBodylistbox} onClick={() => handleMailView(e)} >
+                                <div className={styles.mainBodycheckbox}><input type="checkbox" /></div>
+                                <div className={styles.mainBodytag}>{e.senderId}</div>
+                                <div className={styles.mainBodytagTitle}>{e.title}</div>
+                                <div className={styles.mainBodytag}>{e.sendDate}</div>
+                                <div className={styles.mainBodytag}>{e.fileContent}</div>
+                        </div>)}
+                </div>
+
+            </div>  {/* 메일 바디 */}
+
+        </div> {/* 메인 창  */}
 
 
-        </div>
-
-
-
-
-
+    </div>
 
 
 
     );
+
+
+
+
+
+
 }
 
 export default Mail;
