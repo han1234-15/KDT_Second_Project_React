@@ -15,14 +15,14 @@ const Mail = () => {
     const handleMailWrite = () => {
         navigate("mailwrite");
     }
-
+ 
     const handleMailSent = () => {
          navigate("mailsent");
     }
 
     //받은 메일 리스트 출력
     const handleMailList = () => {
-        axios.get("http://10.5.5.12/mail", { withCredentials: true }).then(resp => {
+        axios.get("http://10.5.5.20/mail", { withCredentials: true }).then(resp => {
             setMail(prev => resp.data);
         });
     }

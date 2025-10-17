@@ -16,7 +16,7 @@ const MailWrite = () => {
       }
       //메일 작성
       const handleMailWrite = () => {
-          axios.post("http://10.5.5.12/mail",mail, {
+          axios.post("http://10.5.5.20/mail",mail, {
             headers: { "Content-Type": "application/json" }
         }).then((res) => {
             setMail(res.data);
