@@ -1,0 +1,147 @@
+[33mcommit a7507c2a09b967fc7e0aeabaef1ba49141b31f39[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Merge: 1297d0b 5593cb4
+Author: Carrythefuture <146246027+Carrythefuture@users.noreply.github.com>
+Date:   Fri Oct 17 10:25:40 2025 +0900
+
+    Merge pull request #6 from rkdqudwn1231/master
+    
+    10.17 09:51 Messenger
+
+[33mcommit 5593cb4c5b12508942a066aa5efa01139d1c8d41[m
+Merge: 80f2ab3 1297d0b
+Author: Carrythefuture <146246027+Carrythefuture@users.noreply.github.com>
+Date:   Fri Oct 17 10:25:33 2025 +0900
+
+    Merge branch 'master' into master
+
+[33mcommit 80f2ab325bc429ce9d6923212be8c09c0b393944[m[33m ([m[1;32mtest[m[33m)[m
+Author: 강범찬 <rkdqudwn1231@gmail.com>
+Date:   Fri Oct 17 09:51:30 2025 +0900
+
+    10.17 09:51
+
+[33mcommit 1297d0b4eca8564526014ad27d274bded006744f[m
+Merge: dbf923a 77b7ab2
+Author: Carrythefuture <146246027+Carrythefuture@users.noreply.github.com>
+Date:   Fri Oct 17 09:14:05 2025 +0900
+
+    Merge pull request #5 from pwrmin/master
+    
+    10.17 09:12 push
+
+[33mcommit 77b7ab2d682563bd7a2ff2bb820e8f17c9a5ef11[m
+Merge: 01f4304 1d8b5f3
+Author: pwrmin <pwrmin06@gmail.com>
+Date:   Fri Oct 17 09:12:14 2025 +0900
+
+    09:12 push
+
+[33mcommit 01f4304153a60c0c0b81e192eec0bd6ea78e5512[m
+Author: pwrmin <pwrmin06@gmail.com>
+Date:   Fri Oct 17 09:00:55 2025 +0900
+
+    10.17 9:00
+
+[33mcommit dbf923a79de916e091009e64d316c470964f7836[m
+Merge: 1d8b5f3 88a3f94
+Author: Yujung2023 <yujung2023@naver.com>
+Date:   Fri Oct 17 08:58:49 2025 +0900
+
+    Merge pull request #4 from han1234-15/master
+    
+    전자 결재
+
+[33mcommit 88a3f945b09b103ae84847ee8f51736d8fa28aeb[m
+Author: han <han@naver.com>
+Date:   Thu Oct 16 11:47:54 2025 +0900
+
+    전자 결제 틀 완료용
+
+[33mcommit 1c6e1a81fa7d1553e463d92447b2f078aaf9e8e0[m
+Merge: 7d003e5 1d8b5f3
+Author: han <han@naver.com>
+Date:   Thu Oct 16 11:45:43 2025 +0900
+
+    전자작업용 틀 완료
+
+[33mcommit 7d003e52a7512ea152ee85d352315df376f394e2[m
+Author: han <han@naver.com>
+Date:   Thu Oct 16 09:10:29 2025 +0900
+
+    전자작업용
+
+[33mcommit 1d8b5f3a8ec778fd9f93b57b8f96bc600a83f81a[m
+Merge: fb76c64 8a24887
+Author: Yujung2023 <yujung2023@naver.com>
+Date:   Thu Oct 16 00:51:47 2025 +0900
+
+    Merge pull request #3 from Yujung2023/master
+    
+    main page update
+
+[33mcommit 8a2488774cf6eb817548b85e376741b225ac176e[m
+Author: YuJung <your-email@example.com>
+Date:   Thu Oct 16 00:45:51 2025 +0900
+
+    main page update
+
+[33mcommit fb76c64c0083508121e26049bc8f130d9a2fe196[m
+Author: Carrythefuture <whdals2babo@gmail.com>
+Date:   Tue Oct 7 03:06:07 2025 +0900
+
+    All File Route.jsx add, Login system create -ing
+
+[33mcommit 5671dcd4a763acfa0708be84927d3a6f22580276[m
+Merge: 3f7ed93 ba188c7
+Author: Carrythefuture <146246027+Carrythefuture@users.noreply.github.com>
+Date:   Mon Oct 6 13:41:32 2025 +0900
+
+    Merge pull request #2 from pwrmin/master
+    
+    박민규 1:40 Route 테스트
+
+[33mcommit ba188c72c84f37f7c1b1ffbbd222c58707d9996e[m
+Author: pwrmin06@gmail.com <pwrmin@naver.com>
+Date:   Mon Oct 6 13:39:49 2025 +0900
+
+    1:39 test
+
+[33mcommit a1512ab44d017049423f2050cb03f312643988ec[m
+Merge: 3c0e985 3f7ed93
+Author: pwrmin06@gmail.com <pwrmin@naver.com>
+Date:   Mon Oct 6 13:34:06 2025 +0900
+
+    Merge branch 'master' of https://github.com/pwrmin/Second_Project_React
+
+[33mcommit 3c0e9850332564a812b244bd552192d63172691c[m
+Author: pwrmin06@gmail.com <pwrmin@naver.com>
+Date:   Mon Oct 6 13:33:34 2025 +0900
+
+    10.06 Route commit
+
+[33mcommit 3f7ed93b0f44196705cafa8a40393cb40e1b156e[m
+Merge: dc7a5a7 2da5099
+Author: Carrythefuture <146246027+Carrythefuture@users.noreply.github.com>
+Date:   Mon Oct 6 12:45:48 2025 +0900
+
+    Merge pull request #1 from pwrmin/master
+    
+    박민규 (리액트) 주소록,메일,공용메일 UI 일부작업 및 메인화면(app.js) 링크 수정
+
+[33mcommit 2da509910c22f3ba1d73e391c631d451e34d2f5d[m
+Author: pwrmin06@gmail.com <pwrmin@naver.com>
+Date:   Sun Oct 5 17:38:36 2025 +0900
+
+    Mingyu_ react commit 10.05 17:38 REACT UI
+
+[33mcommit dc7a5a733ba49cacd41dd8a1e0c21b68b8311923[m
+Author: Carrythefuture <whdals2babo@gmail.com>
+Date:   Sun Oct 5 01:05:39 2025 +0900
+
+    페이지별 라우팅 구조 정리
+
+[33mcommit 7f6f5874718cf9c412dcf6fa160b6514665b14bb[m
+Author: JongMin Lim <your-email@example.com>
+Date:   Fri Oct 3 18:09:23 2025 +0900
+
+    Initialize project using Create React App
