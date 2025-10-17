@@ -66,7 +66,7 @@ const Messenger = () => {
           <Route path="contacts" element={<ContactList />} />
           <Route path="chat" element={<ChatRoomList />} />
           <Route path="settings" element={<Settings />} />
-          <Route path="*" element={<ChatRoomList />} />
+          <Route path="*" element={<ContactList />} />
         </Routes>
       </main>
     </div>

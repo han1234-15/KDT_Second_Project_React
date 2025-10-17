@@ -7,6 +7,18 @@ const ContactList = () => {
 
 const [member, setMember] = useState([]);
 
+ useEffect(() => {
+    caxios.get("/messenger/member")
+      .then(resp => {
+        console.log(resp.data);
+        setMember(resp.data);
+      })
+      .catch(error => {
+        console.error("데이터 요청 실패:", error);
+      });
+  }, []);
+
+
  return(
   <ul>
     <li>&gt; 연구&개발 <span>(15/21)</span></li>

@@ -16,7 +16,7 @@ export default function Login() {
 
         console.log("로그인 시도:", form);
 
-        login("뭐시기");
+        login("ABC");
         // 로그인 로직 추가 예정
     };
 
