@@ -3,6 +3,7 @@ import styles from "./Login.module.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import useAuthStore from "../../store/authStore";
 import logo from "../../assets/images/logo.png";
+import { caxios } from "../../config/config";
 
 export default function Login() {
     const [form, setForm] = useState({ id: "", pw: "" });
@@ -12,13 +13,24 @@ export default function Login() {
     };
 
     const login = useAuthStore(state => state.login);
-
+    const logout = useAuthStore(state => state.logout);
     const handleSubmit = (e) => {
 
+        if (form.id == "" || form.pw == "") {
+            alert("아이디와 비밀번호를 입력해주세요");
+            return;
+        }
         console.log("로그인 시도:", form);
 
-        login("ABC");
-        // 로그인 로직 추가 예정
+        caxios
+            .post("/auth", form)
+            .then((resp) => {
+                login(resp.data);
+            })
+            .catch(() => {
+                sessionStorage.removeItem("token");
+                logout();
+            });
     };
 
     return (
@@ -28,7 +40,7 @@ export default function Login() {
                     <div><img src={logo} /></div>
                     <span className={styles.highlight}>INFINITY</span>
                 </h1>
-                <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.form}>
                     <div className={styles.inputGroup}>
                         <FaUser className={styles.icon} />
                         <input
@@ -51,10 +63,10 @@ export default function Login() {
                             required
                         />
                     </div>
-                    <button type="submit" className={styles.button}>
+                    <button type="button" className={styles.button} onClick={handleSubmit}>
                         로그인
                     </button>
-                </form>
+                </div>
                 <div className={styles.footer}>
                     <a href="#">아이디 찾기</a> | <a href="#">비밀번호 찾기</a>
                 </div>
