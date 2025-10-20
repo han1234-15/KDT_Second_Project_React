@@ -17,42 +17,28 @@ import TaskRoute from "./pages/Task/TaskRoute";
 import ManagementRoute from "./pages/Management/ManagementRoute";
 import Messenger from "./pages/Messenger/Messenger"; // ✅ 메신저 본체 추가 import
 
-// ===== 공통 컴포넌트 =====
+// ===== 공통 컴포넌트 =====d
 import Header from "./pages/Common/Header";
 import Sidebar from "./pages/Common/Sidebar";
+
 import useAuthStore from "./store/authStore";
 import Login from "./pages/Login/Login";
-import { caxios } from "./config/config";
+import ContentTap from "./pages/Common/ContentTap";
+import ContentMain from "./pages/Common/ContentMain";
 
 function App() {
 
   const isLogin = useAuthStore(state => state.isLogin)
   const login = useAuthStore(state => state.login);
-  const logout = useAuthStore(state => state.logout);
   const [loading, setLoading] = useState(true); //로딩 확인용 상태변수
 
   useEffect(() => {
+    // 세션에서 로그인 상태 확인
     const token = sessionStorage.getItem("token");
-
-    if (!token) {
-      logout();
-      setLoading(false);
-      return;
+    if (token) {
+      login(token); // token 자체를 store에 넣는게 일반적
     }
-
-    caxios
-      .get("/auth")
-      .then((resp) => {
-        login(token);
-        console.log(resp);
-      })
-      .catch(() => {
-        sessionStorage.removeItem("token");
-        logout();
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    setLoading(false); // 토큰 확인 후 렌더링 하도록 함.
   }, []);
 
 
@@ -72,40 +58,12 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* ✅ 메신저 팝업 전용 라우트 */}
-        <Route path="/messenger-popup/*" element={<Messenger />} />
+      <Route path="/messenger-popup/*" element={<Messenger />} />
 
 
-        {/* ✅ 일반 그룹웨어 레이아웃 */}
+        {/* ✅ 공통 그룹웨어 레이아웃 */}
         <Route
-          path="/*"
-          element={
-            <div className={styles.container}>
-              <Header /> {/* pages/Common 폴더에 Header.jsx */}
-              <div className={styles.main}>
-                <div className={styles.side}>
-                  <Sidebar /> {/* pages/Common 폴더에 Sidebar.jsx */}
-                </div>
-                <div className={styles.content}>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/mail/*" element={<MailRoute />} />
-                    <Route path="/board/*" element={<BoardRoute />} />
-                    <Route path="/schedule/*" element={<ScheduleRoute />} />
-                    <Route path="/sharedmail/*" element={<SharedMailRoute />} />
-                    <Route path="/contacts/*" element={<ContactsRoute />} />
-                    <Route path="/messenger/*" element={<MessengerRoute />} />
-                    <Route path="/workExpense/*" element={<WorkExpenseRoute />} />
-                    <Route path="/eApproval/*" element={<EApprovalRoute />} />
-                    <Route path="/note/*" element={<NoteRoute />} />
-                    <Route path="/task/*" element={<TaskRoute />} />
-                    <Route path="/management/*" element={<ManagementRoute />} />
-                    <Route path="*" element={<h2>404 Not Found</h2>} />
-                  </Routes>
-                </div>
-              </div>
-            </div>
-          }
-        />
+         path="/*" element={<ContentMain />} />  
       </Routes>
     </BrowserRouter>
   );
