@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./styles/ApprovalDetail.css";
+import { caxios } from "../../config/config";
 
 function EApprovalDetail() {
   const { seq } = useParams();
@@ -9,8 +10,8 @@ function EApprovalDetail() {
   const [doc, setDoc] = useState(null);
 
   useEffect(() => {
-  axios
-    .get(`http://10.5.5.11/Eapproval/detail/${seq}`)
+  caxios
+    .get(`/Eapproval/detail/${seq}`)
     .then((res) => {
       console.log("📡 detail data:", res.data);
       setDoc(res.data);
