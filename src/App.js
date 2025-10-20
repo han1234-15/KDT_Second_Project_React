@@ -15,7 +15,6 @@ import EApprovalRoute from "./pages/EApproval/EApprovalRoute";
 import NoteRoute from "./pages/Note/NoteRoute";
 import TaskRoute from "./pages/Task/TaskRoute";
 import ManagementRoute from "./pages/Management/ManagementRoute";
-import Login from "./pages/Login/Login";
 import Messenger from "./pages/Messenger/Messenger"; // ✅ 메신저 본체 추가 import
 
 // ===== 공통 컴포넌트 =====
@@ -23,20 +22,37 @@ import Header from "./pages/Common/Header";
 import Sidebar from "./pages/Common/Sidebar";
 import useAuthStore from "./store/authStore";
 import Login from "./pages/Login/Login";
+import { caxios } from "./config/config";
 
 function App() {
 
   const isLogin = useAuthStore(state => state.isLogin)
   const login = useAuthStore(state => state.login);
+  const logout = useAuthStore(state => state.logout);
   const [loading, setLoading] = useState(true); //로딩 확인용 상태변수
 
   useEffect(() => {
-    // 세션에서 로그인 상태 확인
     const token = sessionStorage.getItem("token");
-    if (token) {
-      login(token); // token 자체를 store에 넣는게 일반적
+
+    if (!token) {
+      logout();
+      setLoading(false);
+      return;
     }
-    setLoading(false); // 토큰 확인 후 렌더링 하도록 함.
+
+    caxios
+      .get("/auth")
+      .then((resp) => {
+        login(token);
+        console.log(resp);
+      })
+      .catch(() => {
+        sessionStorage.removeItem("token");
+        logout();
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
 
@@ -56,7 +72,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* ✅ 메신저 팝업 전용 라우트 */}
-      <Route path="/messenger-popup/*" element={<Messenger />} />
+        <Route path="/messenger-popup/*" element={<Messenger />} />
 
 
         {/* ✅ 일반 그룹웨어 레이아웃 */}
