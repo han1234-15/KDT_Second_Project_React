@@ -78,6 +78,16 @@
     height: 95%;
 }
 
+.mainBodylistbox {
+
+    height: 5%;
+}
+
+.mainBodylistbox:hover {
+    cursor: pointer;
+    background-color: lightgrey;
+}
+
 .mainBodycheckbox {
     width: 10%;
     height: 100%;

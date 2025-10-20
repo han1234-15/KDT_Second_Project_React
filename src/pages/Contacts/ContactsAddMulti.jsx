@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./Contacts.module.css";
-import axios from "axios";
+import { caxios } from '../../config/config.js';
 import { useNavigate } from "react-router-dom";
 
 
@@ -28,7 +28,7 @@ const ContactsAddMulti = () => {
             phone: String(Contacts.phone)  // 문자열 강제
         };
 
-        axios.post("http://10.5.5.12/contacts", payload, {
+        caxios.post("/contacts", payload, {
             headers: { "Content-Type": "application/json" }
         }).then((res) => {
             setContacts(res.data);

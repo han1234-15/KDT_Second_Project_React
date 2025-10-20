@@ -1,6 +1,6 @@
 import styles from "./Contacts.module.css";
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { caxios } from '../../config/config.js';
 import { useNavigate } from "react-router-dom";
 
 const ContactsSolo = () => {
@@ -23,14 +23,14 @@ const ContactsSolo = () => {
 
     // 주소록 삭제
     const handleContactsDelete = () => {
-        axios.delete("http://10.5.5.20/contacts", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
+        caxios.delete("/contacts", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
             setContacts(prev => prev.filter(contact => !checkedList.includes(contact.seq)));
         });
     }
 
     // 공유 주소록으로 이동
     const handleContactsUpdateTypeMulti = () => {
-        axios.put("http://10.5.5.20/contacts", { seqList: checkedList, type: "multi" }, { withCredentials: true })
+        caxios.put("/contacts", { seqList: checkedList, type: "multi" }, { withCredentials: true })
             .then(resp => {
                 setContacts(prev => prev.map(contact =>
                     checkedList.includes(contact.seq)
@@ -84,7 +84,7 @@ const ContactsSolo = () => {
     const handleContactsList = () => {
         const params = {};
         if (searchName) params.name = searchName;
-        axios.get("http://10.5.5.20/contacts?type=solo", { params, withCredentials: true }).then(resp => {
+        caxios.get("/contacts?type=solo", { params, withCredentials: true }).then(resp => {
             setContacts(prev => resp.data);
         });
     }
@@ -145,7 +145,7 @@ const ContactsSolo = () => {
                     <div className={styles.mainBodytag}>전화번호</div>
                     <div className={styles.mainBodytag}>이메일 </div>
                     <div className={styles.mainBodytag}>부서</div>
-                    <div className={styles.mainBodytag}>직급</div>
+                    <div className={styles.mainBodytag}>직급</div> <br></br>
                 </div>
                 <hr></hr>
 
@@ -154,7 +154,7 @@ const ContactsSolo = () => {
 
 
                     {contacts.map(e =>
-                        <div key={e.seq}>
+                       <div key={e.seq} className={styles.mainBodylistbox} >
                             <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
                             <div className={styles.mainBodytag}>{e.name}</div>
                             <div className={styles.mainBodytag}>{e.phone}</div>

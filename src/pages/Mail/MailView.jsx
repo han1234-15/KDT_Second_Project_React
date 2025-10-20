@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import styles from "./Mail.module.css";
-import axios from "axios";
+import { caxios } from '../../config/config.js';
 import { useEffect, useState } from 'react';
 
 const MailView = () => {
@@ -17,9 +17,32 @@ const MailView = () => {
     // 파일 리스트 출력
     const [List, setList] = useState([]);
 
+    // 파일 다운    
+    const handleDownload = async (mailSeq, sysname, orgname) => {
+        try {
+            const res = await caxios.get(`/files/download?mailSeq=${mailSeq}&sysname=${sysname}`, {
+                responseType: 'blob'  // 중요!
+            });
+
+            // 브라우저에서 파일 다운로드
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', orgname); // 실제 파일명 사용
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+
+
     useEffect(() => {
         if (!mail || !mail.seq) return;
-        axios.get("http://10.5.5.12/files")
+        caxios.get(`/files/mail?mailSeq=${mail.seq}`)
             .then((res) => setList(res.data))
             .catch(err => console.error(err));
     }, [mail]);
@@ -45,20 +68,28 @@ const MailView = () => {
             <div className={styles.mainBody}>
                 <div className={styles.mainBodyViewContent} dangerouslySetInnerHTML={{ __html: safeContent }} />
 
-                <button className={styles.downloadBtn} style={{ marginRight: "20px" }}>파일</button>
+                <button className={styles.backBtn} onClick={handleMailReturn}>뒤로가기</button>
+
+                <button className={styles.downloadBtn} style={{ marginRight: "20px" }}>파일 목록</button>
                 <br></br>
                 <br></br>
+
                 <ul>
+
                     {List.map((e, i) => (
+
                         <li key={i}>
-                            {e.name || e}
-                           <a href={`http://10.5.5.12/files/${e}`} download>: 다운받기</a>
+
+                            {e.orgname || e.sysname}
+                            <button onClick={() => handleDownload(mail.seq, e.sysname, e.orgname)}
+                                style={{ margin: "20px" }}>다운받기</button>
+                            <hr></hr>
                         </li>
                     ))}
                 </ul>
 
 
-                <button className={styles.backBtn} onClick={handleMailReturn}>뒤로가기</button>
+
             </div>
 
         </div>

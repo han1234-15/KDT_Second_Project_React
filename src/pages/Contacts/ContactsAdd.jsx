@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./Contacts.module.css";
-import axios from "axios";
+import { caxios } from '../../config/config.js';
 import { useNavigate } from "react-router-dom";
 
 
@@ -27,7 +27,7 @@ const ContactsAdd = () => {
             phone: String(Contacts.phone)  // 문자열 강제
         };
 
-        axios.post("http://10.5.5.20/contacts", payload, {
+        caxios.post("/contacts", payload, {
             headers: { "Content-Type": "application/json" }
         }).then((res) => {
             setContacts(res.data);
@@ -53,31 +53,31 @@ const ContactsAdd = () => {
 
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                     <div className={styles.NewSharedMailbox1}>성함 : </div>
-                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top" }}
+                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
                         onChange={handlechange} name="name" value={Contacts.name} />
                 </div>
 
 
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                     <div className={styles.NewSharedMailbox1}>전화번호 : </div>
-                    <input type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top" }}
+                    <input type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black"  }}
                         onChange={handlechange} name="phone" value={Contacts.phone} />
                 </div>
 
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                     <div className={styles.NewSharedMailbox1}>이메일 : </div>
-                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top" }}
+                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black"  }}
                         onChange={handlechange} name="email" value={Contacts.email} />
                 </div>
 
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                     <div className={styles.NewSharedMailbox1}>부서 : </div>
-                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top" }}
+                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black"  }}
                         onChange={handlechange} name="team" value={Contacts.team} />
                 </div>
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                     <div className={styles.NewSharedMailbox1}> 직급: </div>
-                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top" }}
+                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black"  }}
                         onChange={handlechange} name="jobRank" value={Contacts.jobRank} />
                 </div>
 
