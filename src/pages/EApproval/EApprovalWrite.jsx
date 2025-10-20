@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./styles/ApprovalWrite.css";
 import approveImg from "./images/승인.jpg";
 import rejectImg from "./images/반려.png";
+import { caxios } from "../../config/config";
 
 function EApprovalWrite() {
   const [showModal,setShowModal]=useState(false);
@@ -47,8 +48,8 @@ function EApprovalWrite() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios
-      .post("http://10.5.5.11/Eapproval/write", formData)
+    caxios
+      .post(`/Eapproval/write`, formData)
       .then(() => {
         alert("결재 문서가 성공적으로 등록되었습니다 ");
         navigate("/Eapproval/A");
@@ -68,9 +69,25 @@ function EApprovalWrite() {
 
   const handleApprovlClick=()=>setShowModal(true);
 
+  
   const handleApprovalDecision=(result)=>{
-    setApprovalResult(result);
-    setShowModal(false);
+
+    const newStatus=result==="approve" ?"in_progress":" rejected";
+
+    axios.put(`http://10.5.5.11/Eapproval/updateStatus/${formData.seq}?status=${newStatus}`)
+    .then(()=>{
+      alert(
+        result === "approve" ?"결재 승인":"결재 반려"
+      );
+      setApprovalResult(result);
+      setShowModal(false);
+    })
+    .catch(()=>{
+      alert("망했어")
+      setShowModal(false);
+    })
+   
+    
   }
 
   // 문서 선택 여부

@@ -1,0 +1,267 @@
+.work-dashboard {
+  width: 100%;
+  padding: 20px 30px;
+  background: #fafafa;
+  font-family: "Pretendard", sans-serif;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #222;
+}
+
+/* === 한 줄 3개 박스 정렬 === */
+.info-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* === fieldset 기본 === */
+.info-box {
+  flex: 1;
+  min-width: 300px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 15px 20px;
+}
+
+.info-box legend {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  padding: 0 6px;
+}
+
+/* === 내부 항목들 === */
+.field-content {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding-top: 8px;
+}
+
+.field-item {
+  text-align: center;
+  flex: 1;
+  min-width: 80px;
+  padding: 5px;
+  border-right: 1px solid #eee;
+}
+
+.field-item:last-child {
+  border-right: none;
+}
+
+.field-item strong {
+  display: block;
+  color: #333;
+  margin-bottom: 3px;
+}
+
+/* === 하단 버튼 영역 === */
+.field-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.link-btn {
+  background-color: transparent;
+  border: 1px solid #ccc;   /* ← 테두리 추가 */
+  color: #007bff;           /* 파란색 텍스트 */
+  border-radius: 4px;
+  padding: 4px 10px;        /* 버튼 크기 */
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.link-btn:hover {
+  background-color: #007bff; /* hover 시 파란색 배경 */
+  color: #fff;               /* hover 시 글자색 흰색 */
+}
+
+/* 오늘 근무현황 */
+.work-plan {
+  text-align: center;
+}
+
+.calendar-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-date {
+  background: #e9edf9;
+  border-radius: 6px;
+  padding: 10px;
+  width: 80px;
+}
+
+.month {
+  font-size: 12px;
+  color: #666;
+}
+
+.day {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+}
+
+.weekday {
+  font-size: 13px;
+  color: #888;
+}
+
+.time-text {
+  margin-top: 10px;
+  font-weight: 600;
+  color: #222;
+}
+
+.time-range {
+  font-size: 13px;
+  color: #666;
+}
+
+.work-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 12px;
+}
+
+.work-buttons button {
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+
+.work-buttons button:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+/* 근무체크 */
+.check-section {
+  text-align: center;
+}
+
+.clock {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+.check-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.check-buttons button {
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.check-buttons .in {
+  background: #007bff;
+}
+
+.check-buttons .out {
+  background: #555;
+}
+
+.time-logs {
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.check-extra input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 3px;
+  padding: 4px 6px;
+  width: 80px;
+  font-size: 12px;
+}
+
+/* 근무현황 */
+.empty-state {
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+  margin: 25px 0;
+}
+.check-section {
+  text-align: center;
+}
+
+.clock {
+  font-size: 28px;
+  font-weight: bold;
+  color: #222;
+  margin: 10px 0 15px;
+}
+
+.check-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.check-buttons button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+}
+
+.check-buttons .in {
+  background: #007bff;
+}
+
+.check-buttons .out {
+  background: #555;
+}
+
+.check-buttons .in:hover {
+  background: #005fcc;
+}
+
+.check-buttons .out:hover {
+  background: #333;
+}
+
+.time-logs {
+  text-align: left;
+  margin-top: 10px;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #777;
+  padding: 20px 0;
+  font-size: 14px;
+}

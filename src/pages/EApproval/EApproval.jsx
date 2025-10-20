@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "./styles/ApprovalPage.css";
+import { caxios } from "../../config/config";
 
 function EApproval() {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ function EApproval() {
   const [docs, setDocs] = useState([]);
   const [openFolder1, setOpenFolder1] = useState(false); // 문서함
   const [openFolder2, setOpenFolder2] = useState(false); // 진행 중 문서
+  
 
   // 상태 코드 → 한글 이름 매핑
   const statusMap = {
@@ -19,14 +21,13 @@ function EApproval() {
     scheduled:"확인",
     in_progress: "진행",
     approved:"예정",
-    in_progress:"진행",
     TEMP: "임시저장"
   };
 
   // 데이터 로드
   useEffect(() => {
-    const url = `http://10.5.5.11/Eapproval/${status ==="show"?"A":status}`;
-    axios
+    const url = `/Eapproval/${status ==="show"?"A":status}`;
+    caxios
       .get(url)
       .then((res) => {
         let data=res.data;
