@@ -1,25 +1,43 @@
 import styles from "./Mail.module.css";
-import axios from "axios";
-import { useState, useRef } from 'react';
+import { caxios } from "../../config/config.js";
+import { useState, useRef , useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { color } from "framer-motion";
+
 
 const MailWrite = () => {
 
+
+  // MailWrite 컴포넌트 에서 주소록 추가 
+  useEffect(() => {
+    window.setRecipient = (names) => {
+      setMail(prev => ({ ...prev, recipientId: names }));
+    };
+  }, []);
 
   const Navigate = useNavigate();
   const fileRef = useRef();
   const [files, setFiles] = useState([]);
 
+
   const [mail, setMail] = useState({
-    user_id: "김이사(임시)",
-    senderId: "김준표(임시)",
+    user_id: "",
+    senderId: "",
     recipientId: "",
     title: "",
     content: ""
   });
+
+  // 수신자(주소록에서) 추가
+  const handleAddContacts = () => {
+    window.open(
+      "addcontacts",
+      "MailAddContacts", // 새 창 이름
+      "width=1400,height=800,resizable=yes,scrollbars=yes"
+    )
+  };
+
 
   // input 변경 처리
   const handleChange = (e) => {
@@ -32,36 +50,44 @@ const MailWrite = () => {
     setMail(prev => ({ ...prev, content: data }));
   };
 
-  // 전송 버튼 클릭 시
-  const handleMailWrite = () => {
-    axios.post("http://10.5.5.12/mail", mail, {
+
+
+  // // 전송 버튼 클릭 시
+  // const handleMailWrite = () => {
+  //   caxios.post("/mail", mail, {
+  //     headers: { "Content-Type": "application/json" }
+  //   }).then((res) => {
+  //     // setMail(res.data);
+  //     Navigate("/mail");
+  //   });
+  // };
+
+  const handleMailWrite = async () => {
+
+    const res = await caxios.post("/mail", mail, {
       headers: { "Content-Type": "application/json" }
-    }).then((res) => {
-      // setMail(res.data);
-      Navigate("/mail");
     });
-  };
+    const mailSeq = res.data; // MailController에서 seq 반환
 
 
-  const handleMailUpload = () => {
-    const form = new FormData();
-
-    // files가 존재할 경우에만 추가
     if (files && files.length > 0) {
+      const form = new FormData();
+      form.append('mailSeq', mailSeq); // mailSeq 포함
       Array.from(files).forEach(file => form.append('files', file));
+
+      await caxios.post(`/files/mailSeq`, form, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+
+      fileRef.current.value = "";
+      setFiles([]);
     }
 
-    axios.post("http://10.5.5.12/files", form, {
-      headers: { "Content-Type": "multipart/form-data" }
-    })
-      .then(res => {
-        fileRef.current.value = "";
-        setFiles([]);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+
+    Navigate("/mail");
+
   };
+
 
 
 
@@ -72,8 +98,9 @@ const MailWrite = () => {
 
       <div className={styles.mainHeader}>
 
-        <input type="text" className={styles.containerhalf} placeholder="수신자를 입력하세요"
+        <input type="text" className={styles.containerhalf} style={{ width: "93%", float: "left" }} placeholder="수신자를 입력하세요"
           onChange={handleChange} name="recipientId" value={mail.recipientId} />
+        <div style={{ width: "5%", float: "left" }}> <button onClick={handleAddContacts}> + </button></div>
 
         <input type="text" className={styles.containerhalf} placeholder="제목을 입력하세요"
           onChange={handleChange} name="title" value={mail.title} />
@@ -105,7 +132,7 @@ const MailWrite = () => {
           onChange={(e) => setFiles(e.target.files)}
           style={{ marginBottom: "10px" }}
         />
-        <button style={{ float: "left" }} onClick={handleMailUpload}>파일 업로드</button>
+        {/* <button style={{ float: "left" }} onClick={handleMailUpload}>파일 업로드</button> */}
         <button className={styles.backBtn} onClick={() => Navigate(-1)}>뒤로가기</button>
         <button style={{ float: "right" }} onClick={handleMailWrite}>전송</button>
       </div>

@@ -1,30 +1,34 @@
 import styles from "./Mail.module.css";
 import { useNavigate, BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import axios from "axios";
+import { caxios } from '../../config/config.js';
 import { useEffect, useState } from 'react';
 
 
 const Mail = () => {
 
     const [mail, setMail] = useState([]);
+    const [searchName, setSearchName] = useState(""); // 검색어 상태
     const [checkedList, setCheckedList] = useState([]); // 체크 상태 관리
     const [allChecked, setAllChecked] = useState(false); // 전체 체크 상태
 
     const navigate = useNavigate();
 
 
+
     // 메일 작성란 이동
     const handleMailWrite = () => {
         navigate("mailwrite");
     }
- 
+
     const handleMailSent = () => {
         navigate("mailsent");
     }
 
     //받은 메일 리스트 출력
     const handleMailList = () => {
-        axios.get("http://10.5.5.20/mail", { withCredentials: true }).then(resp => {
+        const params = {};
+        if (searchName) params.name = searchName;
+        caxios.get("/mail", {params: params , withCredentials: true }).then(resp => {
             setMail(prev => resp.data);
         });
     }
@@ -40,7 +44,7 @@ const Mail = () => {
 
     // 메일 삭제
     const handleMailDelete = () => {
-        axios.delete("http://10.5.5.12/mail", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
+        caxios.delete("/mail", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
             setMail(prev => prev.filter(mail => !checkedList.includes(mail.seq)));
         });
     }
@@ -90,10 +94,12 @@ const Mail = () => {
 
                     {checkedList.length === 0 ? (
                         <>
-
+                            <input type="text" placeholder="검색할 발신자 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
+                                onChange={(e) => setSearchName(e.target.value)}></input>
+                            <button onClick={handleMailList}>검색</button>
                         </>) : (
                         <>
-                            <button onClick={handleMailDelete} style={{ margin: "10px"}}> 삭제 </button>
+                            <button onClick={handleMailDelete} style={{ margin: "10px" }}> 삭제 </button>
 
                         </>
                     )}
@@ -118,24 +124,24 @@ const Mail = () => {
 
                 <div className={styles.mainBodyHeader}>
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
-                    <div className={styles.mainBodytag}>발신인</div>
+                    <div className={styles.mainBodytag}>발신자</div>
                     <div className={styles.mainBodytagTitle}>제목</div>
                     <div className={styles.mainBodytag}>발신날짜</div>
                     <div className={styles.mainBodytag}>첨부파일</div><br></br>
+                    <hr></hr>
                 </div>
-                <hr></hr>
+
 
                 {/* 메일 출력  */}
                 <div className={styles.mainBodylist}>
-
                     {mail.map(e =>
-
                         <div key={e.seq} className={styles.mainBodylistbox} >
                             <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.senderId}</div>
                             <div className={styles.mainBodytagTitle} onClick={() => handleMailView(e)} >{e.title}</div>
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.sendDateStr}</div>
-                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.fileContent}</div>
+                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.fileContent}</div><br></br>
+                            <hr></hr>
                         </div>)}
                 </div>
 

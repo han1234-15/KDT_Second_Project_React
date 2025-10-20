@@ -1,46 +1,43 @@
-import styles from "./Contacts.module.css";
+import styles from "./Mail.module.css";
 import { useEffect, useState } from 'react';
 import { caxios } from '../../config/config.js';
 import { useNavigate } from "react-router-dom";
 
-const ContactsMulti = () => {
+const MailAddContacts = () => {
 
     const Navigate = useNavigate();
 
-   const [contacts, setContacts] = useState([]); // 주소록 데이터 관리
+    const [contacts, setContacts] = useState([]); // 주소록 데이터 관리
     const [searchName, setSearchName] = useState(""); // 검색어 상태
     const [checkedList, setCheckedList] = useState([]); // 체크 상태 관리
     const [allChecked, setAllChecked] = useState(false); // 전체 체크 상태
 
-    // 전체 주소록
-    const handleContacts = () => {
-        Navigate("/contacts");
-    }
     // 개인 주소록
     const handleContactsSolo = () => {
-        Navigate("/contacts/solo");
+        Navigate("/contacts/multi");
+    }
+    // 공유 주소록
+    const handleContactsMulti = () => {
+        Navigate("/contacts/multi");
     }
 
-    // 주소록 삭제
-    const handleContactsDelete = () => {
-        caxios.delete("/contacts", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
-            setContacts(prev => prev.filter(contact => !checkedList.includes(contact.seq)));
+
+
+    // 주소록 검색 +리스트 
+    const handleContactsList = () => {
+        const params = {};
+
+        if (searchName) params.name = searchName;
+        caxios.get("/contacts", { params, withCredentials: true }).then(resp => {
+            setContacts(prev => resp.data);
         });
     }
 
+    // 페이지 로딩시 리스트 출력
+    useEffect(() => {
+        handleContactsList();
+    }, []);
 
-
-    // 개인 주소록으로 이동
-    const handleContactsUpdateTypeSingle = () => {
-        caxios.put("/contacts", { seqList: checkedList, type: "solo" }, { withCredentials: true })
-            .then(resp => {
-                setContacts(prev => prev.map(contact =>
-                    checkedList.includes(contact.seq)
-                        ? { ...contact, type: "solo" }
-                        : contact
-                ));
-            });
-    }
 
     // 전체 체크박스를 클릭하면(true) 아래 체크박스 전체 적용
     useEffect(() => {
@@ -73,37 +70,22 @@ const ContactsMulti = () => {
         }
     }
 
+    // MailWrite 에 추가
+    const handleAddContacts = () => {
+        if (checkedList.length === 0) return;
 
-    // 주소록 추가 
-    const handleContactsAdd = () => {
-        window.open(
-            "/contacts/add",
-            "ContactsAdd", // 새 창 이름
-            "width=1400,height=800,resizable=yes,scrollbars=yes"
-        )
+
+        const selectedNames = contacts
+            .filter(contact => checkedList.includes(contact.seq))
+            .map(contact => contact.name)
+            .join(", "); // 여러 명이면 ,로 구분
+
+
+        if (window.opener) {
+            window.opener.setRecipient(selectedNames); // 부모 창 함수 호출
+            window.close(); // 새 창 닫기
+        }
     }
-
-    // 주소록 검색 +리스트 
-    const handleContactsList = () => {
-        const params = {};
-        if (searchName) params.name = searchName;
-         caxios.get("/contacts?type=multi", { params, withCredentials: true }).then(resp => {
-            setContacts(prev => resp.data);
-        });
-    }
-
-
-    // // 전체 주소록 리스트 
-    // const handleDefaultGet = () => {
-
-    //     caxios.get("/contacts?type=multi", { withCredentials: true }).then(resp => {
-    //         setContacts(prev => resp.data);
-    //     });
-    // }
-    // 페이지 로딩시 리스트 출력
-    useEffect(() => {
-        handleContactsList();
-    }, []);
 
 
 
@@ -120,30 +102,22 @@ const ContactsMulti = () => {
 
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
-                    공유 주소록 <br />
-                    <button onClick={handleContacts} className={styles.headerbutton}>전체 주소록</button>
+                    주소록 <br />
                     <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button>
-                      <button className={styles.createbtn} onClick={handleContactsAdd}> 주소록 추가 </button>
+                    <button onClick={handleContactsMulti} className={styles.headerbutton}>공유 주소록</button>
+
 
                 </div>
 
                 {/* 주소록 헤더 2 */}
                 <div className={styles.mainHeaderbottom} >
-                    {checkedList.length === 0 ? (
-                        <>
-                            <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
-                                onChange={(e) => setSearchName(e.target.value)}></input>
-                            <button onClick={handleContactsList}>검색</button>
-                           
-                        </>) : (
-                        <>
-                          
-                            <button onClick={handleContactsDelete} style={{margin:"10px"}}> 삭제 </button>
-                            <button onClick={handleContactsUpdateTypeSingle} style={{margin:"10px"}}> 개인 주소록으로 </button>
-                           
-                         
-                        </>
-                    )}
+
+
+                    <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
+                        onChange={(e) => setSearchName(e.target.value)}></input>
+                    <button onClick={handleContactsList}>검색</button>
+
+
                 </div>
 
 
@@ -152,26 +126,23 @@ const ContactsMulti = () => {
 
             {/* 주소록 바디 여기가 계속 변하는곳 Route */}
             <div className={styles.mainBody}>
-
-
-
                 <div className={styles.mainBodyHeader}>
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                     <div className={styles.mainBodytag}>성함</div>
                     <div className={styles.mainBodytag}>전화번호</div>
-                    <div className={styles.mainBodytag}>이메일 </div>
+                    <div className={styles.mainBodytag}>이메일</div>
                     <div className={styles.mainBodytag}>부서</div>
-                    <div className={styles.mainBodytag}>직급</div> <br></br>
-                    
+                    <div className={styles.mainBodytag}>직급</div><br></br>
+                    <hr></hr>
                 </div>
-                <hr></hr>
+
 
                 {/* 주소록 출력  */}
                 <div className={styles.mainBodylist}>
 
 
                     {contacts.map(e =>
-                      <div key={e.seq} className={styles.mainBodylistbox} >
+                        <div key={e.seq} className={styles.mainBodylistbox} >
                             <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
                             <div className={styles.mainBodytag}>{e.name}</div>
                             <div className={styles.mainBodytag}>{e.phone}</div>
@@ -186,7 +157,17 @@ const ContactsMulti = () => {
 
 
             </div>{/* 주소록 바디 */}
+            {checkedList.length === 0 ? (
+                <>
 
+
+                </>) : (
+                <>
+
+                    <button onClick={handleAddContacts} style={{ margin: "10px", float: "right" }}> 추가 </button>
+
+                </>
+            )}
         </div> {/* 메인 주소록창  */}
 
 
@@ -197,4 +178,4 @@ const ContactsMulti = () => {
     );
 }
 
-export default ContactsMulti;
+export default MailAddContacts;
