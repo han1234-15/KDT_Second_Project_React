@@ -124,6 +124,7 @@ const MailSent = () => {
                 <div className={styles.mainBodyHeader}>
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                     <div className={styles.mainBodytag}>수신자</div>
+                     <div className={styles.mainBodytag}>수신자 이메일</div>
                     <div className={styles.mainBodytagTitle}>제목</div>
                     <div className={styles.mainBodytag}>발신날짜</div>
                     <br></br>
@@ -138,10 +139,11 @@ const MailSent = () => {
 
                         <div key={e.seq} className={styles.mainBodylistbox} >
                             <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
+                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.recipientName}</div>
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.recipientId}</div>
                             <div className={styles.mainBodytagTitle} onClick={() => handleMailView(e)} >{e.title}</div>
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.sendDateStr}</div>
-                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.fileContent}</div>
+                  
                             <br></br>
                             <hr></hr>
                         </div>)}

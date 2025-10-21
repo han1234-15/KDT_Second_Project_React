@@ -28,7 +28,7 @@ const Mail = () => {
     const handleMailList = () => {
         const params = {};
         if (searchName) params.name = searchName;
-        caxios.get("/mail", {params: params , withCredentials: true }).then(resp => {
+        caxios.get("/mail", { params: params, withCredentials: true }).then(resp => {
             setMail(prev => resp.data);
         });
     }
@@ -127,6 +127,7 @@ const Mail = () => {
                 <div className={styles.mainBodyHeader}>
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                     <div className={styles.mainBodytag}>발신자</div>
+                    <div className={styles.mainBodytag}>발신자 이메일</div>
                     <div className={styles.mainBodytagTitle}>제목</div>
                     <div className={styles.mainBodytag}>발신날짜</div>
                     <br></br>
@@ -139,6 +140,7 @@ const Mail = () => {
                     {mail.map(e =>
                         <div key={e.seq} className={styles.mainBodylistbox} >
                             <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
+                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.senderName}</div>
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.senderId}</div>
                             <div className={styles.mainBodytagTitle} onClick={() => handleMailView(e)} >{e.title}</div>
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.sendDateStr}</div>

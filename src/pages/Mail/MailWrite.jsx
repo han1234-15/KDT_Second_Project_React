@@ -17,14 +17,17 @@ const MailWrite = () => {
   const fileRef = useRef();
   const [files, setFiles] = useState([]);
 
-
   const [mail, setMail] = useState({
     user_id: "",
     senderId: "",
+    senderName: "",
     recipientId: "",
+    recipientName: "",
     title: "",
     content: ""
   });
+
+
 
 
 
@@ -96,7 +99,7 @@ const MailWrite = () => {
       <div className={styles.mainHeader}>
 
         <input type="text" className={styles.containerhalf} style={{ width: "93%", float: "left" }} placeholder="수신자를 입력하세요"
-          onChange={handleChange} name="recipientId" value={mail.recipientId} />
+          onChange={handleChange} name="recipientName" value={mail.recipientName} />
         <div style={{ width: "5%", float: "left" }}> <button onClick={handleAddContacts}> + </button></div>
 
         <input type="text" className={styles.containerhalf} placeholder="제목을 입력하세요"
@@ -157,7 +160,23 @@ const MailWrite = () => {
         )}
 
       >
-        <MailAddContacts onSelect={names => setMail(prev => ({ ...prev, recipientId: names }))}  onCancel={() => setModalContacts(false)} />
+        <MailAddContacts
+          onSelect={selectedContacts => {
+            const emailList = selectedContacts.map(c => c.email).join(", ");
+            const nameList = selectedContacts.map(c => c.name).join(", ");
+
+            setMail(prev => ({
+              ...prev,
+              recipientId: emailList,
+              recipientName: nameList
+            }));
+          }}
+          onCancel={() => setModalContacts(false)}
+        />
+
+
+
+
       </Modal>
     </div>
 
