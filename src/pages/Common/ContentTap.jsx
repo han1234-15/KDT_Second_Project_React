@@ -28,17 +28,20 @@ const ContentTap = ({
       </div>
 
       {/* 서브탭 */}
-      <div className={styles.subTabs}>
-        {subTabs.map((tab) => (
-          <div
-            key={tab.path}
-            className={`${styles.subTab} ${isActive(tab.path) ? styles.active : ""}`}
-            onClick={() => onSubClick(tab.path)}
-          >
-            {tab.label}
-          </div>
-        ))}
-      </div>
+      {subTabs.length > 0 && (
+        <div className={styles.subTabs}>
+          {subTabs.map((tab) => (
+            <div
+              key={tab.path}
+              className={`${styles.subTab} ${isActive(tab.path) ? styles.active : ""}`}
+              onClick={() => onSubClick(tab.path)}
+            >
+              {tab.label}
+            </div>
+          ))}
+        </div>
+      )}
+
     </div>
   );
 };

@@ -7,12 +7,11 @@ const ManagementTabs = () => {
   const location = useLocation();
 
   const mainTabs = [
-    { label: "사용자 관리", path: "user" },
-    { label: "사용자 접속 내역", path: "history" },
-    { label: "관리자 설정", path: "managerSet" },
-    { label: "메일 아카이빙", path: "mailArchive" },
-  ];
-
+  { label: "사용자 관리", path: "/management/user" },
+  { label: "사용자 접속 내역", path: "/management/history" },
+  { label: "관리자 설정", path: "/management/managerSet" },
+  { label: "메일 아카이빙", path: "/management/mailArchive" },
+];
   const subTabs = [ ];
 
   return (
