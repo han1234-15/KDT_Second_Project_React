@@ -1,6 +1,7 @@
 /* 전체 컨테이너 */
 .boardContainer {
-  padding: 0 8px 16px 8px;
+  background-color: ffffff;
+  padding: 0 8px 2px 8px;
 }
 
 /* 콘텐츠 헤더 */
@@ -60,10 +61,10 @@
 .subTabs {
   display: flex;
   gap: 50px;
-  background: #f8f9fb;
-  padding: 10px 12px;
+  background: #ffffff;
+  padding: 7px 8px;
   border-radius: 8px;
-  margin: 16px 0;
+  margin: 8px -5;
   margin-left: -10px;
 }
 
