@@ -12,7 +12,6 @@ import { useDaumPostcodePopup } from 'react-daum-postcode'; // Daum 주소 검�
 import { Alert } from 'antd';
 
 
-
 const UserRegister = () => {
 
     //다음 주소 api
@@ -53,6 +52,7 @@ const UserRegister = () => {
         address_line1: "",
         address_line2: "",
     });
+    
     const [isIdChecked, setIsIdChecked] = useState(false);
 
 
@@ -321,14 +321,16 @@ const UserRegister = () => {
 
                     <div>
                         <label>주소</label>
-                        <Input readOnly name='zip_code' value={memberInfo.zip_code} onChange={handleMemberInfoChange} />
+                        <Input readOnly name='zip_code' value={memberInfo.zip_code} onChange={handleMemberInfoChange} placeholder="우편 번호"/>
                         <button onClick={handleClickZipcode} >우편번호 검색</button>
                     </div>
                     <div>
                         <label></label>
                         <Input readOnly name="address_line1"
                             value={memberInfo.address_line1}
-                            onChange={handleMemberInfoChange} />
+                            onChange={handleMemberInfoChange}
+                            placeholder="주소" />
+                            
                     </div>
                     <div>
                         <label></label>

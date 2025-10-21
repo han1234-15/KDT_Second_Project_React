@@ -3,5 +3,36 @@
     height: 100%;
     font-size: 15px;
 
-    border: 1px solid black;
+}
+
+.userManageBtn{
+    margin-bottom: 10px;
+}
+.userManageBtn button{
+    margin-right: 10px;
+}
+
+.tableHead{
+    width: 70%;
+    font-weight: 500;
+    color: rgb(29, 29, 29);
+}
+
+.tableHead button{
+    width: auto;
+    background:none;
+    color: rgb(29, 29, 29) !important; /* 글자색을 검은색으로 설정 */
+    border: none;
+    outline: black;
+    cursor: pointer;
+    margin-left: 4px;
+    margin-right: 4px;
+    
+}
+
+.tableHead button:hover {
+    /* 예: 포커스 시 배경색을 약간 변경하거나 */
+    background-color: rgba(0, 0, 0, 0.05);
+    /* 또는 밑줄을 추가합니다. */
+    
 }

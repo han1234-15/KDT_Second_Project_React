@@ -18,6 +18,7 @@ import NoteRoute from "../Note/NoteRoute";
 import TaskRoute from "../Task/TaskRoute";
 import ManagementRoute from "../Management/ManagementRoute";
 import BoardTabs from "../Board/BoardTabs";
+import ManagementTabs from "../Management/ManagementTabs";
 
 const ContentMain = () => {
 
@@ -26,6 +27,7 @@ const ContentMain = () => {
   // ✅ 현재 경로에 맞는 탭 선택
   const renderTabs = () => {
     if (location.pathname.startsWith("/board")) return <BoardTabs />;
+    if (location.pathname.startsWith("/management")) return <ManagementTabs />;
     return null;
   };
 
