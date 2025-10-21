@@ -1,20 +1,17 @@
 import styles from "./Mail.module.css";
 import { caxios } from "../../config/config.js";
-import { useState, useRef , useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { Button, Modal } from 'antd';
+import MailAddContacts from "./MailAddContacts";
 
 
 const MailWrite = () => {
 
 
-  // MailWrite 컴포넌트 에서 주소록 추가 
-  useEffect(() => {
-    window.setRecipient = (names) => {
-      setMail(prev => ({ ...prev, recipientId: names }));
-    };
-  }, []);
+
 
   const Navigate = useNavigate();
   const fileRef = useRef();
@@ -29,14 +26,7 @@ const MailWrite = () => {
     content: ""
   });
 
-  // 수신자(주소록에서) 추가
-  const handleAddContacts = () => {
-    window.open(
-      "addcontacts",
-      "MailAddContacts", // 새 창 이름
-      "width=1400,height=800,resizable=yes,scrollbars=yes"
-    )
-  };
+
 
 
   // input 변경 처리
@@ -89,7 +79,14 @@ const MailWrite = () => {
   };
 
 
+  // MODAL
 
+  const [Modalcontacts, setModalContacts] = useState(false);
+
+  // 수신자(주소록에서) 추가
+  const handleAddContacts = () => {
+    setModalContacts(true);
+  };
 
 
   return (
@@ -136,7 +133,35 @@ const MailWrite = () => {
         <button className={styles.backBtn} onClick={() => Navigate(-1)}>뒤로가기</button>
         <button style={{ float: "right" }} onClick={handleMailWrite}>전송</button>
       </div>
+
+      <Modal
+
+        centered={false}
+        open={Modalcontacts}
+        onCancel={() => setModalContacts(false)}
+        footer={null}
+        destroyOnHidden
+
+        width={{
+          xs: '90%',  // 모바일
+          sm: '80%',
+          md: '70%',
+          lg: '60%',
+          xl: '50%',
+          xxl: '50%', // 큰 화면
+        }}
+        modalRender={modal => (
+          <div style={{ marginTop: '100px' }}> {/* 상단에서 50px 아래 */}
+            {modal}
+          </div>
+        )}
+
+      >
+        <MailAddContacts onSelect={names => setMail(prev => ({ ...prev, recipientId: names }))}  onCancel={() => setModalContacts(false)} />
+      </Modal>
     </div>
+
+
   );
 };
 
