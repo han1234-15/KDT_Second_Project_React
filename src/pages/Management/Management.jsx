@@ -59,39 +59,12 @@ const Management = () => {
         },
     ];
 
-    const headItems3 = [
-        {
-            label: (
-                <a href="https://www.antgroup.com" target="_blank" rel="noopener noreferrer">
-                    1st menu item
-                </a>
-            ),
-            key: '0',
-        },
-        {
-            label: (
-                <a href="https://www.aliyun.com" target="_blank" rel="noopener noreferrer">
-                    2nd menu item
-                </a>
-            ),
-            key: '1',
-        },
-        {
-            type: 'divider',
-        },
-        {
-            label: '3rd menu item',
-            key: '3',
-        },
-    ];
-
     const columns = [
         { title: '이름', dataIndex: 'name' },
         { title: 'ID', dataIndex: 'id' },
         { title: '사번', dataIndex: 'employeeCode' },
         { title: '근로 형태', dataIndex: 'employmentType' },
         { title: '입사일', dataIndex: 'hireDate' },
-        { title: '소속 조직', dataIndex: 'department' },
         { title: '직위', dataIndex: 'position' },
         { title: '직무', dataIndex: 'jobTitle' },
     ];
@@ -153,14 +126,6 @@ const Management = () => {
                                         </a>
                                     </Dropdown>
                                     <Dropdown menu={{ items: headItems2 }} trigger={['click']}>
-                                        <a onClick={e => e.preventDefault()}>
-                                            <Space>
-                                                소속 조직
-                                                <DownOutlined />
-                                            </Space>
-                                        </a>
-                                    </Dropdown>
-                                    <Dropdown menu={{ items: headItems3 }} trigger={['click']}>
                                         <a onClick={e => e.preventDefault()}>
                                             <Space>
                                                 근로 형태

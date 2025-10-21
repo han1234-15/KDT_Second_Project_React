@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { caxios } from "../../config/config";
 import { departmentOptions, jobOptions, positionOptions } from '../../config/options';
 import { useDaumPostcodePopup } from 'react-daum-postcode'; // Daum 주소 검색 관련 hook
-
+import { Alert } from 'antd';
 
 
 
@@ -70,10 +70,7 @@ const UserRegister = () => {
     const handleAdd = () => {
         //데이터를 보낼 때는 post를 쓴다.
 
-        if (!isIdChecked) {
-            alert("아이디 중복확인 바랍니다.");
-            return false;
-        }
+
         // 필수값 체크
         const requiredFields = [
             { name: "id", label: "ID" },
@@ -98,6 +95,11 @@ const UserRegister = () => {
         if (!idRegex.test(memberInfo.id)) {
             alert("ID는 4~20자리 알파벳 소문자와 숫자만 가능합니다.");
             return;
+        }
+
+        if (!isIdChecked) {
+            alert("아이디 중복확인 바랍니다.");
+            return false;
         }
 
         // 3️⃣ 비밀번호 형식 체크 (최소 8자리, 대문자, 소문자, 숫자, 특수문자 포함)
@@ -157,10 +159,21 @@ const UserRegister = () => {
             return;
         }
 
-        caxios.post("/member", memberInfo).then(resp => {
-            console.log(resp);
-        });
+        // 세부 주소 체크 (한글 또는 영어만)
+        const address_line2Regex = /^[가-힣a-zA-Z0-9\s\-#]{2,40}$/;
+        if (memberInfo.address_line2 && !address_line2Regex.test(memberInfo.address_line2)) {
+            alert("상세주소는 2~40자리 한글,영어,숫자만 입력 가능합니다. ");
+            return;
+        }
 
+        caxios.post("/member", memberInfo)
+            .then(resp => {
+                alert("회원 등록 성공", "사용자 추가가 완료되었습니다.");
+                navigate("/management");
+            })
+            .catch(err => {
+                alert("회원 등록 실패", "알 수 없는 오류가 발생했습니다.");
+            });
     }
 
     const handleCheckId = () => {
@@ -168,6 +181,12 @@ const UserRegister = () => {
         if (memberInfo.id == "") {
             alert("아이디를 입력하세요");
             return false;
+        }
+        // ID 형식 체크 (알파벳+숫자 4~20자리)
+        const idRegex = /^[a-z0-9]{4,20}$/;
+        if (!idRegex.test(memberInfo.id)) {
+            alert("ID는 4~20자리 알파벳 소문자와 숫자만 가능합니다.");
+            return;
         }
 
         const currentId = memberInfo.id; // 렌더 시점의 값 고정
