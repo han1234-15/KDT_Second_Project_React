@@ -1,0 +1,71 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;           /* 각 구역 간 간격 */
+  padding: 30px;
+  position: relative;
+}
+
+/* 상단 버튼 영역 */
+.btns {
+  display: flex;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  margin-top: -30px;
+  gap: 10px;
+}
+
+.btns button {
+  background: linear-gradient(45deg, #8e44ad, #2196f3);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btns button:hover {
+  opacity: 0.85;
+}
+
+/* 게시판 선택 영역 */
+.boardGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+/* 제목 입력 */
+.titleInput {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 파일 첨부 영역 */
+.file {
+  border: 1px dashed #d9d9d9;
+  border-radius: 5px;
+  padding: 12px;
+  height: 100px;
+  background: #fafafa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.file button {
+  background-color: #1677ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.file button:hover {
+  background-color: #125ecc;
+}

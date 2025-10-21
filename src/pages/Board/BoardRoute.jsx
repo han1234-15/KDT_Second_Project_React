@@ -14,9 +14,10 @@ const BoardRoute = () => {
         <Route path="freedom" element={<BoardFreedom />} />
         <Route path="anonymity" element={<BoardAnonymity />} />
         <Route path="data_room" element={<BoardDataRoom />} />
+        </Route>
       <Route path="boardWrite" element={<BoardWrite />} />
       <Route path="boardDetail" element={<BoardDetail />} />
-      </Route>
+      
     </Routes>
   );
 };
