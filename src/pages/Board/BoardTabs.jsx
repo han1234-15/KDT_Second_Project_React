@@ -9,8 +9,8 @@ const BoardTabs = () => {
 
   const mainTabs = [
     { label: "게시판", path: "/board" },
-    { label: "문서함", path: "/board/boardWrite" },
-    { label: "임시저장", path: "/board/boardDetail" },
+    { label: "중요게시물", path: "/board/boardWrite" },
+    { label: "환경설정", path: "/board/boardDetail" },
   ];
 
   const subTabs = [
