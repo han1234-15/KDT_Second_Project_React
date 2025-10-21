@@ -332,7 +332,7 @@ const Contacts = () => {
                         <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                             <div className={styles.NewSharedMailbox1}>이메일 : </div>
                             <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
-                                onChange={handleUpdateChange} value={updateData.email} name="email" />
+                                onChange={handleUpdateChange} value={updateData.email} name="email" readOnly/>
                         </div>
                         <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                             <div className={styles.NewSharedMailbox1}>부서 : </div>

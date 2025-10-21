@@ -60,7 +60,7 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
     }
 
     // 개별 체크박스 선택
-    const handleSingleCheck = (seq) => {    
+    const handleSingleCheck = (seq) => {
 
         if (checkedList.includes(seq)) {
             setCheckedList(checkedList.filter(id => id !== seq));
@@ -73,14 +73,11 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
     const handleAddContacts = () => {
         if (checkedList.length === 0) return;
 
-
-        const selectedEmail = contacts
+        const selectedContacts = contacts
             .filter(contact => checkedList.includes(contact.seq))
-            .map(contact => contact.email)
-            .join(", "); // 여러 명이면 ,로 구분
+            .map(contact => ({ email: contact.email, name: contact.name })); // 이메일 + 이름 객체
 
-
-        onSelect(selectedEmail);
+        onSelect(selectedContacts); // 배열 그대로 보내기
         setCheckedList([]);
         setAllChecked(false);
         onCancel();
