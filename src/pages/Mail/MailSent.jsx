@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 const MailSent = () => {
 
     const [mail, setMail] = useState([]);
-     const [searchName, setSearchName] = useState(""); // 검색어 상태
+    const [searchName, setSearchName] = useState(""); // 검색어 상태
     const [checkedList, setCheckedList] = useState([]); // 체크 상태 관리
     const [allChecked, setAllChecked] = useState(false); // 전체 체크 상태
 
@@ -24,7 +24,7 @@ const MailSent = () => {
     const handleMailList = () => {
         const params = {};
         if (searchName) params.name = searchName;
-        caxios.get("/mail/send", {params: params , withCredentials: true }).then(resp => {
+        caxios.get("/mail/send", { params: params, withCredentials: true }).then(resp => {
             setMail(resp.data);
         });
     }
@@ -126,7 +126,7 @@ const MailSent = () => {
                     <div className={styles.mainBodytag}>수신자</div>
                     <div className={styles.mainBodytagTitle}>제목</div>
                     <div className={styles.mainBodytag}>발신날짜</div>
-                    <div className={styles.mainBodytag}>첨부파일</div><br></br>
+                    <br></br>
                     <hr></hr>
                 </div>
 
@@ -141,7 +141,8 @@ const MailSent = () => {
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.recipientId}</div>
                             <div className={styles.mainBodytagTitle} onClick={() => handleMailView(e)} >{e.title}</div>
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.sendDateStr}</div>
-                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.fileContent}</div><br></br>
+                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.fileContent}</div>
+                            <br></br>
                             <hr></hr>
                         </div>)}
                 </div>

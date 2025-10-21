@@ -71,6 +71,8 @@ const Mail = () => {
         }
     }
 
+
+
     return (<div className={styles.container}>
 
 
@@ -127,7 +129,7 @@ const Mail = () => {
                     <div className={styles.mainBodytag}>발신자</div>
                     <div className={styles.mainBodytagTitle}>제목</div>
                     <div className={styles.mainBodytag}>발신날짜</div>
-                    <div className={styles.mainBodytag}>첨부파일</div><br></br>
+                    <br></br>
                     <hr></hr>
                 </div>
 
@@ -140,7 +142,7 @@ const Mail = () => {
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.senderId}</div>
                             <div className={styles.mainBodytagTitle} onClick={() => handleMailView(e)} >{e.title}</div>
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.sendDateStr}</div>
-                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.fileContent}</div><br></br>
+                            <br></br>
                             <hr></hr>
                         </div>)}
                 </div>

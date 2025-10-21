@@ -28,7 +28,7 @@
 
 }
 
-.headerbutton{
+.headerbutton {
     font-size: 15px;
     margin: 10px;
 }
@@ -37,7 +37,7 @@
 .mainHeadertop {
 
     height: 60%;
-    font-size: 30px;
+    font-size: 35px;
 }
 
 .mainHeaderbottom {
@@ -68,7 +68,7 @@
 }
 
 
-.mainBodyHeader{
+.mainBodyHeader {
     width: 100%;
     height: 5%;
 }
@@ -91,7 +91,7 @@
 .mainBodycheckbox {
     width: 10%;
     height: 100%;
-      float: left;
+    float: left;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -166,3 +166,20 @@
     cursor: pointer;
 }
 
+
+/* modal */
+
+/* Modal 전체 영역 조정 */
+:global(.ant-modal) {
+    top: 30px !important;
+    /* 위치 조정 */
+}
+
+/* 콘텐츠 영역 커스터마이즈 */
+:global(.ant-modal-content) {
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
