@@ -1,9 +1,36 @@
+.side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* 사이드바 타이틀 */
+.sideTitle {
+  height: 56px;                 /* ✅ 고정 높이 */
+  display: flex;
+  align-items: flex-end;         /* ✅ 아래쪽 정렬 */
+  padding: 0 16px 0 16px;        /* 좌우 여백만 */
+  font-weight: 700;
+  font-size: 22px;
+  color: #2c58b9;
+  border-bottom: 2px solid #e5e7eb;  /* ✅ 탭과 동일한 선 */
+  background: #fff;
+  line-height: 1;
+}
+/* 기존 .sideTitle는 그대로 두고 */
+.sideTitle > span {
+  position: relative;
+  top: -13px;      /* ↓ 아래로 2px 내림 / 위로 올리고 싶으면 negative: -1px */
+  line-height: 1;
+}
+
+/* 기존 메뉴바 */
 .menubar {
-  
-  position: relative; /* ✅ side 내부 기준 */
-  width: 60%;         /* ✅ side 영역의 절반만 차지 */
-  margin: 0 auto;     /* ✅ 가운데 정렬 */
-  top: 70px;              /* fixed 제거했으므로 필요 없음 */
+  position: relative;
+  width: 60%;
+  margin: 0 auto;
+  top: 30px;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 20px;
@@ -18,7 +45,7 @@
 /* 각 메뉴 버튼 */
 .menu {
   display: flex;
-  flex-direction: column; /* ✅ 아이콘 위, 글자 아래 */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 6px;
@@ -32,14 +59,12 @@
   width: 100%;
 }
 
-/* Hover 효과 */
 .menu:hover {
   background: linear-gradient(90deg, #8e44ad15, #2196f315);
   color: #2196f3;
   transform: translateX(3px);
 }
 
-/* 아이콘 크기 */
 .menu :global(svg) {
   font-size: 18px;
 }

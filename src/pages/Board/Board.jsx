@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
+import styles from "./Board.module.css";
 
 const Board = () => {
-    return <h2>Board Page</h2>;
+  return (
+    <div>여기 게시판 메인</div>
+  );
 };
 
 export default Board;

@@ -1,26 +1,53 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate,useParams} from "react-router-dom";
 import "./styles/ApprovalWrite.css";
 import approveImg from "./images/승인.jpg";
 import rejectImg from "./images/반려.png";
+import { caxios } from "../../config/config";
+import { jwtDecode } from "jwt-decode";
+
 
 function EApprovalWrite() {
   const [showModal,setShowModal]=useState(false);
   const [approvalResult,setApprovalResult]=useState(null);
+  const{name}=useParams();
 
   const navigate = useNavigate();
+
+useEffect(() => {
+  if (name) {
+    caxios.get(`/Eapproval/temp/${name}`)
+      .then((res) => {
+        if (res.data) {
+          setFormData(res.data);
+        }
+      })
+      .catch(() => console.log("임시저장 데이터 없음"));
+  }
+}, [name]);
 
   // 문서 종류별 양식 옵션
   const templateOptions = {
     공통: ["업무연락", "품의서", "회의록"],
   };
 
+
+useEffect(() => {
+  const token = sessionStorage.getItem("token");
+  if (token) {
+    const decoded = jwtDecode(token);
+    setFormData(prev => ({
+      ...prev,
+      writer: decoded.name   
+    }));
+  }
+}, []);
+
   // 입력 상태
   const [formData, setFormData] = useState({
     docType: "",
     template: "",
-    writer: "하이웍스산업 대표이사",
+    writer: "",
     retention: "5년",
     security: "C등급",
     title: "",
@@ -47,8 +74,8 @@ function EApprovalWrite() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios
-      .post("http://10.5.5.11/Eapproval/write", formData)
+    caxios
+      .post(`/Eapproval/write`, formData)
       .then(() => {
         alert("결재 문서가 성공적으로 등록되었습니다 ");
         navigate("/Eapproval/A");
@@ -58,7 +85,7 @@ function EApprovalWrite() {
 
   const handleTempSave =()=>{
     const data={...formData,status:"temp"}
-     axios.post("http://10.5.5.11/Eapproval/tempSave", data)
+     caxios.post("/Eapproval/tempSave", data)
      .then(()=>{
         alert("임시 저장 완료")
         navigate("/Eapproval/A")
@@ -68,9 +95,25 @@ function EApprovalWrite() {
 
   const handleApprovlClick=()=>setShowModal(true);
 
+  
   const handleApprovalDecision=(result)=>{
-    setApprovalResult(result);
-    setShowModal(false);
+
+    const newStatus=result==="approve" ?"in_progress":" rejected";
+
+    caxios.put(`/Eapproval/updateStatus/${formData.seq}?status=${newStatus}`)
+    .then(()=>{
+      alert(
+        result === "approve" ?"결재 승인":"결재 반려"
+      );
+      setApprovalResult(result);
+      setShowModal(false);
+    })
+    .catch(()=>{
+      alert("망했어")
+      setShowModal(false);
+    })
+   
+    
   }
 
   // 문서 선택 여부
@@ -272,7 +315,7 @@ function EApprovalWrite() {
             >
               취소
             </button>
-            <button onclassName="temp" onClick={handleTempSave}>
+            <button className="temp" onClick={handleTempSave}>
                 임시저장
             </button>
             <button className="submit" onClick={handleSubmit}>
