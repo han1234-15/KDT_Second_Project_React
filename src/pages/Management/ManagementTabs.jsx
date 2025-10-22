@@ -9,8 +9,8 @@ const ManagementTabs = () => {
   const mainTabs = [
   { label: "사용자 관리", path: "/management/user" },
   { label: "사용자 접속 내역", path: "/management/history" },
-  { label: "관리자 설정", path: "/management/managerSet" },
-  { label: "메일 아카이빙", path: "/management/mailArchive" },
+  { label: "관리자 설정", path: "/management/manager" },
+  { label: "메일 아카이빙", path: "/management/archive" },
 ];
   const subTabs = [ ];
 

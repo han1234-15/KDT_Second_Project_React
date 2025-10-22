@@ -13,10 +13,10 @@ const ManagementRoute = () => {
                 <Route index element={<Navigate to="user" replace />} />
                  <Route path="user" element={<Management />} />
                  <Route path="history" element={<History />} />
-                 <Route path="managerSet" element={<Management />} />
-                 <Route path="mailArchive" element={<Management />} />
+                 <Route path="manager" element={<Management />} />
+                 <Route path="archive" element={<Management />} />
             </Route>
-            <Route path="/register" element={<UserRegister />} />
+            <Route path="register" element={<UserRegister />} />
         </Routes >
     );
 }

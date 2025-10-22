@@ -1,38 +1,73 @@
 .container {
-    width: 100%;
+    
     height: 100%;
     font-size: 15px;
+    min-width: 900px;
+    width: 100%;
 
+
+    padding-left: 30px;
+    padding-top:30px;
 }
 
-.userManageBtn{
+.userManageBtn {
     margin-bottom: 10px;
 }
-.userManageBtn button{
+
+/* userManageBtn 내부 버튼 스타일 */
+.buttonLink {
+    margin-top: 5px;
     margin-right: 10px;
+    background-color: transparent;
+    border: 1px solid #d0d0d0;
+    /* 연한 보라색 테두리 */
+    color: #000000;
+    /* 진한 보라색 글자 */
+    font-size: 13px;
+    border-radius: 6px;
+    padding: 5px 12px;
+    text-decoration: none;
+    /* 링크 밑줄 제거 */
+    cursor: pointer;
+    display: inline-block;
 }
 
-.tableHead{
-    width: 70%;
-    font-weight: 500;
+.buttonLink:hover {
+    color:rgb(141, 141, 141);
+}
+
+.select>* {
+    padding-left: 2px !important;
+}
+
+.tableHead {
+    width: 80%;
+    font-weight: 350;
     color: rgb(29, 29, 29);
 }
 
-.tableHead button{
+.tableHead button {
     width: auto;
-    background:none;
-    color: rgb(29, 29, 29) !important; /* 글자색을 검은색으로 설정 */
+    background: none;
+    color: rgb(29, 29, 29) !important;
+    /* 글자색을 검은색으로 설정 */
+    font-weight: 350 !important;
+    font-size: 14px !important;
     border: none;
     outline: black;
     cursor: pointer;
-    margin-left: 4px;
-    margin-right: 4px;
-    
+
+    margin-right: 10px;
+
 }
 
 .tableHead button:hover {
     /* 예: 포커스 시 배경색을 약간 변경하거나 */
     background-color: rgba(0, 0, 0, 0.05);
     /* 또는 밑줄을 추가합니다. */
-    
+
+}
+
+.cancelBtn {
+  color: rgb(45, 45, 45) !important;
 }

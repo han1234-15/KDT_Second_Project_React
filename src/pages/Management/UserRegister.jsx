@@ -38,11 +38,11 @@ const UserRegister = () => {
         password: "",
         name: "",
         englishName: "",
-        employmentType: "general",
+        employmentType: "일반직",
         hire_date: "",
-        dept_code: "rnd",
-        rank_code: "staff",
-        job_code: "planning",
+        dept_code: "연구&개발",
+        rank_code: "사원",
+        job_code: "기획",
         personalEmail: "",
         officePhone: "",
         mobilePhone: "",
@@ -229,15 +229,15 @@ const UserRegister = () => {
                         <label>근로형태*</label>
                         <Space wrap>
                             <Select
-                                defaultValue="general"
+                                defaultValue="일반직"
                                 style={{ width: 200 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, employmentType: value }))
                                 }
                                 options={[
 
-                                    { value: 'general', label: '일반직' },
-                                    { value: 'executive', label: '임원,촉탁' },
+                                    { value: '일반직', label: '일반직' },
+                                    { value: '임원,촉탁', label: '임원,촉탁' },
                                 ]}
                             />
 
@@ -263,7 +263,7 @@ const UserRegister = () => {
                         <label>부서*</label>
                         <Space wrap>
                             <Select
-                                defaultValue="rnd"
+                                defaultValue="연구&개발"
                                 style={{ width: 200 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, dept_code: value }))
@@ -275,7 +275,7 @@ const UserRegister = () => {
                     <div>
                         <label>직위*</label><Space wrap>
                             <Select
-                                defaultValue="staff"
+                                defaultValue="사원"
                                 style={{ width: 200 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, rank_code: value }))
@@ -288,7 +288,7 @@ const UserRegister = () => {
                     <div>
                         <label>직무*</label><Space wrap>
                             <Select
-                                defaultValue="planning"
+                                defaultValue="기획"
                                 style={{ width: 200 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, job_code: value }))
