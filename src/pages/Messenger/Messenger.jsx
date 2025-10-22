@@ -8,6 +8,7 @@ import ChatRoomList from "./ChatRoomList";
 import ContactList from "./ContactList";
 import Settings from "./Settings";
 
+
 const Messenger = () => {
   const location = useLocation();
 
@@ -19,6 +20,9 @@ const Messenger = () => {
       console.log("✅ JWT 토큰 저장됨:", token);
     }
   }, []);
+
+  // ✅ 현재 경로가 "chat" 포함 시 여백 제거 클래스 적용
+  const isChatPage = location.pathname.includes("chat");
 
   return (
     <div className={styles.messengerContainer}>
@@ -38,7 +42,9 @@ const Messenger = () => {
       <aside className={styles.sidebar}>
         <Link
           to="/messenger-popup/contacts"
-          className={`${styles.menuBtn} ${location.pathname.includes("contacts") ? styles.active : ""}`}
+          className={`${styles.menuBtn} ${
+            location.pathname.includes("contacts") ? styles.active : ""
+          }`}
         >
           <i className="bi bi-person-lines-fill"></i>
           <span>주소록</span>
@@ -46,7 +52,9 @@ const Messenger = () => {
 
         <Link
           to="/messenger-popup/chat"
-          className={`${styles.menuBtn} ${location.pathname.includes("chat") ? styles.active : ""}`}
+          className={`${styles.menuBtn} ${
+            location.pathname.includes("chat") ? styles.active : ""
+          }`}
         >
           <i className="bi bi-chat-dots-fill"></i>
           <span>채팅방</span>
@@ -54,14 +62,21 @@ const Messenger = () => {
 
         <Link
           to="/messenger-popup/settings"
-          className={`${styles.menuBtn} ${location.pathname.includes("settings") ? styles.active : ""}`}
+          className={`${styles.menuBtn} ${
+            location.pathname.includes("settings") ? styles.active : ""
+          }`}
         >
           <i className="bi bi-gear-fill"></i>
           <span>설정</span>
         </Link>
       </aside>
 
-      <main className={styles.chatList}>
+      {/* ✅ chat 라우트일 때만 styles.chatNoPadding 추가 */}
+      <main
+        className={`${styles.chatList} ${
+          isChatPage ? styles.chatNoPadding : ""
+        }`}
+      >
         <Routes>
           <Route path="contacts" element={<ContactList />} />
           <Route path="chat" element={<ChatRoomList />} />

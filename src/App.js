@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styles from "./App.module.css";
 import useAuthStore from "./store/authStore";
 
-// ===== 외부 페이지 import =====
 import Home from "./pages/Home/Home";
 import MailRoute from "./pages/Mail/MailRoute";
 import BoardRoute from "./pages/Board/BoardRoute";
@@ -17,51 +16,44 @@ import NoteRoute from "./pages/Note/NoteRoute";
 import TaskRoute from "./pages/Task/TaskRoute";
 import ManagementRoute from "./pages/Management/ManagementRoute";
 import Login from "./pages/Login/Login";
-import Messenger from "./pages/Messenger/Messenger"; // ✅ 메신저 본체 추가 import
+import Messenger from "./pages/Messenger/Messenger";
+import ChatRoomRoute from "./pages/Messenger/ChatRoomRoute"; // ✅ 독립 라우트
 
-// ===== 공통 컴포넌트 =====
 import Header from "./pages/Common/Header";
 import Sidebar from "./pages/Common/Sidebar";
 
-// ==========================
-// ✅ 메인 App 컴포넌트 시작
-// ==========================
 function App() {
   const isLogin = useAuthStore((state) => state.isLogin);
   const login = useAuthStore((state) => state.login);
   const [loading, setLoading] = useState(true);
 
-  // ✅ 세션에 토큰이 있으면 자동 로그인 처리
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-    if (token) {
-      login(token);
-    }
+    if (token) login(token);
     setLoading(false);
   }, [login]);
 
-  // ✅ 토큰 확인 중일 때 렌더링 방지
   if (loading) return null;
-
-  // ✅ 로그인 안 되어 있으면 로그인 페이지로
   if (!isLogin) return <Login />;
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* ✅ 메신저 팝업 전용 라우트 */}
-      <Route path="/messenger-popup/*" element={<Messenger />} />
+        {/*  메신저 팝업 (Infinity UI) */}
+        <Route path="/messenger-popup/*" element={<Messenger />} />
 
+        {/*  독립 채팅방 팝업 (완전히 분리) */}
+        <Route path="/chatroom/*" element={<ChatRoomRoute />} />
 
-        {/* ✅ 일반 그룹웨어 레이아웃 */}
+        {/* 그룹웨어 기본 구조 */}
         <Route
           path="/*"
           element={
             <div className={styles.container}>
-              <Header /> {/* pages/Common 폴더에 Header.jsx */}
+              <Header />
               <div className={styles.main}>
                 <div className={styles.side}>
-                  <Sidebar /> {/* pages/Common 폴더에 Sidebar.jsx */}
+                  <Sidebar />
                 </div>
                 <div className={styles.content}>
                   <Routes>
