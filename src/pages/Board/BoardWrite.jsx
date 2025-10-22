@@ -8,29 +8,27 @@ import { caxios } from "../../config/config.js";
 const { Option } = Select;
 
 const BoardWrite = () => {
+
   //게시글 상태
   const [board, setBoard] = useState({
     title: "",
     content: "",
-    noticeYn: "N",
-    category: "a1",
+    noticeYn: "",
+    category_id: "",
   });
 
-  //게시판 선택
-  const [category, setCategory] = useState("a1");
-  const handleCategoryChange = (val) => {
-    console.log("선택된 게시판:", val);
-    setCategory(val);
-    setBoard((prev) => ({ ...prev, category: val }));
-  };
-
-  //제목 입력
+  // 제목 입력
   const handleChange = (e) => {
     const { name, value } = e.target;
     setBoard((prev) => ({ ...prev, [name]: value }));
+  }
+  // 컨텐츠 (에디터)
+  const handleEditorChange = (event, editor) => {
+    const data = editor.getData();
+    setBoard((prev) => ({ ...prev, content: data }));
   };
 
-  //체크박스
+  // 체크박스
   const handleNoticeChange = (e) => {
     setBoard((prev) => ({
       ...prev,
@@ -38,43 +36,36 @@ const BoardWrite = () => {
     }));
   };
 
-  //에디터
-  const handleEditorChange = (event, editor) => {
-    const data = editor.getData();
-    setBoard((prev) => ({ ...prev, content: data }));
+  // 게시판 선택
+  const [category_id, setCategory_id] = useState("");
+
+  const handleCategoryChange = (val) => {
+
+    console.log("선택된 게시판:", val);
+
+    setCategory(val);
+    setBoard((prev) => ({ ...prev, category: val }));
   };
 
-  //파일
+  // 파일
   const [files, setFiles] = useState([]);
   const handleFileSelect = (e) => {
     setFiles(Array.from(e.target.files));
   };
 
-  //submit 버튼
-const handleSubmit = async () => {
-  try {
-        // 로그인 시 저장해둔 사용자 ID 불러오기 (sessionStorage 기준)
-    const writerId = sessionStorage.getItem("userId") || "testUser"; 
-    // 로그인 시스템이 아직 없으면 임시로 "testUser" 지정
+  // 글 작성 submit 버튼
+  const handleSubmit = async () => {
+    try {
+      const resp = await caxios.post("/board", board);
+      console.log("등록 완료:", resp.data);
 
-    // board 데이터에 writerId 추가
-    const boardData = {
-      ...board,
-      writerId: writerId,
-    };
-
-    console.log("게시글 데이터:", boardData);
-    const res = await caxios.post("/board", board, {
-      headers: { "Content-Type": "application/json" },
-    });
-
-    console.log("등록 성공:", res.data);
-    alert("게시글이 성공적으로 등록되었습니다!");
-  } catch (error) {
-    console.error("등록 실패:", error);
-    alert("게시글 등록 중 오류가 발생했습니다.");
-  }
-};
+      alert("게시글이 등록되었습니다!");
+    } catch (err) {
+      console.error("등록 실패:", err);
+      
+      alert("등록 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -86,14 +77,15 @@ const handleSubmit = async () => {
       <div className={styles.boardGroup}>
         <label>게시판</label>
         <Select
-          value={category}
+          value={category_id}
           onChange={handleCategoryChange}
           style={{ width: 240 }}
           placeholder="게시판을 선택하세요"
         >
-          <Option value="a1">자유게시판</Option>
-          <Option value="b1">익명게시판</Option>
-          <Option value="c1">자료실</Option>
+          <Option value="1">공지사항</Option>
+          <Option value="2">자유게시판</Option>
+          <Option value="3">익명게시판</Option>
+          <Option value="4">자료실</Option>
         </Select>
       </div>
 

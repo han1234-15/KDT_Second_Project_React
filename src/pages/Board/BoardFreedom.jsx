@@ -52,7 +52,7 @@ const BoardFreedom = () => {
           style={{ width: 400 }}
         />
       </div>
-      <div className={styles.header}>
+      <div className={styles.boardHeader}>
         {/* 페이지네이션 */}
         <Table
           rowSelection={rowSelection}
