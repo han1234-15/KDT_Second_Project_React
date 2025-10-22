@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Modal } from 'antd';
 import ContactsAdd from "./ContactsAdd";
 import ContactsAddMulti from "./ContactsAddMulti";
+import { Pagination } from 'antd';
 
 const Contacts = () => {
 
@@ -15,6 +16,11 @@ const Contacts = () => {
     const [checkedList, setCheckedList] = useState([]); // 체크 상태 관리
     const [allChecked, setAllChecked] = useState(false); // 전체 체크 상태
 
+
+    // 페이지 이동
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+
     // 개인 주소록
     const handleContactsSolo = () => {
         Navigate("solo");
@@ -23,6 +29,7 @@ const Contacts = () => {
     const handleContactsMulti = () => {
         Navigate("multi");
     }
+
 
 
     // 주소록 검색 +리스트 
@@ -46,6 +53,7 @@ const Contacts = () => {
             setContacts(prev => prev.filter(contact => !checkedList.includes(contact.seq)));
         });
     }
+
 
 
 
@@ -145,6 +153,8 @@ const Contacts = () => {
                 });
             }
             setUpdateModalOpen(true);
+        }else {
+            alert("하나의 주소록 수정만 가능합니다!")
         }
     };
 
@@ -164,6 +174,21 @@ const Contacts = () => {
     const handleContactsUpdateOut = () => {
         setUpdateModalOpen(false);
     }
+
+
+    // 페이징용 currentMails
+    const indexOfLast = currentPage * pageSize;
+    const indexOfFirst = indexOfLast - pageSize;
+    const currentContacts = contacts.slice(indexOfFirst, indexOfLast);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        setAllChecked(false);
+        setCheckedList([]);
+    };
+
+
+
     return (<div className={styles.container}>
 
 
@@ -177,9 +202,9 @@ const Contacts = () => {
 
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
-                    전체 주소록 <br />
+                    {/* 전체 주소록 <br />
                     <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button>
-                    <button onClick={handleContactsMulti} className={styles.headerbutton}>공용 주소록</button>
+                    <button onClick={handleContactsMulti} className={styles.headerbutton}>공용 주소록</button> */}
                     <button className={styles.createbtn} onClick={showModalSingleAdd}> 개인주소록 추가 </button>
                     <button className={styles.createbtn} onClick={showModalMultiAdd}> 공용주소록 추가 </button>
 
@@ -224,7 +249,7 @@ const Contacts = () => {
                 <div className={styles.mainBodylist}>
 
 
-                    {contacts.map(e =>
+                    {currentContacts.map(e =>
                         <div key={e.seq} className={styles.mainBodylistbox} >
                             <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
                             <div className={styles.mainBodytag}>{e.name}</div>
@@ -235,8 +260,17 @@ const Contacts = () => {
                             <hr></hr>
                         </div>
 
-                    )}
 
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                        <Pagination
+                            current={currentPage}
+                            pageSize={pageSize}
+                            total={contacts.length}
+                            onChange={handlePageChange}
+                            showSizeChanger={false}
+                        />
+                    </div>
                     {/* 개인 주소록 추가 modal */}
                     <Modal
 
@@ -332,7 +366,7 @@ const Contacts = () => {
                         <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                             <div className={styles.NewSharedMailbox1}>이메일 : </div>
                             <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
-                                onChange={handleUpdateChange} value={updateData.email} name="email" readOnly/>
+                                onChange={handleUpdateChange} value={updateData.email} name="email" readOnly />
                         </div>
                         <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                             <div className={styles.NewSharedMailbox1}>부서 : </div>
