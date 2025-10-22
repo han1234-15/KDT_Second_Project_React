@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styles from "./App.module.css";
 
-// 외부 페이지 컴포넌트 import
+
 import Home from "./pages/Home/Home";
 import MailRoute from "./pages/Mail/MailRoute";
 import BoardRoute from "./pages/Board/BoardRoute";
@@ -15,14 +15,17 @@ import EApprovalRoute from "./pages/EApproval/EApprovalRoute";
 import NoteRoute from "./pages/Note/NoteRoute";
 import TaskRoute from "./pages/Task/TaskRoute";
 import ManagementRoute from "./pages/Management/ManagementRoute";
-import Messenger from "./pages/Messenger/Messenger"; // ✅ 메신저 본체 추가 import
 
-// ===== 공통 컴포넌트 =====d
+import Login from "./pages/Login/Login";
+import Messenger from "./pages/Messenger/Messenger";
+import ChatRoomRoute from "./pages/Messenger/ChatRoomRoute"; // ✅ 독립 라우트
+
 import Header from "./pages/Common/Header";
 import Sidebar from "./pages/Common/Sidebar";
 
+
 import useAuthStore from "./store/authStore";
-import Login from "./pages/Login/Login";
+
 import ContentTap from "./pages/Common/ContentTap";
 import ContentMain from "./pages/Common/ContentMain";
 
@@ -32,9 +35,11 @@ function App() {
   const login = useAuthStore(state => state.login);
   const [loading, setLoading] = useState(true); //로딩 확인용 상태변수
 
+
   useEffect(() => {
     // 세션에서 로그인 상태 확인
     const token = sessionStorage.getItem("token");
+
     if (token) {
       login(token); // token 자체를 store에 넣는게 일반적
     }
@@ -57,9 +62,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ✅ 메신저 팝업 전용 라우트 */}
-      <Route path="/messenger-popup/*" element={<Messenger />} />
+        {/*  메신저 팝업 (Infinity UI) */}
+        <Route path="/messenger-popup/*" element={<Messenger />} />
 
+        {/*  독립 채팅방 팝업 (완전히 분리) */}
+        <Route path="/chatroom/*" element={<ChatRoomRoute />} />
 
         {/* ✅ 공통 그룹웨어 레이아웃 */}
         <Route
