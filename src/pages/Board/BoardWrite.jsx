@@ -43,7 +43,7 @@ const BoardWrite = () => {
 
     console.log("선택된 게시판:", val);
 
-    setCategory(val);
+    category_id(val);
     setBoard((prev) => ({ ...prev, category: val }));
   };
 
