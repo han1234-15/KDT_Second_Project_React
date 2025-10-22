@@ -1,11 +1,11 @@
 .boardTabsWrapper {
     position: relative;
+    margin-top: 20px;
 }
 
-/* ✅ 버튼을 메인탭 오른쪽 상단에 고정 */
 .writeBtn {
     position: absolute;
-    top: 80px;
+    top: 100px;
     /* 탭 줄과 수직 맞춤 */
     right: 20px;
     /* 화면 오른쪽 여백 */
