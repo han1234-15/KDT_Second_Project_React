@@ -5,14 +5,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Modal } from 'antd';
 import ContactsAdd from "./ContactsAdd";
 import ContentTap from "../Common/ContentTap";
+import { Pagination } from 'antd';
 
 const ContactsSolo = () => {
 
-    const mainTabs = [
-        { label: "전체 주소록", path: "/" },
-        { label: "개인 주소록", path: "/contacts/solo" },
-        { label: "공용 주소록", path: "/contacts/multi" },
-    ];
+
 
     const location = useLocation();
     const Navigate = useNavigate();
@@ -22,10 +19,15 @@ const ContactsSolo = () => {
     const [checkedList, setCheckedList] = useState([]); // 체크 상태 관리
     const [allChecked, setAllChecked] = useState(false); // 전체 체크 상태
 
+    // 페이지 이동
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+
     // 개인 주소록
     const handleContacts = () => {
         Navigate("/contacts");
     }
+
     // 공유 주소록
     const handleContactsMulti = () => {
         Navigate("/contacts/multi");
@@ -152,6 +154,18 @@ const ContactsSolo = () => {
     }
 
 
+    // 페이징용 currentMails
+    const indexOfLast = currentPage * pageSize;
+    const indexOfFirst = indexOfLast - pageSize;
+    const currentContacts = contacts.slice(indexOfFirst, indexOfLast);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        setAllChecked(false);
+        setCheckedList([]);
+    };
+
+
     return (<div className={styles.container}>
 
 
@@ -165,13 +179,7 @@ const ContactsSolo = () => {
 
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
-                    {/* 왼쪽 탭 영역 */}
-                    <ContentTap
-                        mainTabs={mainTabs}
-                        activePath={location.pathname}
-                        onMainClick={(path) => Navigate(path)}
-                        onSubClick={(path) => Navigate(path)}
-                    />
+
 
                     <button className={styles.createbtn} onClick={showModalSingleAdd}> 개인 주소록 추가 </button>
                 </div>
@@ -216,7 +224,7 @@ const ContactsSolo = () => {
                 <div className={styles.mainBodylist}>
 
 
-                    {contacts.map(e =>
+                    {currentContacts.map(e =>
                         <div key={e.seq} className={styles.mainBodylistbox} >
                             <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
                             <div className={styles.mainBodytag}>{e.name}</div>
@@ -227,7 +235,17 @@ const ContactsSolo = () => {
                             <hr></hr>
                         </div>
 
+
                     )}
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                        <Pagination
+                            current={currentPage}
+                            pageSize={pageSize}
+                            total={contacts.length}
+                            onChange={handlePageChange}
+                            showSizeChanger={false}
+                        />
+                    </div>
                     <Modal
 
                         centered={false}
@@ -295,7 +313,7 @@ const ContactsSolo = () => {
                         <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                             <div className={styles.NewSharedMailbox1}>이메일 : </div>
                             <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
-                                onChange={handleUpdateChange} value={updateData.email} name="email" />
+                                onChange={handleUpdateChange} value={updateData.email} name="email" readOnly />
                         </div>
                         <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                             <div className={styles.NewSharedMailbox1}>부서 : </div>

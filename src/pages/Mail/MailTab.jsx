@@ -7,14 +7,13 @@ const ContactsTabs = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-   const mainTabs = [
-    { label: "전체 주소록", path: "/contacts/all" },
-    { label: "개인 주소록", path: "/contacts/solo" },
-    { label: "공용 주소록", path: "/contacts/multi" }
+  const mainTabs = [
+    { label: "받은 메일함", path: "/mail/all" },
+    { label: "보낸 메일함", path: "/mail/mailsent" }
   ];
 
-const subTabs = [
-    ];
+  const subTabs = [
+  ];
 
   return (
     <div >
@@ -31,7 +30,7 @@ const subTabs = [
         {/* 오른쪽 버튼 영역 */}
         {location.pathname.startsWith("/board") && (
           <button
-            
+
             onClick={() => navigate("/board/boardWrite")}
           >
             글 작성하기

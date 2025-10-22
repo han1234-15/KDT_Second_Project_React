@@ -6,21 +6,22 @@ import ContactsAddMulti from "./ContactsAddMulti";
 import ContactsSolo from "./ContactsSolo";
 import ContactsMulti from "./ContactsMulti";
 import ContactsTab from "./ContactsTab";
-import test from "./test";
+
 const ContactsRoute = () => {
 
     return (
         <Routes>
             <Route path="/" element={<ContactsTab />} >
-              <Route index element={<Navigate to="all" replace />} />
+                <Route index element={<Navigate to="all" replace />} />
                 <Route path="all" element={<Contacts />} ></Route>
                 <Route path="solo" element={<ContactsSolo />} />
                 <Route path="multi" element={<ContactsMulti />} />
-                <Route path="test" element={<test />} />
+
             </Route>
+
             <Route path="add" element={<ContactsAdd />} />
-                <Route path="addmulti" element={<ContactsAddMulti />} />
-                
+            <Route path="addmulti" element={<ContactsAddMulti />} />
+
         </Routes>
     );
 }

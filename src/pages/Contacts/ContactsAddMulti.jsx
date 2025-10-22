@@ -77,13 +77,9 @@ const ContactsAddMulti = ({ onClose }) => {
                         onChange={handlechange} name="rank_code" value={Contacts.rank_code} />
                 </div>
 
-
-
             </div>
             <button style={{ float: "right", marginLeft: "10px" }} onClick={handleOut}>취소</button>
             <button style={{ float: "right" }} onClick={handleAdd}>완료</button>
-
-
         </div>
     );
 }

@@ -2,6 +2,7 @@ import styles from "./Mail.module.css";
 import { useNavigate, BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { caxios } from '../../config/config.js';
 import { useEffect, useState } from 'react';
+import { Pagination } from 'antd';
 
 const MailSent = () => {
 
@@ -9,6 +10,10 @@ const MailSent = () => {
     const [searchName, setSearchName] = useState(""); // 검색어 상태
     const [checkedList, setCheckedList] = useState([]); // 체크 상태 관리
     const [allChecked, setAllChecked] = useState(false); // 전체 체크 상태
+
+    // 페이지 이동
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
 
     const navigate = useNavigate();
 
@@ -76,7 +81,16 @@ const MailSent = () => {
         }
     }
 
+    // 페이지용
+    const indexOfLast = currentPage * pageSize;
+    const indexOfFirst = indexOfLast - pageSize;
+    const currentMails = mail.slice(indexOfFirst, indexOfLast); // mail 참고
 
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        setAllChecked(false);
+        setCheckedList([]);
+    };
 
 
     return (<div className={styles.container}>
@@ -92,9 +106,9 @@ const MailSent = () => {
 
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
-                    보낸 메일함 :  {mail.length}개의 메일 <br />
+                    보낸 메일 :  {mail.length}개의 메일 <br />
                     <button onClick={handleMailWrite} className={styles.createbtn}>메일쓰기</button>
-                    <button onClick={handleMail} className={styles.headerbutton}>받은 메일함</button>
+
                 </div>
 
                 {/* 주소록 헤더 2 */}
@@ -124,7 +138,7 @@ const MailSent = () => {
                 <div className={styles.mainBodyHeader}>
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                     <div className={styles.mainBodytag}>수신자</div>
-                     <div className={styles.mainBodytag}>수신자 이메일</div>
+                    <div className={styles.mainBodytag}>수신자 이메일</div>
                     <div className={styles.mainBodytagTitle}>제목</div>
                     <div className={styles.mainBodytag}>발신날짜</div>
                     <br></br>
@@ -135,7 +149,7 @@ const MailSent = () => {
                 {/* 메일 출력  */}
                 <div className={styles.mainBodylist}>
 
-                    {mail.map(e =>
+                    {currentMails.map(e =>
 
                         <div key={e.seq} className={styles.mainBodylistbox} >
                             <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
@@ -143,10 +157,22 @@ const MailSent = () => {
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.recipientId}</div>
                             <div className={styles.mainBodytagTitle} onClick={() => handleMailView(e)} >{e.title}</div>
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.sendDateStr}</div>
-                  
+
                             <br></br>
                             <hr></hr>
+                            {/* 페이지네이션 */}
+
+
                         </div>)}
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                        <Pagination
+                            current={currentPage}
+                            pageSize={pageSize}
+                            total={mail.length}
+                            onChange={handlePageChange}
+                            showSizeChanger={false}
+                        />
+                    </div>
                 </div>
 
 
