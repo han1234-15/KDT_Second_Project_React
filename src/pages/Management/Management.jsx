@@ -17,6 +17,7 @@ const Management = () => {
 
     const [search, setSearch] = useState('');
     const [userCount, setUserCount] = useState(0); //그룹웨어 사용 인원
+
     useEffect(() => {
         caxios.get('/member') // 서버에서 사용자 리스트 API
             .then(resp => {
@@ -27,7 +28,7 @@ const Management = () => {
                 console.error('사용자 목록 가져오기 실패', err);
             });
     }, []);
-
+    
     const headItems1 = [
         { label: (<span onClick={() => fetchUsers({ status: 'all' })}>전체</span>), key: '0', },
         { label: (<span onClick={() => fetchUsers({ status: 'active' })}>재직자</span>), key: '1' },

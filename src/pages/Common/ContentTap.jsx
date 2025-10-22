@@ -10,6 +10,7 @@ const ContentTap = ({
 }) => {
   const isActive = (path) => activePath.startsWith(path);
 
+
   return (
     <div className={styles.boardContainer}>
       {/* 메인탭 */}
