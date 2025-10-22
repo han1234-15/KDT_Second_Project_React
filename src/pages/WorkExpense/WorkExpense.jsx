@@ -10,34 +10,134 @@ const WorkExpense = () => {
   const [checkOut, setCheckOut] = useState(null);
   const [status, setStatus] = useState("대기중");
 
+  const [checkInbtn, setCheckInbtn] = useState(false);
+  const [checkOutbtn, setCheckOutbtn] = useState(false);
 
-  const[count,setCount]=useState({
-    late:0,
-    earlyleave:0,
-    absence:0,
-    nocheck:0,
+
+  const [count, setCount] = useState({
+    late: 0,
+    earlyleave: 0,
+    absence: 0,
+    nocheck: 0,
   });
 
-useEffect(() => {
-  caxios.get(`attendance/count`)
-    .then((res) => {
-      console.log("서버 응답:", res.data);
+  const [leavecounts, setLeaveCounts] = useState({
+    leavecount: 0
+  });
 
-      const result = { before: 0, absence: 0, earlyleave: 0, late: 0 ,nocheck: 0};
+  const formatDateTime = (timeString) => {
+    if (!timeString) return null;
 
-      res.data.forEach(item => {
-        const key = item.status?.replace(/\s+/g, "_").toLowerCase(); 
-        if (result.hasOwnProperty(key)) {
-          result[key] = item.cnt;
+    const now = new Date();
+    const [hour, minute] = timeString.split(":");
+
+    // 날짜 형식
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const date = String(now.getDate()).padStart(2, "0");
+
+    // 요일
+    const weekdayNames = ["일", "월", "화", "수", "목", "금", "토"];
+    const weekday = weekdayNames[now.getDay()];
+
+    // 시간 형식
+    let h = parseInt(hour, 10);
+    const ampm = h < 12 ? "오전" : "오후";
+    if (h === 0) h = 12;
+    else if (h > 12) h -= 12;
+
+    const formattedTime = `${ampm} ${String(h).padStart(2, "0")}:${minute}`;
+
+    return `${year}-${month}-${date} (${weekday}) ${formattedTime}`;
+  };
+
+
+  //따로 뺴줘서 실시간으로 지각처리 알수있게 끔
+  const fetchAttendanceCount = () => {
+    caxios.get(`attendance/count`)
+      .then((res) => {
+        console.log("서버 응답:", res.data);
+
+        const result = { before: 0, absence: 0, earlyleave: 0, late: 0, nocheck: 0 };
+
+        res.data.forEach(item => {
+          const key = item.STATUS?.toLowerCase();
+          if (result.hasOwnProperty(key)) {
+            result[key] = item.CNT;
+          }
+        });
+
+        setCount(result);
+      })
+      .catch(err => console.error("근태 카운트 불러오기 실패:", err));
+  };
+
+
+  useEffect(() => {
+    caxios.get("/attendance/today")
+      .then(res => {
+        const data = res.data;
+        const startStatus = data.startStatus ?? data.STARTSTATUS ?? null;
+        const endStatus = data.endStatus ?? data.ENDSTATUS ?? null;
+        const startTime = data.startTime ?? data.STARTTIME ?? null;
+        const endTime = data.endTime ?? data.ENDTIME ?? null;
+
+        setCheckIn(startTime ? formatDateTime(startTime) : null);
+        setCheckOut(endTime ? formatDateTime(endTime) : null);
+
+        if (!startStatus) {
+
+          setStatus("대기중");
+          setCheckInbtn(true);
+          setCheckOutbtn(false);
+
+        } else if (startStatus === "absence") {
+          // 결근 상태 (지각으로 바뀔 가능성 있음)
+          setStatus("결근");
+          setCheckInbtn(true);  
+          setCheckOutbtn(false);
+
+        } else if (startStatus && !endStatus) {
+          // 출근은 했고 퇴근은 아직
+          setStatus(startStatus === "late" ? "지각" : "근무중");
+          setCheckInbtn(false);
+          setCheckOutbtn(true);
+
+        } else {
+          // 퇴근 or nocheck
+          setStatus(endStatus === "nocheck" ? "퇴근미체크" : "퇴근");
+          setCheckInbtn(false);
+          setCheckOutbtn(false);
         }
-      });
 
-      setCount(result);
-    })
-    .catch(err => console.error("근태 카운트 불러오기 실패:", err));
-}, []);
+        fetchAttendanceCount();
+      })
+      .catch(err => console.error(err));
+  }, []);
 
 
+
+
+  useEffect(() => {
+    const autoRefresh = setInterval(() => {
+
+      fetchAttendanceCount();
+
+    }, 60000);
+
+    return () => clearInterval(autoRefresh);
+  }, []);
+
+
+
+  useEffect(() => {
+    caxios.get(`leave/count`)
+      .then((res) => {
+        let data = res.data;
+        console.log("서버 응답", res.data);
+        setLeaveCounts({ leavecount: res.data || 0 });
+      })
+  }, [])
 
 
 
@@ -46,15 +146,36 @@ useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
-
   const handleCheckIn = () => {
-    setCheckIn(time.toLocaleTimeString("ko-KR"));
-    setStatus("근무중");
+    if (!window.confirm("정말 출근하시겠습니까?")) return;
+
+    caxios.post("/attendance/checkin")
+      .then((res) => {
+        setCheckIn(formatDateTime(res.data.time));
+        setStatus(res.data.status === "late" ? "지각" : "근무중");
+        setCheckInbtn(false);
+        setCheckOutbtn(true);
+        fetchAttendanceCount();
+        alert("출근 처리되었습니다.");
+      })
+      .catch(err => console.error("출근 실패:", err));
   };
 
   const handleCheckOut = () => {
-    setCheckOut(time.toLocaleTimeString("ko-KR"));
-    setStatus("퇴근");
+    if (!window.confirm("정말 퇴근하시겠습니까?\n퇴근은 하루에 한 번만 가능합니다.")) {
+      return;
+    }
+
+    caxios.post(`/attendance/checkout`)
+      .then((res) => {
+        setCheckOut(formatDateTime(res.data.time));
+        setStatus(res.data.status === "checkout" ? "조기 퇴근" : "퇴근");
+        setCheckInbtn(false);
+        setCheckOutbtn(false);
+        fetchAttendanceCount();
+        alert("퇴근 처리되었습니다.");
+      })
+      .catch(err => console.error("퇴근 실패", err));
   };
 
   return (
@@ -75,7 +196,7 @@ useEffect(() => {
         <fieldset className="info-box">
           <legend>휴가 현황</legend>
           <div className="field-content">
-            <div className="field-item"><strong>잔여 휴가</strong><div>17일</div></div>
+            <div className="field-item"><strong>잔여 휴가</strong><div>{leavecounts.leavecount}회</div></div>
           </div>
           <div className="field-footer">
             <button className="link-btn">휴가 현황</button>
@@ -121,12 +242,10 @@ useEffect(() => {
           <div className="check-section">
             <div className="clock">{time.toLocaleTimeString("ko-KR")}</div>
             <div className="check-buttons">
-              <button className="in" onClick={handleCheckIn}>출근하기</button>
-              <button className="out" onClick={handleCheckOut}>퇴근하기</button>
+              <button className="in" onClick={handleCheckIn} disabled={!checkInbtn}>출근하기</button>
+              <button className="out" onClick={handleCheckOut} disabled={!checkOutbtn}>퇴근하기</button>
             </div>
             <div className="time-logs">
-              <div><strong>출근</strong> {checkIn || "-- : -- : --"}</div>
-              <div><strong>퇴근</strong> {checkOut || "-- : -- : --"}</div>
               <div><strong>상태</strong> {status}</div>
             </div>
           </div>
@@ -136,15 +255,11 @@ useEffect(() => {
         <fieldset className="info-box">
           <legend>근무현황</legend>
           <div className="empty-state">
-            {status === "근무중"
-              ? "현재 근무 중입니다."
-              : status === "퇴근"
-              ? "오늘 근무를 마쳤습니다."
-              : "근무현황이 없습니다."}
+            <div><strong>출근</strong> {checkIn || "-- : -- : --"}</div>
+            <br></br>
+            <div><strong>퇴근</strong> {checkOut || "-- : -- : --"}</div>
           </div>
-          <div className="field-footer">
-            <button className="link-btn">근무체크 수정</button>
-          </div>
+
         </fieldset>
       </div>
     </div>

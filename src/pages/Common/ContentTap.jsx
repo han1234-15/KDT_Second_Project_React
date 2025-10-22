@@ -7,9 +7,9 @@ const ContentTap = ({
   onMainClick,
   onSubClick,
   activePath = "",
+  activeSubPath = "" // 전자결재에서만 해당
 }) => {
   const isActive = (path) => activePath.startsWith(path);
-
 
   return (
     <div className={styles.boardContainer}>
@@ -34,7 +34,15 @@ const ContentTap = ({
           {subTabs.map((tab) => (
             <div
               key={tab.path}
-              className={`${styles.subTab} ${isActive(tab.path) ? styles.active : ""}`}
+              className={`${styles.subTab} ${
+                activeSubPath
+                  ? activeSubPath === tab.path // 전자결재일떄만
+                    ? styles.active
+                    : ""
+                  : isActive(tab.path) // 다른 메뉴는 동일하게 유지
+                    ? styles.active
+                    : ""
+              }`}
               onClick={() => onSubClick(tab.path)}
             >
               {tab.label}
@@ -42,7 +50,6 @@ const ContentTap = ({
           ))}
         </div>
       )}
-
     </div>
   );
 };

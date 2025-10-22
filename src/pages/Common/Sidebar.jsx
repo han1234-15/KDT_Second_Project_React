@@ -32,7 +32,7 @@ const Sidebar = () => {
     "/contacts": "주소록",
     "/board": "게시판",
     "/schedule": "일정",
-    "/eApproval": "전자결재",
+    "/Eapproval": "전자결재",
     "/workExpense": "근무/경비",
     "/task": "업무관리",
     "/management": "관리",
@@ -75,7 +75,7 @@ const Sidebar = () => {
         <Link to="/contacts" className={styles.menu}><TeamOutlined />주소록</Link>
         <Link to="/board" className={styles.menu}><FileTextOutlined />게시판</Link>
         <Link to="/schedule" className={styles.menu}><ScheduleOutlined />일정</Link>
-        <Link to="/eApproval" className={styles.menu}><FileDoneOutlined />전자결재</Link>
+        <Link to="/Eapproval" className={styles.menu}><FileDoneOutlined />전자결재</Link>
         <Link to="/workExpense" className={styles.menu}><SolutionOutlined />근무/경비</Link>
         <Link to="/task" className={styles.menu}><DesktopOutlined />업무관리</Link>
 
