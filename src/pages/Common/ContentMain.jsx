@@ -19,6 +19,7 @@ import TaskRoute from "../Task/TaskRoute";
 import ManagementRoute from "../Management/ManagementRoute";
 import BoardTabs from "../Board/BoardTabs";
 import ManagementTabs from "../Management/ManagementTabs";
+import ContactsTabs from "../Contacts/ContactsTab";
 
 const ContentMain = () => {
 
@@ -28,6 +29,7 @@ const ContentMain = () => {
   const renderTabs = () => {
     if (location.pathname.startsWith("/board")) return <BoardTabs />;
     if (location.pathname.startsWith("/management")) return <ManagementTabs />;
+    if (location.pathname.startsWith("/contacts")) return <ContactsTabs />;
     return null;
   };
 

@@ -1,12 +1,20 @@
 import styles from "./Contacts.module.css";
 import { useEffect, useState } from 'react';
 import { caxios } from '../../config/config.js';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Modal } from 'antd';
 import ContactsAdd from "./ContactsAdd";
+import ContentTap from "../Common/ContentTap";
 
 const ContactsSolo = () => {
 
+    const mainTabs = [
+        { label: "전체 주소록", path: "/" },
+        { label: "개인 주소록", path: "/contacts/solo" },
+        { label: "공용 주소록", path: "/contacts/multi" },
+    ];
+
+    const location = useLocation();
     const Navigate = useNavigate();
 
     const [contacts, setContacts] = useState([]); // 주소록 데이터 관리
@@ -91,21 +99,21 @@ const ContactsSolo = () => {
     // modal
 
     const [isSingleModalOpen, setIsSingleModalOpen] = useState(false);
-   
+
     const [UpdateModalOpen, setUpdateModalOpen] = useState(false);
 
 
     const showModalSingleAdd = () => { // 개인 주소록 추가
         setIsSingleModalOpen(true);
     };
-  
+
     const handleOk = () => { // 모달창 닫기
         setIsSingleModalOpen(false);
-        
+
     };
     const handleCancel = () => { // 모달창 닫기
         setIsSingleModalOpen(false);
-       
+
     };
     // 수정
     const [updateData, setUpdateData] = useState(
@@ -142,66 +150,7 @@ const ContactsSolo = () => {
     const handleContactsUpdateOut = () => {
         setUpdateModalOpen(false);
     }
-    {/* 수정 modal */ }
-    <Modal
 
-        centered={false}
-        open={UpdateModalOpen}
-        onCancel={() => setUpdateModalOpen(false)}
-        footer={null}
-        destroyOnHidden
-        width={{
-            xs: '90%',
-            sm: '80%',
-            md: '70%',
-            lg: '60%',
-            xl: '50%',
-            xxl: '40%',
-        }}
-        modalRender={modal => (
-            <div style={{ marginTop: '100px' }}> {/* 상단에서 50px 아래 */}
-                {modal}
-            </div>
-        )}
-    >
-
-        <div className={styles.mainHeader} style={{ fontSize: "40px", backgroundColor: "#007bff", color: "white", textAlign: "center" }}>
-            수정
-        </div>
-        <br></br>
-
-        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-            <div className={styles.NewSharedMailbox1}>성함 : </div>
-            <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
-                onChange={handleUpdateChange} value={updateData.name} name="name" />
-        </div>
-
-        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-            <div className={styles.NewSharedMailbox1}>전화번호 : </div>
-            <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
-                onChange={handleUpdateChange} value={updateData.phone} name="phone" />
-        </div>
-
-        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-            <div className={styles.NewSharedMailbox1}>이메일 : </div>
-            <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
-                onChange={handleUpdateChange} value={updateData.email} name="email" />
-        </div>
-        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-            <div className={styles.NewSharedMailbox1}>부서 : </div>
-            <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
-                onChange={handleUpdateChange} value={updateData.job_code} name="job_code" />
-        </div>
-        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-            <div className={styles.NewSharedMailbox1}>직급 : </div>
-            <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
-                onChange={handleUpdateChange} value={updateData.rank_code} name="rank_code" />
-        </div>
-
-        <button style={{ float: "right", marginLeft: "10px" }} onClick={handleContactsUpdateOut}>취소</button>
-        <button style={{ float: "right" }} onClick={handleContactsUpdate}>완료</button>
-
-    </Modal>
 
     return (<div className={styles.container}>
 
@@ -216,9 +165,14 @@ const ContactsSolo = () => {
 
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
-                    개인 주소록 <br />
-                    <button onClick={handleContacts} className={styles.headerbutton}>전체 주소록</button>
-                    <button onClick={handleContactsMulti} className={styles.headerbutton}>공용 주소록</button>
+                    {/* 왼쪽 탭 영역 */}
+                    <ContentTap
+                        mainTabs={mainTabs}
+                        activePath={location.pathname}
+                        onMainClick={(path) => Navigate(path)}
+                        onSubClick={(path) => Navigate(path)}
+                    />
+
                     <button className={styles.createbtn} onClick={showModalSingleAdd}> 개인 주소록 추가 </button>
                 </div>
 
@@ -358,6 +312,8 @@ const ContactsSolo = () => {
                         <button style={{ float: "right" }} onClick={handleContactsUpdate}>완료</button>
 
                     </Modal>
+
+
                 </div>
 
 

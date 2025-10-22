@@ -112,7 +112,7 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
                 {/* 주소록 헤더 2 */}
                 <div className={styles.mainHeaderbottom} >
 
-                    <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
+                    <input type="text" placeholder="검색할 주소록 이름" style={{ width: "82.5%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
                         onChange={(e) => setSearchName(e.target.value)}></input>
                     <button onClick={handleContactsList}>검색</button>
 

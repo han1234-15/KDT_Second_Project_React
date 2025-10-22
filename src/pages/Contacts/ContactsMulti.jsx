@@ -1,12 +1,20 @@
 import styles from "./Contacts.module.css";
 import { useEffect, useState } from 'react';
 import { caxios } from '../../config/config.js';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ContactsAddMulti from "./ContactsAddMulti";
+import ContentTap from "../Common/ContentTap";
 import { Button, Flex, Modal } from 'antd';
 
 const ContactsMulti = () => {
 
+  const mainTabs = [
+    { label: "전체 주소록", path: "/contacts" },
+    { label: "개인 주소록", path: "/contacts/solo" },
+    { label: "공용 주소록", path: "/contacts/multi" },
+];
+
+    const location = useLocation();
     const Navigate = useNavigate();
 
     const [contacts, setContacts] = useState([]); // 주소록 데이터 관리
@@ -103,21 +111,21 @@ const ContactsMulti = () => {
 
     // modal
 
-   
+
     const [isMultiModalOpen, setIsMultiModalOpen] = useState(false);
     const [UpdateModalOpen, setUpdateModalOpen] = useState(false);
 
 
-  
+
     const showModalMultiAdd = () => { // 공용 주소록 추가
         setIsMultiModalOpen(true);
     };
     const handleOk = () => { // 모달창 닫기
-       
+
         setIsMultiModalOpen(false);
     };
     const handleCancel = () => { // 모달창 닫기
-     
+
         setIsMultiModalOpen(false);
     };
     // 수정
@@ -168,9 +176,18 @@ const ContactsMulti = () => {
 
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
-                    공용 주소록 <br />
-                    <button onClick={handleContacts} className={styles.headerbutton}>전체 주소록</button>
-                    <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button>
+                    {/* 왼쪽 탭 영역 */}
+                    <ContentTap
+                        mainTabs={mainTabs}
+                        activePath={location.pathname}
+                        onMainClick={(path) => Navigate(path)}
+                        onSubClick={(path) => Navigate(path)}
+                    />
+
+                   
+
+                    {/* <button onClick={handleContacts} className={styles.headerbutton}>전체 주소록</button>
+                    <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button> */}
                     <button className={styles.createbtn} onClick={showModalMultiAdd}> 공용 주소록 추가 </button>
 
                 </div>
