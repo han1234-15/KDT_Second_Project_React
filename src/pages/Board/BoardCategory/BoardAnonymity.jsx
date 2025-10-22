@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Table, Input } from "antd";
-import styles from "./BoardDataRoom.module.css";
-import { caxios } from "../../config/config";
+import styles from "./BoardAnonymity.module.css";
+import { caxios } from "../../../config/config";
 const { Search } = Input;
 
-const BoardDataRoom = () => {
+const BoardAnonymity = () => {
   const [search, setSearch] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   
   const [data, setData] = useState([]);
-  // 자유게시판(category_id = 2) 데이터 불러오기
+  // 자유게시판(category_id = 3) 데이터 불러오기
   useEffect(() => {
     caxios
-      .get("/board/2") // category_id = 2 (자유게시판)
+      .get("/board/3") // category_id = 3 (익명게시판)
       .then((resp) => {
         console.log("게시글 목록:", resp.data);
         // 백엔드 응답 구조에 맞게 데이터 매핑
         const mapped = resp.data.map((item) => ({
           key: item.seq,
-          tag: "자유", // 필요 시 카테고리명 표시
+          tag: "익명", // 필요 시 카테고리명 표시
           title: item.title,
           author: item.writer_id,
           date: new Date(item.createdAt).toLocaleDateString(),
@@ -86,4 +86,4 @@ const BoardDataRoom = () => {
   );
 };
 
-export default BoardDataRoom;
+export default BoardAnonymity;
