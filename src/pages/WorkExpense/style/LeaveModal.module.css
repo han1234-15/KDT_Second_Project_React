@@ -1,0 +1,57 @@
+/* ✅ 결재 테이블 전체 래퍼 */
+.approvalTableBox {
+  margin-bottom: 15px;
+}
+
+/* ✅ 결재선 제목 + 버튼을 한 줄 정렬 */
+.approvalTableTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* ✅ 결재선 옆 + 버튼 스타일 (파란색 유지) */
+.addApprovalBtn {
+  background: #409eff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.addApprovalBtn:hover {
+  background: #1d7ed6;
+}
+
+/* ✅ 결재 테이블 */
+.approvalTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.approvalTable th,
+.approvalTable td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  font-size: 13px;
+}
+
+.leftCol {
+  background: #f7f7f7;
+  font-weight: 600;
+}
+
+/* ✅ 선택된 날짜 박스 */
+.selectedDateBox {
+  margin: 10px 0;
+  font-size: 13px;
+  background: #f8fcff;
+  border: 1px solid #d0e4ff;
+  padding: 8px;
+  border-radius: 6px;
+}
