@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const caxios = axios.create({
-  baseURL: `http://10.5.5.20`
+  baseURL: `http://10.5.5.12`
 });
 
 // export const caxios = axios.create({

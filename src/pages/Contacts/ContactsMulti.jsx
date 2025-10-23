@@ -22,7 +22,7 @@ const ContactsMulti = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
-      // 페이징용 currentMails
+    // 페이징용 currentMails
     const indexOfLast = currentPage * pageSize;
     const indexOfFirst = indexOfLast - pageSize;
     const currentContacts = contacts.slice(indexOfFirst, indexOfLast);
@@ -176,7 +176,7 @@ const ContactsMulti = () => {
         setUpdateModalOpen(false);
     }
 
-  
+
 
 
     return (<div className={styles.container}>
@@ -193,7 +193,7 @@ const ContactsMulti = () => {
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
 
-
+                    공용 주소록 : {contacts.length} 명 <br></br>
                     {/* <button onClick={handleContacts} className={styles.headerbutton}>전체 주소록</button>
                     <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button> */}
                     <button className={styles.createbtn} onClick={showModalMultiAdd}> 공용 주소록 추가 </button>
@@ -205,7 +205,7 @@ const ContactsMulti = () => {
                     {checkedList.length === 0 ? (
                         <>
                             <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
-                                onChange={(e) => setSearchName(e.target.value)}></input>
+                                onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => {if (e.key === "Enter") { handleContactsList();}}}></input>
                             <button onClick={handleContactsList}>검색</button>
 
                         </>) : (

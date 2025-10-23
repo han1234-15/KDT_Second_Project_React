@@ -12,7 +12,6 @@ const MailWrite = () => {
 
 
 
-
   const Navigate = useNavigate();
   const fileRef = useRef();
   const [files, setFiles] = useState([]);
@@ -29,9 +28,6 @@ const MailWrite = () => {
 
 
 
-
-
-
   // input 변경 처리
   const handleChange = (e) => {
     setMail(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -45,143 +41,142 @@ const MailWrite = () => {
 
 
 
-  // // 전송 버튼 클릭 시
-  // const handleMailWrite = () => {
-  //   caxios.post("/mail", mail, {
-  //     headers: { "Content-Type": "application/json" }
-  //   }).then((res) => {
-  //     // setMail(res.data);
-  //     Navigate("/mail");
-  //   });
-  // };
-
+  // // 전송 버튼
   const handleMailWrite = async () => {
-
-    const res = await caxios.post("/mail", mail, {
-      headers: { "Content-Type": "application/json" }
-    });
-    const mailSeq = res.data; // MailController에서 seq 반환
-
-
-    if (files && files.length > 0) {
-      const form = new FormData();
-      form.append('mailSeq', mailSeq); // mailSeq 포함
-      Array.from(files).forEach(file => form.append('files', file));
-
-      await caxios.post(`/files/mailSeq`, form, {
-        headers: { "Content-Type": "multipart/form-data" }
+    try {
+      const res = await caxios.post("/mail", mail, {
+        headers: { "Content-Type": "application/json" }
       });
 
-      fileRef.current.value = "";
-      setFiles([]);
-    }
+      const mailSeq = res.data; // MailController에서 seq 반환
 
 
-    Navigate("/mail");
+      if (files && files.length > 0) {
+        const form = new FormData();
+        form.append('mailSeq', mailSeq); // mailSeq 포함
+        Array.from(files).forEach(file => form.append('files', file));
 
-  };
+        await caxios.post(`/files/mailSeq`, form, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+
+        fileRef.current.value = "";
+        setFiles([]);
+      } 
+      Navigate("/mail");
+    } catch (err) {
+    console.error("메일 발송 중 오류:", err);
+
+    // 서버에서 보낸 메시지
+    if (err.response && err.response.data) {
+      alert(err.response.data); 
+    } else {
+      alert("메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }}
+    };
 
 
-  // MODAL
+    // MODAL
 
-  const [Modalcontacts, setModalContacts] = useState(false);
+    const [Modalcontacts, setModalContacts] = useState(false);
 
-  // 수신자(주소록에서) 추가
-  const handleAddContacts = () => {
-    setModalContacts(true);
-  };
-
-
-  return (
-    <div className={styles.container}>
+    // 수신자(주소록에서) 추가
+    const handleAddContacts = () => {
+      setModalContacts(true);
+    };
 
 
-      <div className={styles.mainHeader}>
+    return (
+      <div className={styles.container}>
 
-        <input type="text" className={styles.containerhalf} style={{ width: "93%", float: "left" }} placeholder="수신자를 입력하세요"
-          onChange={handleChange} name="recipientName" value={mail.recipientName} />
-        <div style={{ width: "5%", float: "left" }}> <button onClick={handleAddContacts}> + </button></div>
 
-        <input type="text" className={styles.containerhalf} placeholder="제목을 입력하세요"
-          onChange={handleChange} name="title" value={mail.title} />
-      </div>
+        <div className={styles.mainHeader}>
 
-      <div className={styles.mainBody}>
+          <input type="text" className={styles.containerhalf} style={{ width: "93%", float: "left" }} placeholder="수신자를 입력하세요"
+            onChange={handleChange} name="recipientName" value={mail.recipientName} />
+          <div style={{ width: "5%", float: "left" }}> <button onClick={handleAddContacts}> 주소록 </button></div>
 
-        <CKEditor
-          editor={ClassicEditor}
-          data={mail.content || ''}
-          className={styles.ckEditor}
-          onChange={handleEditorChange}
-          config={{
-            toolbar: [
-              'heading', '|', 'bold', 'italic', 'underline', 'link',
-              'bulletedList', 'numberedList', '|', 'insertTable',
-              'blockQuote', 'undo', 'redo',
-            ]
-          }}
+          <input type="text" className={styles.containerhalf} placeholder="제목을 입력하세요"
+            onChange={handleChange} name="title" value={mail.title} />
+        </div>
 
-        />
-      </div>
-      <div style={{ marginTop: "10px" }}>
-        {/* <button style={{ float: "left" }}>파일 업로드</button> */}
-        <input
-          type="file"
-          multiple
-          ref={fileRef}
-          onChange={(e) => setFiles(e.target.files)}
-          style={{ marginBottom: "10px" }}
-        />
-        {/* <button style={{ float: "left" }} onClick={handleMailUpload}>파일 업로드</button> */}
-        <button className={styles.backBtn} onClick={() => Navigate(-1)}>뒤로가기</button>
-        <button style={{ float: "right" }} onClick={handleMailWrite}>전송</button>
-      </div>
+        <div className={styles.mainBody}>
 
-      <Modal
+          <CKEditor
+            editor={ClassicEditor}
+            data={mail.content || ''}
+            className={styles.ckEditor}
+            onChange={handleEditorChange}
+            config={{
+              toolbar: [
+                'heading', '|', 'bold', 'italic', 'underline', 'link',
+                'bulletedList', 'numberedList', '|', 'insertTable',
+                'blockQuote', 'undo', 'redo',
+              ]
+            }}
 
-        centered={false}
-        open={Modalcontacts}
-        onCancel={() => setModalContacts(false)}
-        footer={null}
-        destroyOnHidden
+          />
+        </div>
+        <div style={{ marginTop: "10px" }}>
+          {/* <button style={{ float: "left" }}>파일 업로드</button> */}
+          <input
+            type="file"
+            multiple
+            ref={fileRef}
+            onChange={(e) => setFiles(e.target.files)}
+            style={{ marginBottom: "10px" }}
+          />
+          {/* <button style={{ float: "left" }} onClick={handleMailUpload}>파일 업로드</button> */}
+          
+          <button className={styles.backBtn}onClick={() => Navigate(-1)}>뒤로가기</button>
+          <button style={{ float: "right" , marginRight:"40px"}}  onClick={handleMailWrite}>전송</button>
+        </div>
 
-        width={{
-          xs: '90%',  // 모바일
-          sm: '80%',
-          md: '70%',
-          lg: '60%',
-          xl: '50%',
-          xxl: '50%', // 큰 화면
-        }}
-        modalRender={modal => (
-          <div style={{ marginTop: '100px' }}> {/* 상단에서 50px 아래 */}
-            {modal}
-          </div>
-        )}
+        <Modal
 
-      >
-        <MailAddContacts
-          onSelect={selectedContacts => {
-            const emailList = selectedContacts.map(c => c.email).join(", ");
-            const nameList = selectedContacts.map(c => c.name).join(", ");
-
-            setMail(prev => ({
-              ...prev,
-              recipientId: emailList,
-              recipientName: nameList
-            }));
-          }}
+          centered={false}
+          open={Modalcontacts}
           onCancel={() => setModalContacts(false)}
-        />
+          footer={null}
+          destroyOnHidden
+
+          width={{
+            xs: '90%',  // 모바일
+            sm: '80%',
+            md: '70%',
+            lg: '60%',
+            xl: '50%',
+            xxl: '50%', // 큰 화면
+          }}
+          modalRender={modal => (
+            <div style={{ marginTop: '100px' }}> {/* 상단에서 50px 아래 */}
+              {modal}
+            </div>
+          )}
+
+        >
+          <MailAddContacts
+            onSelect={selectedContacts => {
+              const emailList = selectedContacts.map(c => c.email).join(", ");
+              const nameList = selectedContacts.map(c => c.name).join(", ");
+
+              setMail(prev => ({
+                ...prev,
+                recipientId: emailList,
+                recipientName: nameList
+              }));
+            }}
+            onCancel={() => setModalContacts(false)}
+          />
 
 
 
 
-      </Modal>
-    </div>
+        </Modal>
+      </div>
 
 
-  );
-};
+    );
+  };
 
-export default MailWrite;
+  export default MailWrite;

@@ -32,6 +32,7 @@ const Mail = () => {
     const handleMailList = () => {
         const params = {};
         if (searchName) params.name = searchName;
+
         caxios.get("/mail", { params: params, withCredentials: true }).then(resp => {
             setMail(prev => resp.data);
         });
@@ -86,6 +87,30 @@ const Mail = () => {
         setCheckedList([]);
     };
 
+    // 답장기능
+    // const handleMailResponse = () => {
+    //     navigate("/mail/response", { state: mail });
+        
+    // }
+
+    const handleMailResponse = () => {
+    if (checkedList.length === 0) {
+        alert("답장할 메일을 선택해주세요.");
+        return;
+    }
+
+    const selectedMailSeq = checkedList[0];
+    const selectedMail = mail.find(m => m.seq === selectedMailSeq);
+
+    if (!selectedMail) {
+        alert("선택한 메일을 찾을 수 없습니다.");
+        return;
+    }
+
+    navigate("/mail/response", { state: selectedMail  });
+};
+
+
     return (<div className={styles.container}>
 
 
@@ -110,17 +135,18 @@ const Mail = () => {
                     {checkedList.length === 0 ? (
                         <>
                             <input type="text" placeholder="검색할 발신자 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
-                                onChange={(e) => setSearchName(e.target.value)}></input>
+                                onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => {if (e.key === "Enter") { handleMailList();}}}></input>
                             <button onClick={handleMailList}>검색</button>
                         </>) : (
                         <>
+                            <button onClick={handleMailResponse} style={{ margin: "10px" }}>답장</button>
                             <button onClick={handleMailDelete} style={{ margin: "10px" }}> 삭제 </button>
 
                         </>
                     )}
 
                     {/* <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-                        <label style={{ marginTop: "15px" }}>
+                        <label style={{ marginTop: "15px" }}>   
                             <input type="checkbox" /> 모든 메일
                         </label>
                         <label style={{ marginTop: "15px" }}>
