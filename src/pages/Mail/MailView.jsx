@@ -8,11 +8,12 @@ const MailView = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
-    const { mail } = location.state || {}; // Mail 객체 받기
+    const { mail, Mailres } = location.state || {}; // Mail 객체 받기
 
     const handleMailReturn = () => {
         navigate(-1);
     }
+
 
     // 파일 리스트 출력
     const [List, setList] = useState([]);
@@ -39,7 +40,6 @@ const MailView = () => {
     };
 
 
-
     useEffect(() => {
         if (!mail || !mail.seq) return;
         caxios.get(`/files/mail?mailSeq=${mail.seq}`)
@@ -56,11 +56,16 @@ const MailView = () => {
     // 안전하게 HTML 정화 npm install dompurify 필요
     const safeContent = DOMPurify.sanitize(mail.content);
 
+    // 답장기능
+    const handleMailResponse = () => {
+        navigate("/mail/response", { state: mail });
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.mainHeader}>
                 <div className={styles.mainHeadertop}>
-                    제목 : {mail.title}
+                    {mail.title}
                 </div>
                 <hr />
             </div>
@@ -69,7 +74,8 @@ const MailView = () => {
                 <div className={styles.mainBodyViewContent} dangerouslySetInnerHTML={{ __html: safeContent }} />
 
                 <button className={styles.backBtn} onClick={handleMailReturn}>뒤로가기</button>
-
+                {/* 보낸 메일은 답장 기능 */}
+                {!Mailres  && (<button style={{ float: "right", marginRight: "40px" }} onClick={handleMailResponse}>답장</button>)}
                 <button className={styles.downloadBtn} style={{ marginRight: "20px" }}>파일 목록</button>
                 <br></br>
                 <br></br>

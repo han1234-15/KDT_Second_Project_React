@@ -48,7 +48,7 @@ const MailSent = () => {
 
     // 메일 보기(클릭)
     const handleMailView = (mailItem) => {
-        navigate("/mail/mailview", { state: { mail: mailItem } }); // 클릭 시 Mailview 페이지로 이동
+        navigate("/mail/mailview", { state: { mail: mailItem, Mailres: true } }); // 클릭 시 Mailview 페이지로 이동
     };
 
     // 메일 삭제
@@ -116,7 +116,7 @@ const MailSent = () => {
                     {checkedList.length === 0 ? (
                         <>
                             <input type="text" placeholder="검색할 수신자 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
-                                onChange={(e) => setSearchName(e.target.value)}></input>
+                                onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => {if (e.key === "Enter") { handleMailList();}}}></input>
                             <button onClick={handleMailList}>검색</button>
                         </>) : (
                         <>

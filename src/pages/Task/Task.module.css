@@ -113,15 +113,15 @@
 .mainBodybox {
     width: 100%;
     height: 10%;
-    background-color: #007bff;
-    color: white;
-
+    background-color: white;
+    color: black;
+    font-size: 15px;
 }
 
 
 .NewSharedMailbox1 {
 
-    width: 10%;
+    width: 15%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -131,14 +131,16 @@
 
 .NewSharedMailbox2 {
 
-    width: 90%;
+    width: 80%;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     float: left;
+    background-color: white;
+    margin-left: 10px;
+   
 }
-
 
 
 
@@ -179,6 +181,6 @@
     border-radius: 12px;
     background-color: #f9f9f9;
     padding: 20px;
-    max-height: 80vh;
+    max-height: 100vh;
     overflow-y: auto;
 }
