@@ -4,12 +4,15 @@ import styles from "./BoardWrite.module.css";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { caxios } from "../../config/config.js";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
 const BoardWrite = () => {
 
-  //게시글 상태
+   const Navigate = useNavigate();
+
+  // 게시글 상태
   const [board, setBoard] = useState({
     title: "",
     content: "",
@@ -43,8 +46,8 @@ const BoardWrite = () => {
 
     console.log("선택된 게시판:", val);
 
-    category_id(val);
-    setBoard((prev) => ({ ...prev, category: val }));
+    setCategory_id(val);
+    setBoard((prev) => ({ ...prev, category_id: val }));
   };
 
   // 파일
@@ -60,6 +63,8 @@ const BoardWrite = () => {
       console.log("등록 완료:", resp.data);
 
       alert("게시글이 등록되었습니다!");
+
+      Navigate("/board");
     } catch (err) {
       console.error("등록 실패:", err);
       

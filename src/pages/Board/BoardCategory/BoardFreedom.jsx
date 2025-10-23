@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Table, Input } from "antd";
-import styles from "./BoardDataRoom.module.css";
-import { caxios } from "../../config/config";
+import styles from "./BoardFreedom.module.css";
+import { caxios } from "../../../config/config";
 const { Search } = Input;
 
-const BoardDataRoom = () => {
+const BoardFreedom = () => {
   const [search, setSearch] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   
@@ -86,4 +86,4 @@ const BoardDataRoom = () => {
   );
 };
 
-export default BoardDataRoom;
+export default BoardFreedom;
