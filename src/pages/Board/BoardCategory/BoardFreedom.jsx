@@ -2,17 +2,24 @@ import React, { useEffect, useState } from "react";
 import { Table, Input } from "antd";
 import styles from "./BoardFreedom.module.css";
 import { caxios } from "../../../config/config";
+import { useNavigate } from "react-router-dom";
 const { Search } = Input;
 
 const BoardFreedom = () => {
+
+  const navigate = useNavigate();
+  const handleRowClick = (record) => {
+    navigate(`/board/detail/${record.key}`); // record.key = seq
+  };
+
   const [search, setSearch] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  
+
   const [data, setData] = useState([]);
   // 자유게시판(category_id = 2) 데이터 불러오기
   useEffect(() => {
     caxios
-      .get("/board/2") // category_id = 2 (자유게시판)
+      .get("/board/category/2") // category_id = 2 (자유게시판)
       .then((resp) => {
         console.log("게시글 목록:", resp.data);
         // 백엔드 응답 구조에 맞게 데이터 매핑
@@ -80,6 +87,10 @@ const BoardFreedom = () => {
             defaultPageSize: 10,
             onChange: handlePageChange,
           }}
+          onRow={(record) => ({
+            onClick: () => handleRowClick(record), // 클릭 시 navigate 작동
+          })}
+          rowClassName={() => styles.tableRow} // (선택) 클릭 시 hover 스타일 주기용
         />
       </div>
     </div>

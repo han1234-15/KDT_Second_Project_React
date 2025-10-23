@@ -2,17 +2,24 @@ import React, { useEffect, useState } from "react";
 import { Table, Input } from "antd";
 import styles from "./BoardAnnouncement.module.css";
 import { caxios } from "../../../config/config";
+import { useNavigate } from "react-router-dom";
 const { Search } = Input;
 
 const BoardAnnouncement = () => {
+
+  const navigate = useNavigate();
+  const handleRowClick = (record) => {
+    navigate(`/board/detail/${record.key}`); // record.key = seq
+  };
+
   const [search, setSearch] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  
+
   const [data, setData] = useState([]);
   // 공지사항 (category_id = 1) 데이터 불러오기
   useEffect(() => {
     caxios
-      .get("/board/1") // category_id = 1 (공지사항)
+      .get("/board/category/1") // category_id = 1 (공지사항)
       .then((resp) => {
         console.log("게시글 목록:", resp.data);
         // 백엔드 응답 구조에 맞게 데이터 매핑

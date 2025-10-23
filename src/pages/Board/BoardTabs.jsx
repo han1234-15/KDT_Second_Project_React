@@ -9,7 +9,7 @@ const BoardTabs = () => {
 
   const mainTabs = [
     { label: "게시판", path: "/board" },
-    { label: "중요게시물", path: "/board/importance" },
+    { label: "중요게시물", path: "/board/boardDetail" },
     { label: "자료실", path: "/board/data_room" },
   ];
 
