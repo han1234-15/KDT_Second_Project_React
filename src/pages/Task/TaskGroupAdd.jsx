@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Modal } from 'antd';
 import styles from "./Task.module.css";
 
+//업무 그룹 추가페이지
 const TaskGroupAdd = ({ onClose }) => {
 
 
@@ -56,8 +57,6 @@ const TaskGroupAdd = ({ onClose }) => {
                     <input type="text" className={styles.NewSharedMailbox2}
                         style={{ textAlign: "left", verticalAlign: "top", color: "black", borderRadius: "5px", border: "1px solid grey" }} />
                 </div>
-
-
             </div>
             <button style={{ float: "right", marginLeft: "10px" }} onClick={handleOut}>취소</button>
             <button style={{ float: "right" }} onClick={handleAdd}>완료</button>

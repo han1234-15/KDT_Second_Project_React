@@ -5,6 +5,10 @@ import TaskTab from "./TaskTab";
 import TaskGroup from "./TaskGroup.jsx";
 import TaskGroupAdd from "./TaskGroupAdd";
 import TaskResponsible from "./TaskResponsible.jsx";
+import TaskDataAdd from "./TaskDataAdd.jsx";
+import TaskResponsibleAdd from "./TaskResponsibleAdd.jsx";
+
+
 const TaskRoute = () => {
 
     return (
@@ -17,7 +21,8 @@ const TaskRoute = () => {
                 <Route path="responsible" element={<TaskResponsible />} />
             </Route>
             <Route path="groupAdd" element={<TaskGroupAdd />} />
-
+            <Route path="dataAdd" element={<TaskDataAdd />} />
+             <Route path="responsibleAdd" element={<TaskResponsibleAdd />} />
         </Routes>
 
 
