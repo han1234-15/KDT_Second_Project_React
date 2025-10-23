@@ -2,17 +2,17 @@ import React, { useEffect, useState } from "react";
 
 import styles from "./UserRegister.module.css";
 
-import { DownOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Dropdown, Input, Space, Select } from 'antd';
-import { Link, useNavigate } from "react-router-dom";
+import { UserOutlined } from '@ant-design/icons';
+import { Input, Space, Select } from 'antd';
+import { useNavigate, useParams } from "react-router-dom";
 
 import { caxios } from "../../config/config";
 import { departmentOptions, jobOptions, positionOptions } from '../../config/options';
 import { useDaumPostcodePopup } from 'react-daum-postcode'; // Daum 주소 검색 관련 hook
-import { Alert } from 'antd';
 
 
-const UserRegister = () => {
+
+const UserDetail = () => {
 
     //다음 주소 api
     const postcodeScriptUrl = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
@@ -53,28 +53,19 @@ const UserRegister = () => {
         address_line2: "",
     });
 
-    const [isIdChecked, setIsIdChecked] = useState(false);
-
-
     const handleMemberInfoChange = (e) => {
         const { name, value } = e.target;
-
-        if (name == "id") {
-            console.log("id변경");
-            setIsIdChecked(false);
+        if (name == "password") {
+            console.log("값은 : " + value);
         }
-
         setMemberInfo(prev => ({ ...prev, [name]: value }));
     }
 
     const handleAdd = async () => {
         //데이터를 보낼 때는 post를 쓴다.
-
-
         // 필수값 체크
         const requiredFields = [
             { name: "id", label: "ID" },
-            { name: "password", label: "비밀번호" },
             { name: "name", label: "이름" },
             { name: "employmentType", label: "근로형태" },
             { name: "hire_date", label: "입사일" },
@@ -97,19 +88,15 @@ const UserRegister = () => {
             return;
         }
 
-        if (!isIdChecked) {
-            alert("아이디 중복확인 바랍니다.");
-            return false;
-        }
 
-        // 3️⃣ 비밀번호 형식 체크 (최소 8자리, 대문자, 소문자, 숫자, 특수문자 포함)
+        // 비밀번호 형식 체크 (최소 8자리, 대문자, 소문자, 숫자, 특수문자 포함)
         const pwRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!pwRegex.test(memberInfo.password)) {
+        if (memberInfo.password != null && memberInfo.password != "" && !pwRegex.test(memberInfo.password)) {
             alert("비밀번호는 최소 8자리, 대문자/소문자/숫자/특수문자를 포함해야 합니다.");
             return;
         }
 
-        // 4️⃣ 이름 체크 (한글 또는 영어만)
+        // 이름 체크 (한글 또는 영어만)
         const nameRegex = /^[가-힣]{2,20}$/;
         if (!nameRegex.test(memberInfo.name)) {
             alert("이름은 2~20자리 한글만 가능합니다. ");
@@ -166,72 +153,32 @@ const UserRegister = () => {
             return;
         }
 
-        // caxios.post("/member", memberInfo)
-        //     .then(resp => {
-        //         alert("회원 등록 성공", "사용자 추가가 완료되었습니다.");
-        //         navigate("/management");
-        //     })
-        //     .catch(err => {
-        //         alert("회원 등록 실패", "알 수 없는 오류가 발생했습니다.");
-        //     });
-
-
         const formData = new FormData();
-        formData.append("member", new Blob([JSON.stringify(memberInfo)], { type: "application/json" }));
-        if (profileImage) formData.append("profileImage", profileImage);
 
+        formData.append("member", new Blob([JSON.stringify(memberInfo)], { type: "application/json" }));
+        // 새 이미지 파일이 있는 경우만 업로드
+        if (profileImage && profileImage instanceof File) {
+            formData.append("profileImage", profileImage);
+        }
+
+        // 기존 이미지 삭제 여부 플래그
+        formData.append("deleteProfile", deleteProfile)
         try {
-            const resp = await caxios.post("/member", formData, {
+            const resp = await caxios.post("/member/member", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-            alert("회원 등록 성공");
+            alert("회원 수정 성공");
             navigate("/management");
         } catch (err) {
-            alert("회원 등록 실패");
+            alert("회원 수정 실패");
         }
 
-    }
-
-    const handleCheckId = () => {
-        //데이터를 보낼 때는 post를 쓴다.
-        if (memberInfo.id == "") {
-            alert("아이디를 입력하세요");
-            return false;
-        }
-        // ID 형식 체크 (알파벳+숫자 4~20자리)
-        const idRegex = /^[a-z0-9]{4,20}$/;
-        if (!idRegex.test(memberInfo.id)) {
-            alert("ID는 4~20자리 알파벳 소문자와 숫자만 가능합니다.");
-            return;
-        }
-
-        const currentId = memberInfo.id; // 렌더 시점의 값 고정
-
-        caxios.post("/member/checkId", { id: currentId })
-            .then(resp => {
-                console.log(resp);
-                if (resp.data != 0) {
-                    alert("존재하는 아이디입니다.");
-                    setMemberInfo(prev => ({ ...prev, id: "" }));
-                }
-                else {
-                    alert("사용가능한 아이디입니다.");
-                    setIsIdChecked(true);
-                    console.log(isIdChecked);
-                }
-            });
-
-        //setMemberInfo({});
     }
 
     const [profileImage, setProfileImage] = useState(null); // 파일 객체
     const [previewUrl, setPreviewUrl] = useState(null); // 미리보기 URL
     // 미리보기 메모리 해제
-    useEffect(() => {
-        return () => {
-            if (previewUrl) URL.revokeObjectURL(previewUrl);
-        };
-    }, [previewUrl]);
+
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -245,21 +192,83 @@ const UserRegister = () => {
 
         setProfileImage(file);
         setPreviewUrl(URL.createObjectURL(file));
+        setDeleteProfile(false); // 선택 시 삭제 플래그 초기화
 
         e.target.value = ""; // <- 이 줄이 중요
     };
 
+    //기존에 있던 프로필 이미지이라서 null인지 삭제해서 null인지 체크용
+    const [deleteProfile, setDeleteProfile] = useState(false);
+
     const handleRemoveImage = () => {
         setProfileImage(null);
         setPreviewUrl(null);
+        setDeleteProfile(true); // 삭제 의사 표시
     };
 
+    const [loading, setLoading] = useState(true); //로딩 확인용 상태변수
 
+    const { id: checkUserId } = useParams(); // URL에서 id를 userId로 가져옴
+
+    useEffect(() => {
+        const token = sessionStorage.getItem("token");
+
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+
+        const fetchUserData = async () => {
+            try {
+                await caxios.get("/auth/check");
+                //관리자인지 체크 먼저하고
+
+                const memberResp = await caxios.get(`/member/${checkUserId}`);
+                const data = memberResp.data;
+
+                // 날짜 변환
+                const formattedHireDate = data.hire_date
+                    ? new Date(data.hire_date).toISOString().split("T")[0]
+                    : "";
+
+                const formattedBirthDate = data.birthDate
+                    ? new Date(data.birthDate).toISOString().split("T")[0]
+                    : "";
+
+                //확인할 유저 아이디 불러오기.
+                console.log(memberResp);
+                console.log(memberResp.data);
+                setMemberInfo({
+                    ...data,
+                    hire_date: formattedHireDate,
+                    birthDate: formattedBirthDate,
+                });
+
+                console.log("프로필이미지:" + profileImage);
+                if(memberResp.data.profileImage_servName != null)
+                {
+                    setPreviewUrl("https://storage.googleapis.com/yj_study/" + memberResp.data.profileImage_servName); //이미지 넣는거
+                }
+                setLoading(false); // 여기서 false로 변경
+            } catch (err) {
+                console.error(err);
+                navigate("/");
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+
+    //토큰을 확인하는데 시간이 걸려서 loading으로 토큰 확인이 끝나기 전까지 다른 컴포넌트가 렌더링 되지 않도록 함.
+    if (loading) {
+        return null; // 혹은 스켈레톤 화면, 로딩 스피너
+    }
 
     return (
         <div className={styles.container}>
 
-            <h1>사용자 등록</h1>
+            <h1>사용자 수정</h1>
 
             <div className={styles.content}>
                 {/* ----------left는 프로필 들어가는 자리 */}
@@ -288,8 +297,11 @@ const UserRegister = () => {
                     </div>
                 </div>
                 <div className={styles.right}>
-                    <div><label>ID*</label><Input placeholder="알파벳+숫자 4~20자리" name='id' value={memberInfo.id} onChange={handleMemberInfoChange} /> <button className={styles.idBtn} onClick={handleCheckId}>중복확인</button></div>
-                    <div><label>비밀번호*</label><Input placeholder="최소 8자리, 대문자, 소문자, 숫자, 특수문자" name='password' value={memberInfo.password} onChange={handleMemberInfoChange} /></div>
+                    <div>
+                        <label>ID*</label>
+                        <div style={{ paddingLeft: '2px' }}>{memberInfo.id}</div>
+                    </div>
+                    <div><label>비밀번호 변경</label><Input placeholder="최소 8자리, 대문자, 소문자, 숫자, 특수문자" name='password' value={memberInfo.password} onChange={handleMemberInfoChange} /></div>
                     <div><label>이름*</label><Input placeholder="한글 2~20자리" name='name' value={memberInfo.name} onChange={handleMemberInfoChange} /></div>
                     <div><label>영어 이름</label><Input placeholder="영문 이름 입력" name='englishName' value={memberInfo.englishName} onChange={handleMemberInfoChange} /></div>
 
@@ -297,7 +309,7 @@ const UserRegister = () => {
                         <label>근로형태*</label>
                         <Space wrap>
                             <Select
-                                defaultValue="일반직"
+                                value={memberInfo.employmentType}
                                 style={{ width: 200 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, employmentType: value }))
@@ -312,13 +324,13 @@ const UserRegister = () => {
                         </Space>
                     </div>
 
-
                     <div className={styles.hire_date}>
                         <label>입사일*</label>
                         <Input
                             type="date"
                             placeholder="YYYY-MM-DD"
-                            value={memberInfo.hire_date}
+                            value={memberInfo.hire_date ? memberInfo.hire_date.slice(0, 10) : ""}
+
                             onChange={(e) =>
                                 setMemberInfo(prev => ({ ...prev, hire_date: e.target.value }))
                             }
@@ -331,7 +343,7 @@ const UserRegister = () => {
                         <label>부서*</label>
                         <Space wrap>
                             <Select
-                                defaultValue="연구&개발"
+                                value={memberInfo.dept_code}
                                 style={{ width: 200 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, dept_code: value }))
@@ -343,7 +355,7 @@ const UserRegister = () => {
                     <div>
                         <label>직위*</label><Space wrap>
                             <Select
-                                defaultValue="사원"
+                                value={memberInfo.rank_code}
                                 style={{ width: 200 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, rank_code: value }))
@@ -356,7 +368,7 @@ const UserRegister = () => {
                     <div>
                         <label>직무*</label><Space wrap>
                             <Select
-                                defaultValue="기획"
+                                value={memberInfo.job_code}
                                 style={{ width: 200 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, job_code: value }))
@@ -376,15 +388,15 @@ const UserRegister = () => {
                         <Input
                             type="date"
                             placeholder="YYYY-MM-DD"
-                            value={memberInfo.birthDate}
+                            value={memberInfo.birthDate ? memberInfo.birthDate.slice(0, 10) : ""}
                             onChange={(e) =>
                                 setMemberInfo(prev => ({ ...prev, birthDate: e.target.value }))
                             }
                         />
                         <span className={styles.birthSpan}>
-                            <input type="radio" id="solar" name="calendarType" value="S" onChange={() => setMemberInfo(prev => ({ ...prev, calendarType: "S" }))} defaultChecked />
+                            <input type="radio" id="solar" checked={memberInfo.calendarType === "S"} name="calendarType" value="S" onChange={() => setMemberInfo(prev => ({ ...prev, calendarType: "S" }))} />
                             <label htmlFor="solar" className={styles.birthLabel}>양력</label>
-                            <input type="radio" id="lunar" name="calendarType" value="L" onChange={() => setMemberInfo(prev => ({ ...prev, calendarType: "L" }))} />
+                            <input type="radio" id="lunar" checked={memberInfo.calendarType === "L"} name="calendarType" value="L" onChange={() => setMemberInfo(prev => ({ ...prev, calendarType: "L" }))} />
                             <label htmlFor="lunar" className={styles.birthLabel}>음력</label>
                         </span>
                     </div>
@@ -409,7 +421,7 @@ const UserRegister = () => {
                             onChange={handleMemberInfoChange} />
                     </div>
                     <div className={styles.bottomButton}>
-                        <button onClick={handleAdd}>등록</button>
+                        <button onClick={handleAdd}>수정</button>
                         <button onClick={() => navigate(-1)}>취소</button>
                     </div>
                 </div>
@@ -419,4 +431,4 @@ const UserRegister = () => {
     );
 }
 
-export default UserRegister;
+export default UserDetail;

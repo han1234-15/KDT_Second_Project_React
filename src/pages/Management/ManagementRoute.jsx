@@ -2,6 +2,7 @@
 import History from "./History";
 import Management from "./Management";
 import ManagementTabs from "./ManagementTabs";
+import UserDetail from "./UserDetail";
 import UserRegister from "./UserRegister";
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -17,6 +18,7 @@ const ManagementRoute = () => {
                  <Route path="archive" element={<Management />} />
             </Route>
             <Route path="register" element={<UserRegister />} />
+            <Route path="user/detail/:id" element={<UserDetail />} />
         </Routes >
     );
 }

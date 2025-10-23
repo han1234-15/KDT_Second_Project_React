@@ -116,29 +116,22 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
             {/* 주소록 헤더  */}
             <div className={styles.mainHeader}>
 
-
-
                 {/* 주소록 헤더 1 */}
-                <div className={styles.mainHeadertop} style={{textAlign:"center"}}>
-                    주소록 <br />
+                <div className={styles.mainHeadertop} style={{ textAlign: "center" }}>
+
                     <button onClick={handleContactsAll} className={styles.headerbutton}>전체 주소록</button>
                     <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button>
                     <button onClick={handleContactsMulti} className={styles.headerbutton}>공유 주소록</button>
-
-
                 </div>
 
                 {/* 주소록 헤더 2 */}
                 <div className={styles.mainHeaderbottom} >
 
                     <input type="text" placeholder="검색할 주소록 이름" style={{ width: "81%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
-                        onChange={(e) => setSearchName(e.target.value)}></input>
+                        onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
                     <button onClick={handleContactsList}>검색</button>
-
-
                 </div>
-
-
+                <br></br>
             </div> {/* 주소록 헤더  */}
             <hr></hr>
 
@@ -201,7 +194,9 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
                                 <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
                                 <hr></hr>
                             </div>
+
                         ))}
+                    <br></br>
                     {/* 페이징 추가 */}
                     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                         <Pagination

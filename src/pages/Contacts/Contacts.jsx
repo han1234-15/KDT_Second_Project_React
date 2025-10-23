@@ -198,13 +198,12 @@ const Contacts = () => {
             {/* 주소록 헤더  */}
             <div className={styles.mainHeader}>
 
-
-
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
                     {/* 전체 주소록 <br />
                     <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button>
                     <button onClick={handleContactsMulti} className={styles.headerbutton}>공용 주소록</button> */}
+                    전체 주소록 : {contacts.length} 명 <br></br>
                     <button className={styles.createbtn} onClick={showModalSingleAdd}> 개인주소록 추가 </button>
                     <button className={styles.createbtn} onClick={showModalMultiAdd}> 공용주소록 추가 </button>
 
@@ -215,7 +214,7 @@ const Contacts = () => {
                     {checkedList.length === 0 ? (
                         <>
                             <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
-                                onChange={(e) => setSearchName(e.target.value)}></input>
+                                onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => {if (e.key === "Enter") { handleContactsList();}}}></input>
                             <button onClick={handleContactsList}>검색</button>
 
                         </>) : (
