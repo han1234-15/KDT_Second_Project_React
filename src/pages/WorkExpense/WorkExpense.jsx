@@ -17,8 +17,8 @@ const WorkExpense = () => {
   const [count, setCount] = useState({
     late: 0,
     earlyleave: 0,
-    absence: 0,
     nocheck: 0,
+    absence: 0
   });
 
   const [leavecounts, setLeaveCounts] = useState({
@@ -53,130 +53,115 @@ const WorkExpense = () => {
 
 
   //따로 뺴줘서 실시간으로 지각처리 알수있게 끔
-  const fetchAttendanceCount = () => {
-    caxios.get(`attendance/count`)
-      .then((res) => {
-        console.log("서버 응답:", res.data);
+const fetchAttendanceCount = async () => {
+  try {
+    const res = await caxios.get(`attendance/count`);
+    const result = { before: 0, absence: 0, earlyleave: 0, late: 0, nocheck: 0 };
+       console.log("📌 COUNT 응답:", res.data);  
+    res.data.forEach(item => {
+      const key = item.STATUS?.toLowerCase();
+      if (result.hasOwnProperty(key)) {
+        result[key] = item.CNT;
+      }
+    });
 
-        const result = { before: 0, absence: 0, earlyleave: 0, late: 0, nocheck: 0 };
-
-        res.data.forEach(item => {
-          const key = item.STATUS?.toLowerCase();
-          if (result.hasOwnProperty(key)) {
-            result[key] = item.CNT;
-          }
-        });
-
-        setCount(result);
-      })
-      .catch(err => console.error("근태 카운트 불러오기 실패:", err));
-  };
+    setCount(result);
+  } catch (err) {
+    console.error("근태 카운트 불러오기 실패:", err);
+  }
+};
 
 
+ const fetchToday = async () => {
+  try {
+    const res = await caxios.get("/attendance/today");
+    const data = res.data;
+
+    const startStatus = data.startStatus ?? data.STARTSTATUS ?? null;
+    const endStatus   = data.endStatus   ?? data.ENDSTATUS   ?? null;
+    const startTime   = data.startTime   ?? data.STARTTIME   ?? null;
+    const endTime     = data.endTime     ?? data.ENDTIME     ?? null;
+
+    setCheckIn(startTime ? formatDateTime(startTime) : null);
+    setCheckOut(endTime ? formatDateTime(endTime) : null);
+
+    // === 상태별 분기 ===
+    if (!startStatus) {
+      setStatus("대기중");
+      setCheckInbtn(true);
+      setCheckOutbtn(false);
+    } else if (startStatus === "absence") {
+      setStatus("결근");
+      setCheckInbtn(true);
+      setCheckOutbtn(false);
+    } else if (startStatus === "late" && !endStatus) {
+      setStatus("지각");
+      setCheckInbtn(false);
+      setCheckOutbtn(true);
+    } else if (startStatus === "normal" && !endStatus) {
+      setStatus("근무중");
+      setCheckInbtn(false);
+      setCheckOutbtn(true);
+    } else {
+      setStatus(endStatus === "nocheck" ? "퇴근미체크" : "퇴근");
+      setCheckInbtn(false);
+      setCheckOutbtn(false);
+    }
+
+    await fetchAttendanceCount();
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+
+
+  // ✅ 새로고침 포함 최초 반영
   useEffect(() => {
-    caxios.get("/attendance/today")
-      .then(res => {
-        const data = res.data;
-        const startStatus = data.startStatus ?? data.STARTSTATUS ?? null;
-        const endStatus = data.endStatus ?? data.ENDSTATUS ?? null;
-        const startTime = data.startTime ?? data.STARTTIME ?? null;
-        const endTime = data.endTime ?? data.ENDTIME ?? null;
-
-        setCheckIn(startTime ? formatDateTime(startTime) : null);
-        setCheckOut(endTime ? formatDateTime(endTime) : null);
-
-        if (!startStatus) {
-
-          setStatus("대기중");
-          setCheckInbtn(true);
-          setCheckOutbtn(false);
-
-        } else if (startStatus === "absence") {
-          // 결근 상태 (지각으로 바뀔 가능성 있음)
-          setStatus("결근");
-          setCheckInbtn(true);  
-          setCheckOutbtn(false);
-
-        } else if (startStatus && !endStatus) {
-          // 출근은 했고 퇴근은 아직
-          setStatus(startStatus === "late" ? "지각" : "근무중");
-          setCheckInbtn(false);
-          setCheckOutbtn(true);
-
-        } else {
-          // 퇴근 or nocheck
-          setStatus(endStatus === "nocheck" ? "퇴근미체크" : "퇴근");
-          setCheckInbtn(false);
-          setCheckOutbtn(false);
-        }
-
-        fetchAttendanceCount();
-      })
-      .catch(err => console.error(err));
+    fetchToday();
+    fetchAttendanceCount();
   }, []);
 
-
-
+  // ✅ 카운트 자동 갱신
+useEffect(() => {
+  const autoRefresh = setInterval(() => {
+    fetchToday();
+    fetchAttendanceCount();
+  }, 10000); // 10초마다 재조회 (결근 실시간 반영)
+  return () => clearInterval(autoRefresh);
+}, []);
 
   useEffect(() => {
-    const autoRefresh = setInterval(() => {
-
-      fetchAttendanceCount();
-
-    }, 60000);
-
-    return () => clearInterval(autoRefresh);
+    caxios.get(`/leave/count`)
+      .then((res) => setLeaveCounts({ leavecount: res.data || 0 }));
   }, []);
 
-
-
-  useEffect(() => {
-    caxios.get(`leave/count`)
-      .then((res) => {
-        let data = res.data;
-        console.log("서버 응답", res.data);
-        setLeaveCounts({ leavecount: res.data || 0 });
-      })
-  }, [])
-
-
-
-  // 실시간 시계 업데이트
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
-  const handleCheckIn = () => {
-    if (!window.confirm("정말 출근하시겠습니까?")) return;
 
-    caxios.post("/attendance/checkin")
-      .then((res) => {
-        setCheckIn(formatDateTime(res.data.time));
-        setStatus(res.data.status === "late" ? "지각" : "근무중");
-        setCheckInbtn(false);
-        setCheckOutbtn(true);
-        fetchAttendanceCount();
-        alert("출근 처리되었습니다.");
-      })
-      .catch(err => console.error("출근 실패:", err));
-  };
+  const handleCheckIn = async () => {
+  if (!window.confirm("정말 출근하시겠습니까?")) return;
 
-  const handleCheckOut = () => {
-    if (!window.confirm("정말 퇴근하시겠습니까?\n퇴근은 하루에 한 번만 가능합니다.")) {
-      return;
-    }
+  await caxios.post("/attendance/checkin");
+  setTimeout(async () => {
+    await fetchToday();
+    await fetchAttendanceCount(); 
+  }, 150);
+  alert("출근 처리되었습니다.");
+};
 
-    caxios.post(`/attendance/checkout`)
-      .then((res) => {
-        setCheckOut(formatDateTime(res.data.time));
-        setStatus(res.data.status === "checkout" ? "조기 퇴근" : "퇴근");
-        setCheckInbtn(false);
-        setCheckOutbtn(false);
-        fetchAttendanceCount();
-        alert("퇴근 처리되었습니다.");
-      })
-      .catch(err => console.error("퇴근 실패", err));
-  };
+const handleCheckOut = async () => {
+  if (!window.confirm("정말 퇴근하시겠습니까?")) return;
+
+  await caxios.post("/attendance/checkout");
+  setTimeout(async () => {
+    await fetchToday();
+    await fetchAttendanceCount(); 
+  }, 150);
+  alert("퇴근 처리되었습니다.");
+};
 
   return (
     <div className="work-dashboard">
