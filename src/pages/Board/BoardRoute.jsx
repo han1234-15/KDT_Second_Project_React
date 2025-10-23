@@ -20,7 +20,7 @@ const BoardRoute = () => {
         <Route path="dataroom" element={<BoardDataRoom />} />
       </Route>
       <Route path="boardWrite" element={<BoardWrite />} />
-      <Route path="boardDetail" element={<BoardDetail />} />
+      <Route path="detail/:seq" element={<BoardDetail />} />
 
     </Routes>
   );
