@@ -12,7 +12,6 @@ const BoardDetail = () => {
 
   // URL 파라미터에서 seq 꺼내오기
   const { seq } = useParams();
-
   const navigate = useNavigate();
 
   // board useState
@@ -98,6 +97,55 @@ const BoardDetail = () => {
     }
   }
 
+  // 댓글 상태 관리
+  const [comments, setComments] = useState([]);      // 댓글 목록
+  const [newComment, setNewComment] = useState("");  // 새 댓글 입력값
+
+  // 댓글 목록 불러오기
+  const fetchComments = async () => {
+    try {
+      const resp = await caxios.get(`/comment/${seq}`);
+      setComments(resp.data);
+    } catch (err) {
+      console.error("댓글 불러오기 실패:", err);
+    }
+  };
+
+  // 컴포넌트 로드시 댓글 목록 로드
+  useEffect(() => {
+    if (seq) fetchComments();
+  }, [seq]);
+
+  // 댓글 작성
+  const handleAddComment = async () => {
+    if (!newComment.trim()) {
+      alert("댓글을 입력해주세요!");
+      return;
+    }
+    try {
+      await caxios.post("/comment", {
+        parent_seq: seq,
+        comments: newComment,
+      });
+      setNewComment("");
+      fetchComments(); // 새로고침
+    } catch (err) {
+      console.error("댓글 작성 실패:", err);
+      alert("댓글 등록 중 오류 발생");
+    }
+  };
+
+  // 댓글 삭제
+  const handleDeleteComment = async (commentSeq) => {
+    if (window.confirm("댓글을 삭제하시겠습니까?")) {
+      try {
+        await caxios.delete(`/comment/${commentSeq}`);
+        fetchComments();
+      } catch (err) {
+        console.error("댓글 삭제 실패:", err);
+      }
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -150,27 +198,61 @@ const BoardDetail = () => {
           <div dangerouslySetInnerHTML={{ __html: board.content }} />
         )}
       </div>
+      {/* 댓글 영역 */}
       {!fixMode && (
         <div className={styles.reply}>
+          {/* 댓글 입력 */}
           <div className={styles.writeReply}>
             <div className={styles.replyProfile}>
-              <RedditOutlined style={{ fontSize: "50px", marginLeft: "50px", marginTop: "25px" }} />
+              <RedditOutlined style={{ fontSize: "45px", marginLeft: "20px", marginTop: "15px" }} />
             </div>
-            {/* <div className={styles.write}></div>
-            <div className={styles.date}></div> */}
             <div className={styles.replyContent}>
-              <Input
-                name="title"
-                style={{ width: "1200px" }}
+              <Input.TextArea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
                 placeholder="댓글을 입력하세요"
-
+                rows={3}
+                style={{ width: "100%", resize: "none" }}
               />
             </div>
-            <button className={styles.replyBtn}>등록</button>
+            <button className={styles.replyBtn} onClick={handleAddComment}>
+              등록
+            </button>
+          </div>
+
+          {/* 댓글 목록 */}
+          <div className={styles.commentList}>
+            {comments.length > 0 ? (
+              comments.map((c) => (
+                <div key={c.seq} className={styles.commentItem}>
+                  <div className={styles.commentProfile}>
+                    <RedditOutlined style={{ fontSize: "40px"}} />
+                  </div>
+                  <div className={styles.commentMain}>
+                    <div className={styles.commentHeader}>
+                      <div className={styles.commentInfo}>
+                        <span className={styles.commentWriter}>{c.writer_id}</span>
+                        <span className={styles.commentDate}>
+                          {new Date(c.writeDate).toLocaleString("ko-KR")}
+                        </span>
+                      </div>
+                      <button
+                        className={styles.commentDelete}
+                        onClick={() => handleDeleteComment(c.seq)}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                    <div className={styles.commentBody}>{c.comments}</div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className={styles.noComment}>등록된 댓글이 없습니다.</p>
+            )}
           </div>
         </div>
       )}
-
     </div>
   );
 };
