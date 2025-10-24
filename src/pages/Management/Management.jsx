@@ -196,7 +196,13 @@ const Management = () => {
     const deleteUsers = async (userIds) => {
         try {
             await caxios.delete('/member', { data: userIds });
-            fetchUsers(); // 삭제 후 테이블 갱신
+            fetchUsers({   // 현재 필터 상태 유지
+                status: statusFilter,
+                dept: deptFilter,
+                employment: employmentFilter,
+                job: jobFilter,
+                rank: rankFilter
+            });
             setSelectedRowKeys([]); // 선택 초기화
             fetchUserCount();
             closeModal();
