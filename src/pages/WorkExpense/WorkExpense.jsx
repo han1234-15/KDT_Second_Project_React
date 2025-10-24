@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./style/WorkExpense.css";
-import axios from "axios";
 import { caxios } from "../../config/config";
 import LeaveModal from "./LeaveModal";
 
@@ -15,6 +14,18 @@ const WorkExpense = () => {
   const [checkOutbtn, setCheckOutbtn] = useState(false);
   const [workTime, setWorkTime] = useState(null);
 
+  const [loginUser, setLoginUser] = useState(null);
+
+
+  useEffect(() => {
+    caxios.get("/member/me")
+      .then(res => {
+        setLoginUser(res.data);
+        console.log("로그인 사용자 정보:", res.data);
+      })
+      .catch(err => console.error("로그인 사용자 정보 조회 실패", err));
+  }, []);
+
   const [count, setCount] = useState({
     late: 0,
     earlyleave: 0,
@@ -22,7 +33,7 @@ const WorkExpense = () => {
     absence: 0
   });
 
-  const[isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
 
   //  모달 열기
   const showLeaveModal = () => {
@@ -163,11 +174,21 @@ const WorkExpense = () => {
     }
   };
 
+  const fetchRemainLeave = async () => {
+    try {
+      const res = await caxios.get("/leave/count");
+      setLeaveCounts({ leavecount: parseFloat(res.data) || 0 });
+    } catch (err) {
+      console.error("잔여연차 조회 실패:", err);
+    }
+  };
+
 
   const refresh = () => {
-  fetchToday();
-  fetchAttendanceCount();
-};
+    fetchToday();
+    fetchAttendanceCount();
+    fetchRemainLeave();
+  };
 
 
 
@@ -175,6 +196,7 @@ const WorkExpense = () => {
   useEffect(() => {
     fetchToday();
     fetchAttendanceCount();
+    fetchRemainLeave();
   }, []);
 
   //  카운트 자동 갱신
@@ -186,10 +208,7 @@ const WorkExpense = () => {
     return () => clearInterval(autoRefresh);
   }, []);
 
-  useEffect(() => {
-    caxios.get(`/leave/count`)
-      .then((res) => setLeaveCounts({ leavecount: res.data || 0 }));
-  }, []);
+
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -236,7 +255,11 @@ const WorkExpense = () => {
         <fieldset className="info-box">
           <legend>휴가 현황</legend>
           <div className="field-content">
-            <div className="field-item"><strong>잔여 휴가</strong><div>{leavecounts.leavecount}회</div></div>
+            <div className="field-item">
+              <strong>잔여 휴가</strong>
+              <div>{leavecounts.leavecount % 1 === 0 ? leavecounts.leavecount + "일" : leavecounts.leavecount.toFixed(1) + "일"}
+              </div>
+            </div>
           </div>
           <div className="field-footer">
             <button className="link-btn">휴가 현황</button>
@@ -244,11 +267,14 @@ const WorkExpense = () => {
               휴가 신청
             </button>
 
-            <LeaveModal
-              open={isLeaveModalOpen}
-              onClose={handleLeaveCancel}
-              refresh={refresh}
-            />
+            {loginUser && (
+              <LeaveModal
+                open={isLeaveModalOpen}
+                onClose={handleLeaveCancel}
+                refresh={refresh}
+                applicant={loginUser}
+              />
+            )}
 
           </div>
         </fieldset>
