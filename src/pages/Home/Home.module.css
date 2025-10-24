@@ -1,0 +1,103 @@
+/* ✅ 전체 컨테이너 */
+.container {
+  background: #f0f2f5;
+  height: auto;
+  min-height: 100vh;
+  padding: 20px;
+  overflow-x: hidden !important;
+  overflow-y: auto !important; /* 스크롤 가능 */
+  display: block;
+}
+
+/* ✅ 공통 카드 스타일 */
+.card {
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  background: #fff !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ✅ 카드 헤더 (드래그 핸들) */
+.cardHeader {
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  cursor: move !important; /* 드래그 핸들 */
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.headerIcon {
+  font-size: 18px;
+}
+
+/* ✅ 카드 본문 */
+.cardBody {
+  padding: 14px 18px;
+  flex: 1;
+}
+
+/* ✅ 프로필 카드 내부 */
+.profileWrap {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.profileName {
+  margin: 8px 0 0 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.profileTitle {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.statusSelect {
+  width: 160px;
+  margin-top: 8px;
+}
+
+/* ✅ 버튼 간격 */
+.btnSpacing {
+  margin-right: 8px;
+}
+
+/* ✅ 강조 텍스트 */
+.highlight {
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+/* ✅ 달력 래퍼 */
+.calendarWrap {
+  padding: 12px 16px;
+}
+
+/* ✅ 색상 유틸 */
+.gradientPrimary {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.gradientInfo {
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+}

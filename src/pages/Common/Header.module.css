@@ -65,3 +65,23 @@ button {
     object-fit: cover;
     transition: 0.3s ease;
 }
+.messengerIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #8e44ad, #2196f3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.messengerIcon:hover {
+  transform: scale(1.1);
+}
+
+.sendIcon {
+  color: #fff;
+  font-size: 18px;
+}
