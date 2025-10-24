@@ -28,12 +28,17 @@ import useAuthStore from "./store/authStore";
 
 import ContentTap from "./pages/Common/ContentTap";
 import ContentMain from "./pages/Common/ContentMain";
+import { SocketProvider } from "./config/SocketContext"; // 우리가 만든 Provider
+
+
 
 function App() {
 
   const isLogin = useAuthStore(state => state.isLogin)
   const login = useAuthStore(state => state.login);
   const [loading, setLoading] = useState(true); //로딩 확인용 상태변수
+
+
 
 
   useEffect(() => {
