@@ -204,8 +204,6 @@ const Mypage = () => {
 
     const [loading, setLoading] = useState(true); //로딩 확인용 상태변수
 
-    const { id: checkUserId } = useParams(); // URL에서 id를 userId로 가져옴
-
     useEffect(() => {
         const token = sessionStorage.getItem("token");
 
@@ -216,10 +214,7 @@ const Mypage = () => {
 
         const fetchUserData = async () => {
             try {
-                await caxios.get("/auth/check");
-                //관리자인지 체크 먼저하고
-
-                const memberResp = await caxios.get(`/member/info/${checkUserId}`);
+                const memberResp = await caxios.get(`/member/userInfo`);
                 const data = memberResp.data;
 
                 // 날짜 변환

@@ -72,6 +72,9 @@ const Header = () => {
                             <div style={{ fontSize: 15, color: '#666', marginTop: '2px' }}>
                                 {memberInfo.rank_code} / {memberInfo.dept_code}
                             </div>
+                            <div style={{ fontSize: 12, color: '#666', marginTop: '2px' }}>
+                                {memberInfo.officeEmail}
+                            </div>
                         </div>
                     </div>
 
