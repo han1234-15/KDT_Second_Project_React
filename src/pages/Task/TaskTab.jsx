@@ -9,7 +9,7 @@ const TaskTab = () => {
     const location = useLocation();
 
     const mainTabs = [
-        { label: "업무 관리", path: "" }
+        { label: "업무 관리", path: "all" }
     ];
 
     const subTabs = [

@@ -20,9 +20,10 @@ const TaskRoute = () => {
                 <Route path="group" element={<TaskGroup />} />
                 <Route path="responsible" element={<TaskResponsible />} />
             </Route>
+
             <Route path="groupAdd" element={<TaskGroupAdd />} />
             <Route path="dataAdd" element={<TaskDataAdd />} />
-             <Route path="responsibleAdd" element={<TaskResponsibleAdd />} />
+            <Route path="responsibleAdd" element={<TaskResponsibleAdd />} />
         </Routes>
 
 
