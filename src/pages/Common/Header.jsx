@@ -6,12 +6,14 @@ import { Avatar, Button, Dropdown, Menu, Space } from "antd";
 import { BellOutlined, DownOutlined, LockOutlined, LogoutOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { caxios } from "../../config/config";
+import { Send } from "react-bootstrap-icons";   // ✅ 부트스트랩 아이콘 추가
 
 const Header = () => {
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
     const userProfile = useAuthStore(state => state.userProfile);
     const setUserProfile = useAuthStore(state => state.setUserProfile);
+    const token = useAuthStore(state => state.token);   // ✅ 메신저 팝업용 토큰
 
     const [memberInfo, setMemberInfo] = useState({
         name: "",
@@ -19,19 +21,29 @@ const Header = () => {
         rank_code: "사원",
         officeEmail: "",
     });
-    const [loading, setLoading] = useState(true); //로딩 확인용 상태변수
-
+    const [loading, setLoading] = useState(true);
 
     const handleLogout = (e) => {
-
         console.log("로그아웃 시도");
-
         logout();
-        // 로그인 로직 추가 예정
+    };
+
+    // ✅ 메신저 팝업 열기 함수
+    const openMessenger = () => {
+        const width = 400;
+        const height = 550;
+        const left = window.screen.width - width - 40;
+        const top = window.screen.height - height - 100;
+
+        const url = `${window.location.origin}/messenger-popup?token=${token}`;
+        window.open(
+            url,
+            "MessengerPopup",
+            `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no,status=no`
+        );
     };
 
     const frofileMenu = [
-
         {
             label: (
                 <div
@@ -39,14 +51,13 @@ const Header = () => {
                         width: 250,
                         padding: 12,
                         display: 'flex',
-                        flexDirection: 'column', // 전체는 세로 정렬
+                        flexDirection: 'column',
                         gap: 8,
                     }}
                     className="userInfoPopup"
                     onClick={() => navigate("/mypage")}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        {/* 이미지 */}
                         {userProfile ? (
                             <img
                                 src={userProfile}
@@ -61,12 +72,10 @@ const Header = () => {
                                     border: '2px solid #aaa',
                                     borderRadius: '50%',
                                     padding: 4,
-                                    overflow:'hidden'
+                                    overflow: 'hidden'
                                 }}
                             />
                         )}
-
-                        {/* 텍스트 */}
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                             <div style={{ fontSize: 22, fontWeight: 600, marginTop: '25px' }}>{memberInfo.name}</div>
                             <div style={{ fontSize: 15, color: '#666', marginTop: '2px' }}>
@@ -74,8 +83,6 @@ const Header = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* 수정 버튼 */}
                     <div
                         style={{
                             marginTop: 8,
@@ -83,7 +90,6 @@ const Header = () => {
                             color: '#1890ff',
                             textAlign: 'left'
                         }}
-                        
                     >
                         사용자 정보 수정
                     </div>
@@ -91,71 +97,45 @@ const Header = () => {
             ),
             key: '1',
         },
-
+        { type: 'divider' },
         {
-            type: 'divider',
-        },
-        {
-            label: <div onClick={handleLogout} style={{ fontSize: '15px', paddingLeft: '10px' }}><LogoutOutlined style={{ paddingRight: '10px', fontSize: '15px' }} />로그아웃</div>,
+            label: <div onClick={handleLogout} style={{ fontSize: '15px', paddingLeft: '10px' }}>
+                <LogoutOutlined style={{ paddingRight: '10px', fontSize: '15px' }} />로그아웃
+            </div>,
             key: '2',
         },
     ];
 
-
     const notificationMenu = [
-        {
-            label: <div>내용 넣을거면 여기에 render 내용 쓰기1</div>,
-            key: '1',
-        },
-        {
-            label: <div>알림 드롭다운</div>,
-            key: '2',
-        },
-        {
-            label: <div>알림 드롭다운</div>,
-            key: '3',
-        },
+        { label: <div>내용 넣을거면 여기에 render 내용 쓰기1</div>, key: '1' },
+        { label: <div>알림 드롭다운</div>, key: '2' },
+        { label: <div>알림 드롭다운</div>, key: '3' },
     ];
 
     const widgetSetMenu = [
-        {
-            label: <div>내용 넣을거면 여기에 render 내용 쓰기1</div>,
-            key: '1',
-        },
-        {
-            label: <div>위젯</div>,
-            key: '2',
-        },
-        {
-            label: <div>위젯</div>,
-            key: '3',
-        },
+        { label: <div>내용 넣을거면 여기에 render 내용 쓰기1</div>, key: '1' },
+        { label: <div>위젯</div>, key: '2' },
+        { label: <div>위젯</div>, key: '3' },
     ];
 
     const fetchUserData = async () => {
         try {
             const memberResp = await caxios.get(`/member/userInfo`);
-
             const data = memberResp.data;
 
-            //확인할 유저 아이디 불러오기.
-            console.log(memberResp);
-            console.log(memberResp.data);
-
             setMemberInfo(prev => {
-                const updated = { ...prev }; // 기존 상태 복사
+                const updated = { ...prev };
                 Object.keys(data).forEach(key => {
                     if (key in prev) {
-                        updated[key] = data[key]; // 기존 key만 덮어쓰기
+                        updated[key] = data[key];
                     }
                 });
                 return updated;
             });
 
             if (memberResp.data.profileImage_servName != null) {
-                setUserProfile("https://storage.googleapis.com/yj_study/" + memberResp.data.profileImage_servName); //이미지 넣는거
-            }
-            else{
+                setUserProfile("https://storage.googleapis.com/yj_study/" + memberResp.data.profileImage_servName);
+            } else {
                 setUserProfile(null);
             }
             setLoading(false);
@@ -168,26 +148,7 @@ const Header = () => {
         }
     };
 
-
-    useEffect(() => {
-        const token = sessionStorage.getItem("token");
-
-        if (!token) {
-            navigate("/login");
-            return;
-        }
-        fetchUserData();
-    }, []);
-
-
-    //토큰을 확인하는데 시간이 걸려서 loading으로 토큰 확인이 끝나기 전까지 다른 컴포넌트가 렌더링 되지 않도록 함.
-    if (loading) {
-        return null; // 혹은 스켈레톤 화면, 로딩 스피너
-    }
-
     return (
-
-
         <div className={styles.header}>
             {/* 왼쪽 끝 */}
             <div className={styles.logo} onClick={() => navigate("/")}>
@@ -198,6 +159,14 @@ const Header = () => {
             {/* 오른쪽 끝 */}
             <div>
                 <Space>
+                    {/* 메신저 아이콘 */}
+                    <a onClick={e => { e.preventDefault(); openMessenger(); }}>
+                        <div className={styles.messengerIcon}>
+                            <Send className={styles.sendIcon} />
+                        </div>
+                    </a>
+
+
                     {/* 알림 */}
                     <Dropdown menu={{ items: notificationMenu }} trigger={['click']}>
                         <a onClick={e => { e.preventDefault(); fetchUserData(); }}>
@@ -232,10 +201,7 @@ const Header = () => {
                     </Dropdown>
                 </Space>
             </div>
-
         </div>
-
-
     );
 };
 

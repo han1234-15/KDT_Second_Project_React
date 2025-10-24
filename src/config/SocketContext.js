@@ -23,8 +23,8 @@ function SocketProvider({children}){
     
 useEffect(() => {
     // SockJS 인스턴스 생성 (백엔드 WebSocket 엔드포인트 주소)
-    const sock = new SockJS("http://10.10.55.97/ws-chat");
-
+    //const sock = new SockJS("http://10.10.55.97/ws-chat");
+    const sock = new SockJS("http://192.168.119.210/ws-chat");
     // STOMP 클라이언트 생성
     clientRef.current = new Client({
       webSocketFactory: () => sock, // SockJS를 통해 WebSocket 연결 생성
