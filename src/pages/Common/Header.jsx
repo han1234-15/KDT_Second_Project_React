@@ -122,7 +122,9 @@ const Header = () => {
         try {
             const memberResp = await caxios.get(`/member/userInfo`);
             const data = memberResp.data;
-
+            //확인할 유저 아이디 불러오기.
+            console.log(memberResp);
+            console.log(memberResp.data);
             setMemberInfo(prev => {
                 const updated = { ...prev };
                 Object.keys(data).forEach(key => {
