@@ -1,7 +1,7 @@
 import style from './Management.module.css'
 import { Link } from 'react-router-dom';
 
-import { AuditOutlined, ClusterOutlined, DownOutlined, FileDoneOutlined, ProfileOutlined, RestOutlined, UserOutlined, UserSwitchOutlined } from '@ant-design/icons';
+import { AuditOutlined, ClusterOutlined, DownOutlined, FileDoneOutlined, ProfileOutlined, RestOutlined, UserDeleteOutlined, UserOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import { Dropdown, Input, Select, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Button, Flex, Table, Modal } from 'antd';
@@ -20,11 +20,11 @@ const Management = () => {
     const [userCount, setUserCount] = useState(0); //그룹웨어 사용 인원
     const [search, setSearch] = useState('');
 
-    const [statusFilter, setStatusFilter] = useState('근로 형태');
+    const [statusFilter, setStatusFilter] = useState('재직 상태');
     const [deptFilter, setDeptFilter] = useState('전체 부서');
     const [jobFilter, setJobFilter] = useState('전체 직무');
     const [rankFilter, setRankFilter] = useState('전체 직위');
-    const [employmentFilter, setEmploymentFilter] = useState('재직 상태');
+    const [employmentFilter, setEmploymentFilter] = useState('근로 형태');
 
     // 모달용 상태 추가
     const [openModal, setOpenModal] = useState(null);
@@ -103,11 +103,11 @@ const Management = () => {
         let url = '/member';
         const params = new URLSearchParams();
 
-        if (filter.status && filter.status !== '근로 형태') params.append('status', filter.status);
+        if (filter.status && filter.status !== '재직 상태') params.append('status', filter.status);
         if (filter.dept && filter.dept !== '전체 부서') params.append('dept', filter.dept);
-        if (filter.employment && filter.employment !== '전체 직위') params.append('employment', filter.employment);
+        if (filter.employment && filter.employment !== '근로 형태') params.append('employment', filter.employment);
         if (filter.job && filter.job !== '전체 직무') params.append('job', filter.job);
-        if (filter.rank && filter.rank !== '재직 상태') params.append('rank', filter.rank);
+        if (filter.rank && filter.rank !== '전체 직위') params.append('rank', filter.rank);
 
         const queryStr = params.toString();
         if (queryStr) url += `?${queryStr}`;
@@ -116,13 +116,23 @@ const Management = () => {
             .then(resp => {
                 setUsers(resp.data);
                 setSelectedRowKeys([]);
+
             })
             .catch(err => console.error('목록 불러오기 실패', err));
     };
 
 
     const columns = [
-        { title: '이름', dataIndex: 'name', key: 'name' },
+        {
+            title: '이름',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text, record) => (
+                <Link to={`/management/user/detail/${record.id}`} style={{ color: "#1677ff" ,textDecoration: 'none' }}>
+                    {text}
+                </Link>
+            ),
+        },
         { title: 'ID', dataIndex: 'id', key: 'id' },
         { title: '사번', dataIndex: 'employee_no', key: 'employee_no' },
         { title: '근로 형태', dataIndex: 'employmentType', key: 'employmentType' },
@@ -172,13 +182,29 @@ const Management = () => {
         if (openModal === 'status') setStatusValue(null);
         setOpenModal(null);
     }
+    // 전체 인원 수 불러오기
+    const fetchUserCount = async () => {
+        try {
+            const resp = await caxios.get('/member/count');
+            setUserCount(resp.data);
+        } catch (err) {
+            console.error('인원 수 불러오기 실패', err);
+        }
+    };
 
     // 삭제 요청
     const deleteUsers = async (userIds) => {
         try {
             await caxios.delete('/member', { data: userIds });
-            fetchUsers(); // 삭제 후 테이블 갱신
+            fetchUsers({   // 현재 필터 상태 유지
+                status: statusFilter,
+                dept: deptFilter,
+                employment: employmentFilter,
+                job: jobFilter,
+                rank: rankFilter
+            });
             setSelectedRowKeys([]); // 선택 초기화
+            fetchUserCount();
             closeModal();
         } catch (err) {
             console.error('삭제 실패', err);
@@ -199,8 +225,16 @@ const Management = () => {
                 ids: selectedRowKeys,
                 empType: value
             });
-            fetchUsers();
+            fetchUsers({   // 현재 필터 상태 유지
+                status: statusFilter,
+                dept: deptFilter,
+                employment: employmentFilter,
+                job: jobFilter,
+                rank: rankFilter
+            });
+
             setSelectedRowKeys([]); // 선택 초기화
+            //테이블 필터 초기화
             closeModal();
         } catch (err) {
             console.error('수정 실패', err);
@@ -220,7 +254,14 @@ const Management = () => {
                 ids: selectedRowKeys,
                 dept: value
             });
-            fetchUsers();
+            fetchUsers({   // 현재 필터 상태 유지
+                status: statusFilter,
+                dept: deptFilter,
+                employment: employmentFilter,
+                job: jobFilter,
+                rank: rankFilter
+            });
+
             setSelectedRowKeys([]); // 선택 초기화
             closeModal();
         } catch (err) {
@@ -239,7 +280,14 @@ const Management = () => {
                 ids: selectedRowKeys,
                 rank: value
             });
-            fetchUsers();
+            fetchUsers({   // 현재 필터 상태 유지
+                status: statusFilter,
+                dept: deptFilter,
+                employment: employmentFilter,
+                job: jobFilter,
+                rank: rankFilter
+            });
+
             setSelectedRowKeys([]); // 선택 초기화
             closeModal();
         } catch (err) {
@@ -258,7 +306,14 @@ const Management = () => {
                 ids: selectedRowKeys,
                 job: value
             });
-            fetchUsers();
+            fetchUsers({   // 현재 필터 상태 유지
+                status: statusFilter,
+                dept: deptFilter,
+                employment: employmentFilter,
+                job: jobFilter,
+                rank: rankFilter
+            });
+
             setSelectedRowKeys([]); // 선택 초기화
             closeModal();
         } catch (err) {
@@ -277,7 +332,14 @@ const Management = () => {
                 ids: selectedRowKeys,
                 status: value
             });
-            fetchUsers();
+            fetchUsers({   // 현재 필터 상태 유지
+                status: statusFilter,
+                dept: deptFilter,
+                employment: employmentFilter,
+                job: jobFilter,
+                rank: rankFilter
+            });
+
             setSelectedRowKeys([]); // 선택 초기화
             closeModal();
         } catch (err) {
@@ -312,12 +374,12 @@ const Management = () => {
                                     <button name="dept" onClick={handleClick}><ClusterOutlined /> 부서 수정</button>
                                     <button name="rank" onClick={handleClick}><AuditOutlined /> 직위 수정</button>
                                     <button name="job" onClick={handleClick}><FileDoneOutlined /> 직무 수정</button>
-                                    <button name="status" onClick={handleClick}><FileDoneOutlined /> 재직상태 수정</button>
+                                    <button name="status" onClick={handleClick}><UserDeleteOutlined /> 재직상태 수정</button>
                                 </div>
                                 :
                                 <div style={{ width: '80%' }}>
                                     <Select
-                                        defaultValue="근로 형태"
+                                        value={employmentFilter}
                                         variant="borderless"
                                         style={{ width: 100 }}
                                         onChange={handleEmploymentChange}
@@ -326,7 +388,7 @@ const Management = () => {
                                     />
 
                                     <Select
-                                        defaultValue="전체 부서"
+                                        value={deptFilter}
                                         variant="borderless"
                                         style={{ width: 110 }}
                                         onChange={handleDeptChange}
@@ -334,7 +396,7 @@ const Management = () => {
                                     />
 
                                     <Select
-                                        defaultValue="전체 직위"
+                                        value={rankFilter}
                                         variant="borderless"
                                         style={{ width: 110 }}
                                         onChange={handleRankChange}
@@ -342,7 +404,7 @@ const Management = () => {
                                     />
 
                                     <Select
-                                        defaultValue="전체 직무"
+                                        value={jobFilter}
                                         variant="borderless"
                                         style={{ width: 110 }}
                                         onChange={handleJobChange}
@@ -350,7 +412,7 @@ const Management = () => {
                                     />
 
                                     <Select
-                                        defaultValue="재직 상태"
+                                        value={statusFilter}
                                         variant="borderless"
                                         style={{ width: 110 }}
                                         onChange={handleStatusChange}
@@ -396,7 +458,7 @@ const Management = () => {
                                 삭제
                             </Button>
                         ]}
-                        
+
                         modalRender={modal => (
                             <div style={{ marginTop: '40%' }}> {/* 상단에서 50px 아래 */}
                                 {modal}
@@ -425,7 +487,7 @@ const Management = () => {
                                 수정
                             </Button>
                         ]}
-                        
+
                         modalRender={modal => (
                             <div style={{ marginTop: '40%' }}> {/* 상단에서 50px 아래 */}
                                 {modal}
@@ -461,7 +523,7 @@ const Management = () => {
                                 수정
                             </Button>
                         ]}
-                        
+
                         modalRender={modal => (
                             <div style={{ marginTop: '40%' }}> {/* 상단에서 50px 아래 */}
                                 {modal}
@@ -494,7 +556,7 @@ const Management = () => {
                                 수정
                             </Button>
                         ]}
-                        
+
                         modalRender={modal => (
                             <div style={{ marginTop: '40%' }}> {/* 상단에서 50px 아래 */}
                                 {modal}
@@ -510,7 +572,7 @@ const Management = () => {
                             onChange={setRankValue}    // 상태 업데이트
                         />
 
-                        
+
                     </Modal>
 
                     <Modal
@@ -548,7 +610,7 @@ const Management = () => {
                     <Modal
                         title="재직상태 수정"
                         open={openModal === 'status'}
-                         centered={false}        // 중앙 정렬 비활성화 (top 적용 가능하게)
+                        centered={false}        // 중앙 정렬 비활성화 (top 적용 가능하게)
                         onOk={() => {
                             console.log('재직 상태 수정 실행');
                             closeModal();

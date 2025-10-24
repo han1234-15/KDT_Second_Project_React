@@ -1,0 +1,186 @@
+* {
+    box-sizing: border-box;
+
+}
+
+.container {
+
+    width: 100%;
+    height: 100%;
+    font-size: 15px;
+
+
+}
+
+
+/* 메인 */
+.main {
+  width: 100%;
+  height: 100%;
+  float: left;
+
+}
+
+.mainHeader {
+    width: 100%;
+    height: 20%;
+
+}
+
+.headerbutton {
+    font-size: 15px;
+    margin: 10px;
+}
+
+
+.mainHeadertop {
+
+    height: 60%;
+    font-size: 35px;
+}
+
+.mainHeaderbottom {
+
+    height: 40%;
+    margin-top: 10px;
+
+}
+
+.mainHeadertag {
+
+    width: 20%;
+    height: 100%;
+    float: left;
+    display: flex;
+    /* Flexbox 활성화 */
+    align-items: center;
+    /* 세로 중앙 정렬 */
+    justify-content: center;
+    /* 가로 중앙 정렬 */
+    text-align: center;
+    border: none;
+}
+
+.mainBody {
+    width: 100%;
+    height: 80%;
+}
+
+
+.mainBodyHeader {
+    width: 100%;
+    height: 5%;
+}
+
+.mainBodylist {
+    width: 100%;
+    height: 95%;
+}
+
+.mainBodylistbox {
+
+    height: 5%;
+}
+
+.mainBodylistbox:hover {
+    cursor: pointer;
+    background-color: lightgrey;
+}
+
+.mainBodycheckbox {
+    width: 10%;
+    height: 100%;
+    float: left;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: none;
+}
+
+.mainBodytag {
+
+    width: 18%;
+    height: 100%;
+    float: left;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: none;
+}
+
+.mainBodybox {
+    width: 100%;
+    height: 10%;
+    background-color: white;
+    color: black;
+    font-size: 15px;
+}
+
+
+.NewSharedMailbox1 {
+
+    width: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    float: left;
+}
+
+.NewSharedMailbox2 {
+
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    float: left;
+    background-color: white;
+    margin-left: 10px;
+   
+}
+
+
+
+.createbtn {
+    width: 10%;
+    height: 60%;
+    display: block;
+    /* 블록처럼 쌓이게 */
+    font-size: 15px;
+    margin: 2px 0;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    /* 밑줄 제거 */
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 500;
+    float: right;
+    margin-right: 50px;
+
+}
+
+.createbtn:hover {
+    cursor: pointer;
+}
+
+
+/* modal */
+
+/* Modal 전체 영역 조정 */
+:global(.ant-modal) {
+    top: 30px !important;
+    /* 위치 조정 */
+}
+
+/* 콘텐츠 영역 커스터마이즈 */
+:global(.ant-modal-content) {
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    max-height: 100vh;
+    overflow-y: auto;
+}

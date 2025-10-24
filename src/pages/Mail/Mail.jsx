@@ -32,6 +32,7 @@ const Mail = () => {
     const handleMailList = () => {
         const params = {};
         if (searchName) params.name = searchName;
+
         caxios.get("/mail", { params: params, withCredentials: true }).then(resp => {
             setMail(prev => resp.data);
         });
@@ -51,6 +52,9 @@ const Mail = () => {
         caxios.delete("/mail", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
             setMail(prev => prev.filter(mail => !checkedList.includes(mail.seq)));
         });
+        setCheckedList([]);
+        setAllChecked(false);
+        handleMailList();
     }
 
     // 전체 체크박스 선택
@@ -86,7 +90,31 @@ const Mail = () => {
         setCheckedList([]);
     };
 
-    return (<div className={styles.container}>
+    // 답장기능
+    // const handleMailResponse = () => {
+    //     navigate("/mail/response", { state: mail });
+
+    // }
+
+    const handleMailResponse = () => {
+        if (checkedList.length === 0) {
+            alert("답장할 메일을 선택해주세요.");
+            return;
+        }
+
+        const selectedMailSeq = checkedList[0];
+        const selectedMail = mail.find(m => m.seq === selectedMailSeq);
+
+        if (!selectedMail) {
+            alert("선택한 메일을 찾을 수 없습니다.");
+            return;
+        }
+
+        navigate("/mail/response", { state: selectedMail });
+    };
+
+
+    return (<div className={styles.container} >
 
 
         {/* 메인 주소록창 */}
@@ -109,18 +137,19 @@ const Mail = () => {
 
                     {checkedList.length === 0 ? (
                         <>
-                            <input type="text" placeholder="검색할 발신자 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
-                                onChange={(e) => setSearchName(e.target.value)}></input>
-                            <button onClick={handleMailList}>검색</button>
+                            <input type="text" placeholder="검색할 발신자 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center", fontSize: "20px" }}
+                                onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleMailList(); } }}></input>
+                            <button onClick={handleMailList} >검색</button>
                         </>) : (
                         <>
+                            <button onClick={handleMailResponse} style={{ margin: "10px" }}>답장</button>
                             <button onClick={handleMailDelete} style={{ margin: "10px" }}> 삭제 </button>
 
                         </>
                     )}
 
                     {/* <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-                        <label style={{ marginTop: "15px" }}>
+                        <label style={{ marginTop: "15px" }}>   
                             <input type="checkbox" /> 모든 메일
                         </label>
                         <label style={{ marginTop: "15px" }}>
@@ -132,10 +161,10 @@ const Mail = () => {
 
 
             </div> {/* 메일 헤더  */}
-            <hr></hr>
+            
 
             {/* 메일 양식 */}
-            <div className={styles.mainBody}>
+            <div className={styles.mainBody} style={{ fontSize: "20px" , marginTop:"20px"}}>
 
                 <div className={styles.mainBodyHeader}>
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
@@ -144,7 +173,7 @@ const Mail = () => {
                     <div className={styles.mainBodytagTitle}>제목</div>
                     <div className={styles.mainBodytag}>발신날짜</div>
                     <br></br>
-                    <hr></hr>
+                   
                 </div>
 
 
@@ -156,9 +185,8 @@ const Mail = () => {
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.senderName}</div>
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.senderId}</div>
                             <div className={styles.mainBodytagTitle} onClick={() => handleMailView(e)} >{e.title}</div>
-                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.sendDateStr}</div>
-                            <br></br>
-                            <hr></hr>
+                            <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.sendDateStr}</div><br></br>
+                            <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
                         </div>)}
                     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                         <Pagination
@@ -181,7 +209,6 @@ const Mail = () => {
 
 
     );
-
 
 
 

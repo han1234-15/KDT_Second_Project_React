@@ -30,6 +30,7 @@
     /* 링크 밑줄 제거 */
     cursor: pointer;
     display: inline-block;
+    
 }
 
 .buttonLink:hover {

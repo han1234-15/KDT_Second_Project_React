@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./style/WorkExpense.css";
-import axios from "axios";
 import { caxios } from "../../config/config";
+import LeaveModal from "./LeaveModal";
 
 
 const WorkExpense = () => {
@@ -12,14 +12,62 @@ const WorkExpense = () => {
 
   const [checkInbtn, setCheckInbtn] = useState(false);
   const [checkOutbtn, setCheckOutbtn] = useState(false);
+  const [workTime, setWorkTime] = useState(null);
 
+  const [loginUser, setLoginUser] = useState(null);
+
+
+  useEffect(() => {
+    caxios.get("/member/me")
+      .then(res => {
+        setLoginUser(res.data);
+        console.log("로그인 사용자 정보:", res.data);
+      })
+      .catch(err => console.error("로그인 사용자 정보 조회 실패", err));
+  }, []);
 
   const [count, setCount] = useState({
     late: 0,
     earlyleave: 0,
-    absence: 0,
     nocheck: 0,
+    absence: 0
   });
+
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
+
+  //  모달 열기
+  const showLeaveModal = () => {
+    setIsLeaveModalOpen(true);
+  };
+
+  // 확인(닫기)
+  const handleLeaveOk = () => {
+    setIsLeaveModalOpen(false);
+  };
+  // 취소(닫기)
+  const handleLeaveCancel = () => {
+    setIsLeaveModalOpen(false);
+  };
+
+  const calcWorkTime = (startTime, endTime) => {
+    if (!startTime || !endTime) return null;
+
+    // "HH:mm" 형태에서 숫자 추출
+    const [sh, sm] = startTime.split(":").map(Number);
+    const [eh, em] = endTime.split(":").map(Number);
+
+    // 분 단위로 변환 후 차이 계산
+    const start = sh * 60 + sm;
+    const end = eh * 60 + em;
+    const diff = end - start;
+
+    if (diff <= 0) return null; // 비정상 데이터 방어
+
+    const hours = Math.floor(diff / 60);
+    const mins = diff % 60;
+
+    return `${hours}시간 ${mins}분`;
+  };
 
   const [leavecounts, setLeaveCounts] = useState({
     leavecount: 0
@@ -52,130 +100,141 @@ const WorkExpense = () => {
   };
 
 
+
+
+
   //따로 뺴줘서 실시간으로 지각처리 알수있게 끔
-  const fetchAttendanceCount = () => {
-    caxios.get(`attendance/count`)
-      .then((res) => {
-        console.log("서버 응답:", res.data);
+  const fetchAttendanceCount = async () => {
+    try {
+      const res = await caxios.get(`attendance/count`);
+      const result = { before: 0, absence: 0, earlyleave: 0, late: 0, nocheck: 0 };
+      console.log("📌 COUNT 응답:", res.data);
+      res.data.forEach(item => {
+        const key = item.STATUS?.toLowerCase();
+        if (result.hasOwnProperty(key)) {
+          result[key] = item.CNT;
+        }
+      });
 
-        const result = { before: 0, absence: 0, earlyleave: 0, late: 0, nocheck: 0 };
-
-        res.data.forEach(item => {
-          const key = item.STATUS?.toLowerCase();
-          if (result.hasOwnProperty(key)) {
-            result[key] = item.CNT;
-          }
-        });
-
-        setCount(result);
-      })
-      .catch(err => console.error("근태 카운트 불러오기 실패:", err));
+      setCount(result);
+    } catch (err) {
+      console.error("근태 카운트 불러오기 실패:", err);
+    }
   };
 
 
+  const fetchToday = async () => {
+    try {
+      const res = await caxios.get("/attendance/today");
+      const data = res.data;
+
+      const startStatus = data.startStatus ?? data.STARTSTATUS ?? null;
+      const endStatus = data.endStatus ?? data.ENDSTATUS ?? null;
+      const startTime = data.startTime ?? data.STARTTIME ?? null;
+      const endTime = data.endTime ?? data.ENDTIME ?? null;
+
+      setCheckIn(startTime ? formatDateTime(startTime) : null);
+      setCheckOut(endTime ? formatDateTime(endTime) : null);
+
+      // ✅ 근무시간 계산을 이 안으로 옮겨야 한다!
+      if (startTime && endTime) {
+        setWorkTime(calcWorkTime(startTime, endTime));
+      } else if (startTime && !endTime) {
+        setWorkTime("근무중");
+      } else {
+        setWorkTime(null);
+      }
+
+      // === 상태별 분기 ===
+      if (!startStatus) {
+        setStatus("대기중");
+        setCheckInbtn(true);
+        setCheckOutbtn(false);
+      } else if (startStatus === "absence") {
+        setStatus("결근");
+        setCheckInbtn(true);
+        setCheckOutbtn(false);
+      } else if (startStatus === "late" && !endStatus) {
+        setStatus("지각");
+        setCheckInbtn(false);
+        setCheckOutbtn(true);
+      } else if (startStatus === "normal" && !endStatus) {
+        setStatus("근무중");
+        setCheckInbtn(false);
+        setCheckOutbtn(true);
+      } else {
+        setStatus(endStatus === "nocheck" ? "퇴근미체크" : "퇴근");
+        setCheckInbtn(false);
+        setCheckOutbtn(false);
+      }
+
+      await fetchAttendanceCount();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchRemainLeave = async () => {
+    try {
+      const res = await caxios.get("/leave/count");
+      setLeaveCounts({ leavecount: parseFloat(res.data) || 0 });
+    } catch (err) {
+      console.error("잔여연차 조회 실패:", err);
+    }
+  };
+
+
+  const refresh = () => {
+    fetchToday();
+    fetchAttendanceCount();
+    fetchRemainLeave();
+  };
+
+
+
+  // ✅ 새로고침 포함 최초 반영
   useEffect(() => {
-    caxios.get("/attendance/today")
-      .then(res => {
-        const data = res.data;
-        const startStatus = data.startStatus ?? data.STARTSTATUS ?? null;
-        const endStatus = data.endStatus ?? data.ENDSTATUS ?? null;
-        const startTime = data.startTime ?? data.STARTTIME ?? null;
-        const endTime = data.endTime ?? data.ENDTIME ?? null;
-
-        setCheckIn(startTime ? formatDateTime(startTime) : null);
-        setCheckOut(endTime ? formatDateTime(endTime) : null);
-
-        if (!startStatus) {
-
-          setStatus("대기중");
-          setCheckInbtn(true);
-          setCheckOutbtn(false);
-
-        } else if (startStatus === "absence") {
-          // 결근 상태 (지각으로 바뀔 가능성 있음)
-          setStatus("결근");
-          setCheckInbtn(true);  
-          setCheckOutbtn(false);
-
-        } else if (startStatus && !endStatus) {
-          // 출근은 했고 퇴근은 아직
-          setStatus(startStatus === "late" ? "지각" : "근무중");
-          setCheckInbtn(false);
-          setCheckOutbtn(true);
-
-        } else {
-          // 퇴근 or nocheck
-          setStatus(endStatus === "nocheck" ? "퇴근미체크" : "퇴근");
-          setCheckInbtn(false);
-          setCheckOutbtn(false);
-        }
-
-        fetchAttendanceCount();
-      })
-      .catch(err => console.error(err));
+    fetchToday();
+    fetchAttendanceCount();
+    fetchRemainLeave();
   }, []);
 
-
-
-
+  //  카운트 자동 갱신
   useEffect(() => {
     const autoRefresh = setInterval(() => {
-
+      fetchToday();
       fetchAttendanceCount();
-
-    }, 60000);
-
+    }, 10000); // 10초마다 재조회 (결근 실시간 반영)
     return () => clearInterval(autoRefresh);
   }, []);
 
 
 
   useEffect(() => {
-    caxios.get(`leave/count`)
-      .then((res) => {
-        let data = res.data;
-        console.log("서버 응답", res.data);
-        setLeaveCounts({ leavecount: res.data || 0 });
-      })
-  }, [])
-
-
-
-  // 실시간 시계 업데이트
-  useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
-  const handleCheckIn = () => {
+
+  const handleCheckIn = async () => {
     if (!window.confirm("정말 출근하시겠습니까?")) return;
 
-    caxios.post("/attendance/checkin")
-      .then((res) => {
-        setCheckIn(formatDateTime(res.data.time));
-        setStatus(res.data.status === "late" ? "지각" : "근무중");
-        setCheckInbtn(false);
-        setCheckOutbtn(true);
-        fetchAttendanceCount();
-        alert("출근 처리되었습니다.");
-      })
-      .catch(err => console.error("출근 실패:", err));
+    await caxios.post("/attendance/checkin");
+    setTimeout(async () => {
+      await fetchToday();
+      await fetchAttendanceCount();
+    }, 150);
+    alert("출근 처리되었습니다.");
   };
 
-  const handleCheckOut = () => {
-    if (!window.confirm("정말 퇴근하시겠습니까?\n퇴근은 하루에 한 번만 가능합니다.")) {
-      return;
-    }
+  const handleCheckOut = async () => {
+    if (!window.confirm("정말 퇴근하시겠습니까?")) return;
 
-    caxios.post(`/attendance/checkout`)
-      .then((res) => {
-        setCheckOut(formatDateTime(res.data.time));
-        setStatus(res.data.status === "checkout" ? "조기 퇴근" : "퇴근");
-        setCheckInbtn(false);
-        setCheckOutbtn(false);
-        fetchAttendanceCount();
-        alert("퇴근 처리되었습니다.");
-      })
-      .catch(err => console.error("퇴근 실패", err));
+    await caxios.post("/attendance/checkout");
+    setTimeout(async () => {
+      await fetchToday();
+      await fetchAttendanceCount();
+    }, 150);
+    alert("퇴근 처리되었습니다.");
   };
 
   return (
@@ -196,11 +255,27 @@ const WorkExpense = () => {
         <fieldset className="info-box">
           <legend>휴가 현황</legend>
           <div className="field-content">
-            <div className="field-item"><strong>잔여 휴가</strong><div>{leavecounts.leavecount}회</div></div>
+            <div className="field-item">
+              <strong>잔여 휴가</strong>
+              <div>{leavecounts.leavecount % 1 === 0 ? leavecounts.leavecount + "일" : leavecounts.leavecount.toFixed(1) + "일"}
+              </div>
+            </div>
           </div>
           <div className="field-footer">
             <button className="link-btn">휴가 현황</button>
-            <button className="link-btn">휴가 신청</button>
+            <button className="link-btn" onClick={showLeaveModal}>
+              휴가 신청
+            </button>
+
+            {loginUser && (
+              <LeaveModal
+                open={isLeaveModalOpen}
+                onClose={handleLeaveCancel}
+                refresh={refresh}
+                applicant={loginUser}
+              />
+            )}
+
           </div>
         </fieldset>
 
@@ -208,7 +283,7 @@ const WorkExpense = () => {
           <legend>근무시간</legend>
           <div className="field-content">
             <div className="field-item"><strong>근무일수</strong><div>0일</div></div>
-            <div className="field-item"><strong>총근무시간</strong><div>0시간</div></div>
+            <div className="field-item"><strong>총근무시간</strong><div>{workTime || "0시간 0분"}</div></div>
             <div className="field-item"><strong>보정정근</strong><div>0시간</div></div>
           </div>
         </fieldset>

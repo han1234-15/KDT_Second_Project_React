@@ -22,7 +22,7 @@ const ContactsMulti = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
-      // 페이징용 currentMails
+    // 페이징용 currentMails
     const indexOfLast = currentPage * pageSize;
     const indexOfFirst = indexOfLast - pageSize;
     const currentContacts = contacts.slice(indexOfFirst, indexOfLast);
@@ -48,6 +48,9 @@ const ContactsMulti = () => {
         caxios.delete("/contacts", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
             setContacts(prev => prev.filter(contact => !checkedList.includes(contact.seq)));
         });
+        setCheckedList([]);
+        setAllChecked(false);
+        handleContactsList();
     }
 
 
@@ -62,6 +65,9 @@ const ContactsMulti = () => {
                         : contact
                 ));
             });
+        setCheckedList([]);
+        setAllChecked(false);
+        handleContactsList();
     }
 
     // 전체 체크박스를 클릭하면(true) 아래 체크박스 전체 적용
@@ -158,6 +164,11 @@ const ContactsMulti = () => {
                 });
             }
             setUpdateModalOpen(true);
+            setCheckedList([]);
+            setAllChecked(false);
+            handleContactsList();
+        } else {
+            alert("하나의 주소록 수정만 가능합니다!")
         }
     };
     const handleUpdateChange = (e) => {
@@ -176,7 +187,7 @@ const ContactsMulti = () => {
         setUpdateModalOpen(false);
     }
 
-  
+
 
 
     return (<div className={styles.container}>
@@ -193,7 +204,7 @@ const ContactsMulti = () => {
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
 
-
+                    공용 주소록 : {contacts.length} 명 <br></br>
                     {/* <button onClick={handleContacts} className={styles.headerbutton}>전체 주소록</button>
                     <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button> */}
                     <button className={styles.createbtn} onClick={showModalMultiAdd}> 공용 주소록 추가 </button>
@@ -204,8 +215,8 @@ const ContactsMulti = () => {
                 <div className={styles.mainHeaderbottom} >
                     {checkedList.length === 0 ? (
                         <>
-                            <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
-                                onChange={(e) => setSearchName(e.target.value)}></input>
+                            <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center", fontSize: "20px" }}
+                                onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
                             <button onClick={handleContactsList}>검색</button>
 
                         </>) : (
@@ -222,10 +233,10 @@ const ContactsMulti = () => {
 
 
             </div> {/* 주소록 헤더  */}
-            <hr></hr>
+         
 
             {/* 주소록 바디 여기가 계속 변하는곳 Route */}
-            <div className={styles.mainBody}>
+            <div className={styles.mainBody} style={{ fontSize: "20px" }}>
 
 
 
@@ -238,7 +249,7 @@ const ContactsMulti = () => {
                     <div className={styles.mainBodytag}>직급</div> <br></br>
 
                 </div>
-                <hr></hr>
+             
 
                 {/* 주소록 출력  */}
                 <div className={styles.mainBodylist}>
@@ -252,7 +263,7 @@ const ContactsMulti = () => {
                             <div className={styles.mainBodytag}>{e.email}</div>
                             <div className={styles.mainBodytag}>{e.job_code}</div>
                             <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
-                            <hr></hr>
+                            <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
                         </div>
 
 

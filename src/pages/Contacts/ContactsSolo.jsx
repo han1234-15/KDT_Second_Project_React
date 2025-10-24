@@ -38,6 +38,9 @@ const ContactsSolo = () => {
         caxios.delete("/contacts", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
             setContacts(prev => prev.filter(contact => !checkedList.includes(contact.seq)));
         });
+        setCheckedList([]);
+        setAllChecked(false);
+        handleContactsList();
     }
 
     // 공유 주소록으로 이동
@@ -50,6 +53,9 @@ const ContactsSolo = () => {
                         : contact
                 ));
             });
+        setCheckedList([]);
+        setAllChecked(false);
+        handleContactsList();
     }
 
     // 전체 체크박스를 클릭하면(true) 아래 체크박스 전체 적용
@@ -135,6 +141,11 @@ const ContactsSolo = () => {
                 });
             }
             setUpdateModalOpen(true);
+            setCheckedList([]);
+            setAllChecked(false);
+            handleContactsList();
+        } else {
+            alert("하나의 주소록 수정만 가능합니다!")
         }
     };
     const handleUpdateChange = (e) => {
@@ -180,7 +191,7 @@ const ContactsSolo = () => {
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
 
-
+                    개인 주소록 : {contacts.length} 명 <br></br>
                     <button className={styles.createbtn} onClick={showModalSingleAdd}> 개인 주소록 추가 </button>
                 </div>
 
@@ -188,8 +199,8 @@ const ContactsSolo = () => {
                 <div className={styles.mainHeaderbottom} >
                     {checkedList.length === 0 ? (
                         <>
-                            <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
-                                onChange={(e) => setSearchName(e.target.value)}></input>
+                            <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center", fontSize: "20px" }}
+                                onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
                             <button onClick={handleContactsList}>검색</button>
 
                         </>) : (
@@ -203,10 +214,9 @@ const ContactsSolo = () => {
 
 
             </div> {/* 주소록 헤더  */}
-            <hr></hr>
-
+         
             {/* 주소록 바디 여기가 계속 변하는곳 Route */}
-            <div className={styles.mainBody}>
+            <div className={styles.mainBody} style={{ fontSize: "20px" }}>
 
 
 
@@ -218,8 +228,7 @@ const ContactsSolo = () => {
                     <div className={styles.mainBodytag}>부서</div>
                     <div className={styles.mainBodytag}>직급</div> <br></br>
                 </div>
-                <hr></hr>
-
+               
                 {/* 주소록 출력  */}
                 <div className={styles.mainBodylist}>
 
@@ -231,8 +240,8 @@ const ContactsSolo = () => {
                             <div className={styles.mainBodytag}>{e.phone}</div>
                             <div className={styles.mainBodytag}>{e.email}</div>
                             <div className={styles.mainBodytag}>{e.job_code}</div>
-                            <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
-                            <hr></hr>
+                            <div className={styles.mainBodytag}>{e.rank_code}</div>
+                            <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
                         </div>
 
 

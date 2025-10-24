@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import ContentTap from "../Common/ContentTap";
-import styles from "./BoardTabs.module.css"; 
+import styles from "./BoardTabs.module.css";
 
 const BoardTabs = () => {
   const navigate = useNavigate();
@@ -9,14 +9,14 @@ const BoardTabs = () => {
 
   const mainTabs = [
     { label: "게시판", path: "/board" },
-    { label: "중요게시물", path: "/board/boardWrite" },
-    { label: "환경설정", path: "/board/boardDetail" },
+    { label: "중요게시물", path: "/board/boardDetail" },
+    { label: "자료실", path: "/board/data_room" },
   ];
 
   const subTabs = [
+    { label: "공지사항", path: "/board/announcement" },
     { label: "자유게시판", path: "/board/freedom" },
     { label: "익명게시판", path: "/board/anonymity" },
-    { label: "자료실", path: "/board/data_room" },
   ];
 
   return (

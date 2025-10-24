@@ -9,13 +9,16 @@
 .option {
     display: flex;
     align-items: center;
+    border-top: 1px solid #e0e0e0;
+
     width: 100%;
     height: 3%;
-    border-bottom: 1px solid #e0e0e0;
     gap: 10px;
 }
 
 .option button {
+    display: flex;
+    justify-content: center;
     width: 60px;
     border: none;
     background-color: white;
@@ -26,6 +29,7 @@
     align-items: center;
     width: 100%;
     height: 5%;
+    border-top: 1px solid #e0e0e0;
     border-bottom: 1px solid #e0e0e0;
 }
 
@@ -50,8 +54,13 @@
     gap: 20px;
 }
 
-.title div {
-    width: 8%;
+.inputEdit {
+    width: 50%;
+}
+
+.inputReadonly {
+    border: none;
+    width: 50%;
 }
 
 .boardInfo {
@@ -79,36 +88,97 @@
 .boardContent {
     width: 100%;
     height: 20%;
-    /* 68 */
-    border-bottom: 1px solid #e0e0e0;
 }
 
 .reply {
-    display: flex;
-    width: 100%;
-    height: 24%;
+    margin-top: 40px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 20px;
 }
 
 .writeReply {
     display: flex;
-    width: 100%;
-    height: 30%;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.replyProfile {
-    width: 10%;
-    height: 100%;
+    align-items: flex-start;
+    margin-bottom: 20px;
 }
 
 .replyContent {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    flex: 1;
+    margin: 0 10px;
 }
 
 .replyBtn {
-    margin-left: 30px;
-    margin-top: 40px;
+    margin-top: 15px;
     width: 80px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.commentList {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+  margin-left: 16px;
+}
+
+.commentItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.commentProfile {
+  width: 50px;
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.commentMain {
+  flex: 1;
+}
+
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.commentInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.commentWriter {
+  font-weight: 600;
+  color: #333;
+}
+
+.commentDate {
+  color: #999;
+  font-size: 12px;
+}
+
+.commentDelete {
+width: 50px;
+}
+
+.commentDelete:hover {
+  text-decoration: underline;
+}
+
+.commentBody {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #444;
+  white-space: pre-wrap;
+}
+
+.noComment {
+  text-align: center;
+  color: #999;
+  margin-top: 10px;
 }

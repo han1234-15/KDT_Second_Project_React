@@ -1,24 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Input } from "antd";
-import styles from "./BoardFreedom.module.css";
+import styles from "./BoardImportance.module.css";
+import { caxios } from "../../config/config";
 const { Search } = Input;
 
-const BoardFreedom = () => {
+const BoardImportance = () => {
   const [search, setSearch] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  
+  const [data, setData] = useState([]);
+  // 공지사항 (category_id = 1) 데이터 불러오기
+  useEffect(() => {
+    caxios
+      .get("/board/1") // category_id = 1 (공지사항)
+      .then((resp) => {
+        console.log("게시글 목록:", resp.data);
+        // 백엔드 응답 구조에 맞게 데이터 매핑
+        const mapped = resp.data.map((item) => ({
+          key: item.seq,
+          tag: "공지", // 필요 시 카테고리명 표시
+          title: item.title,
+          author: item.writer_id,
+          date: new Date(item.createdAt).toLocaleDateString(),
+        }));
+        setData(mapped);
+      })
+      .catch((err) => {
+        console.error("게시글 목록 불러오기 실패:", err);
+      });
+  }, []);
 
-    // 더미 데이터
-  const dataSource = Array.from({ length: 42 }, (_, i) => ({
-    key: i,
-    tag: "공지",
-    title: `게시글 제목 ${i + 1}`,
-    author: `작성자 ${i + 1}`,
-    date: "2025-10-22",
-  }));
-    // 검색어 필터링
-  const filteredData = dataSource.filter((item) =>
-    item.title.includes(search)
-  );
 
   // 컬럼 정의
   const columns = [
@@ -41,6 +52,11 @@ const BoardFreedom = () => {
     onChange: (keys) => setSelectedRowKeys(keys),
   };
 
+  // 검색 필터 적용
+  const filteredData = data.filter((item) =>
+    item.title.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className={styles.container}>
       <div className={styles.search}>
@@ -53,11 +69,10 @@ const BoardFreedom = () => {
         />
       </div>
       <div className={styles.boardHeader}>
-        {/* 페이지네이션 */}
         <Table
           rowSelection={rowSelection}
-          dataSource={filteredData}
           columns={columns}
+          dataSource={filteredData}
           pagination={{
             position: ["bottomCenter"],
             hideOnSinglePage: true,
@@ -71,4 +86,4 @@ const BoardFreedom = () => {
   );
 };
 
-export default BoardFreedom;
+export default BoardImportance;

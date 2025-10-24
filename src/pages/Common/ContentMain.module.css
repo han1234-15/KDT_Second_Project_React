@@ -38,7 +38,7 @@
   justify-content: flex-start;
   background-color: #ffffff;
   padding: 0;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.03);
+  /* box-shadow: 2px 0 5px rgba(0, 0, 0, 0.03); 이거 있으면 선 생겨서 일단 주석 처리함 -임종민 */
 }
 
 /* === 콘텐츠 영역 (8/10 너비) === */

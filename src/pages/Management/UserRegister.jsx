@@ -52,7 +52,7 @@ const UserRegister = () => {
         address_line1: "",
         address_line2: "",
     });
-    
+
     const [isIdChecked, setIsIdChecked] = useState(false);
 
 
@@ -67,7 +67,7 @@ const UserRegister = () => {
         setMemberInfo(prev => ({ ...prev, [name]: value }));
     }
 
-    const handleAdd = () => {
+    const handleAdd = async () => {
         //데이터를 보낼 때는 post를 쓴다.
 
 
@@ -166,14 +166,30 @@ const UserRegister = () => {
             return;
         }
 
-        caxios.post("/member", memberInfo)
-            .then(resp => {
-                alert("회원 등록 성공", "사용자 추가가 완료되었습니다.");
-                navigate("/management");
-            })
-            .catch(err => {
-                alert("회원 등록 실패", "알 수 없는 오류가 발생했습니다.");
+        // caxios.post("/member", memberInfo)
+        //     .then(resp => {
+        //         alert("회원 등록 성공", "사용자 추가가 완료되었습니다.");
+        //         navigate("/management");
+        //     })
+        //     .catch(err => {
+        //         alert("회원 등록 실패", "알 수 없는 오류가 발생했습니다.");
+        //     });
+
+
+        const formData = new FormData();
+        formData.append("member", new Blob([JSON.stringify(memberInfo)], { type: "application/json" }));
+        if (profileImage) formData.append("profileImage", profileImage);
+
+        try {
+            const resp = await caxios.post("/member", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
             });
+            alert("회원 등록 성공");
+            navigate("/management");
+        } catch (err) {
+            alert("회원 등록 실패");
+        }
+
     }
 
     const handleCheckId = () => {
@@ -208,6 +224,37 @@ const UserRegister = () => {
         //setMemberInfo({});
     }
 
+    const [profileImage, setProfileImage] = useState(null); // 파일 객체
+    const [previewUrl, setPreviewUrl] = useState(null); // 미리보기 URL
+    // 미리보기 메모리 해제
+    useEffect(() => {
+        return () => {
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+        };
+    }, [previewUrl]);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            alert("이미지 파일만 업로드 가능합니다.");
+            e.target.value = ""; // <- 추가
+            return;
+        }
+
+        setProfileImage(file);
+        setPreviewUrl(URL.createObjectURL(file));
+
+        e.target.value = ""; // <- 이 줄이 중요
+    };
+
+    const handleRemoveImage = () => {
+        setProfileImage(null);
+        setPreviewUrl(null);
+    };
+
+
 
     return (
         <div className={styles.container}>
@@ -215,9 +262,30 @@ const UserRegister = () => {
             <h1>사용자 등록</h1>
 
             <div className={styles.content}>
-                <div className={styles.left}>프로필들어갈자링ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
-
-
+                {/* ----------left는 프로필 들어가는 자리 */}
+                <div className={styles.left}>
+                    <div className={styles.profileContainer}>
+                        {previewUrl ? (
+                            <img src={previewUrl} alt="프로필 미리보기" className={styles.profileImage} />
+                        ) : (
+                            <div className={styles.placeholder}>
+                                <UserOutlined style={{ fontSize: '36px', color: '#aaa' }} />
+                            </div>
+                        )}
+                        <div className={styles.profileButtons}>
+                            <label htmlFor="profileUpload" className={styles.uploadBtn}>이미지 선택</label>
+                            {previewUrl && (
+                                <div><button onClick={handleRemoveImage} className={styles.removeBtn}>삭제</button></div>
+                            )}
+                        </div>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            id="profileUpload"
+                            style={{ display: "none" }}
+                            onChange={handleImageChange}
+                        />
+                    </div>
                 </div>
                 <div className={styles.right}>
                     <div><label>ID*</label><Input placeholder="알파벳+숫자 4~20자리" name='id' value={memberInfo.id} onChange={handleMemberInfoChange} /> <button className={styles.idBtn} onClick={handleCheckId}>중복확인</button></div>
@@ -313,15 +381,17 @@ const UserRegister = () => {
                                 setMemberInfo(prev => ({ ...prev, birthDate: e.target.value }))
                             }
                         />
-                        <input type="radio" id="solar" name="calendarType" value="S" onChange={() => setMemberInfo(prev => ({ ...prev, calendarType: "S" }))} defaultChecked />
-                        <label htmlFor="solar" className={styles.birthLabel}>양력</label>
-                        <input type="radio" id="lunar" name="calendarType" value="L" onChange={() => setMemberInfo(prev => ({ ...prev, calendarType: "L" }))} />
-                        <label htmlFor="lunar" className={styles.birthLabel}>음력</label>
+                        <span className={styles.birthSpan}>
+                            <input type="radio" id="solar" name="calendarType" value="S" onChange={() => setMemberInfo(prev => ({ ...prev, calendarType: "S" }))} defaultChecked />
+                            <label htmlFor="solar" className={styles.birthLabel}>양력</label>
+                            <input type="radio" id="lunar" name="calendarType" value="L" onChange={() => setMemberInfo(prev => ({ ...prev, calendarType: "L" }))} />
+                            <label htmlFor="lunar" className={styles.birthLabel}>음력</label>
+                        </span>
                     </div>
 
                     <div>
                         <label>주소</label>
-                        <Input readOnly name='zip_code' value={memberInfo.zip_code} onChange={handleMemberInfoChange} placeholder="우편 번호"/>
+                        <Input readOnly name='zip_code' value={memberInfo.zip_code} onChange={handleMemberInfoChange} placeholder="우편 번호" />
                         <button onClick={handleClickZipcode} >우편번호 검색</button>
                     </div>
                     <div>
@@ -330,7 +400,7 @@ const UserRegister = () => {
                             value={memberInfo.address_line1}
                             onChange={handleMemberInfoChange}
                             placeholder="주소" />
-                            
+
                     </div>
                     <div>
                         <label></label>

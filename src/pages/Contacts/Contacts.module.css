@@ -15,10 +15,9 @@
 
 /* 메인 */
 .main {
-
-    width: 80%;
-    height: 100%;
-    float: left;
+  width: 100%;
+  height: 100%;
+  float: left;
 
 }
 
@@ -71,28 +70,43 @@
 .mainBodyHeader {
     width: 100%;
     height: 5%;
+    border-top: 2px solid #ccc;
+     border-bottom: 2px solid #ccc;
+  
 }
 
 .mainBodylist {
     width: 100%;
     height: 95%;
+  
 }
 
 .mainBodylistbox {
-
-    height: 5%;
+  width: 100%;
+  height: 60px; 
+  line-height: 60px; 
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  align-items: center; 
+  
 }
 
+/* 
+.mainBodylistbox {
+    height: 5%;
+
+} */
+
 .mainBodylistbox:hover {
-    cursor: pointer;
-    background-color: lightgrey;
+   
+   background-color: rgb(252, 252, 252);
+    
 }
 
 .mainBodycheckbox {
     width: 10%;
     height: 100%;
     float: left;
-    display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;

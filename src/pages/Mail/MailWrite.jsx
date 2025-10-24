@@ -12,7 +12,6 @@ const MailWrite = () => {
 
 
 
-
   const Navigate = useNavigate();
   const fileRef = useRef();
   const [files, setFiles] = useState([]);
@@ -29,9 +28,6 @@ const MailWrite = () => {
 
 
 
-
-
-
   // input 변경 처리
   const handleChange = (e) => {
     setMail(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -43,42 +39,44 @@ const MailWrite = () => {
     setMail(prev => ({ ...prev, content: data }));
   };
 
+  const handleFileClick = () => {
+    fileRef.current.click();
+  }
 
 
-  // // 전송 버튼 클릭 시
-  // const handleMailWrite = () => {
-  //   caxios.post("/mail", mail, {
-  //     headers: { "Content-Type": "application/json" }
-  //   }).then((res) => {
-  //     // setMail(res.data);
-  //     Navigate("/mail");
-  //   });
-  // };
-
+  // // 전송 버튼
   const handleMailWrite = async () => {
-
-    const res = await caxios.post("/mail", mail, {
-      headers: { "Content-Type": "application/json" }
-    });
-    const mailSeq = res.data; // MailController에서 seq 반환
-
-
-    if (files && files.length > 0) {
-      const form = new FormData();
-      form.append('mailSeq', mailSeq); // mailSeq 포함
-      Array.from(files).forEach(file => form.append('files', file));
-
-      await caxios.post(`/files/mailSeq`, form, {
-        headers: { "Content-Type": "multipart/form-data" }
+    try {
+      const res = await caxios.post("/mail", mail, {
+        headers: { "Content-Type": "application/json" }
       });
 
-      fileRef.current.value = "";
-      setFiles([]);
+      const mailSeq = res.data; // MailController에서 seq 반환
+
+
+      if (files && files.length > 0) {
+        const form = new FormData();
+        form.append('mailSeq', mailSeq); // mailSeq 포함
+        Array.from(files).forEach(file => form.append('files', file));
+
+        await caxios.post(`/file/mailSeq`, form, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+
+        fileRef.current.value = "";
+        setFiles([]);
+      }
+      Navigate("/mail");
+    } catch (err) {
+      console.error("메일 발송 중 오류:", err);
+
+      // 서버에서 보낸 메시지
+      if (err.response && err.response.data) {
+        alert(err.response.data);
+      } else {
+        alert("메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      }
     }
-
-
-    Navigate("/mail");
-
   };
 
 
@@ -93,17 +91,17 @@ const MailWrite = () => {
 
 
   return (
-    <div className={styles.container}>
-
-
+    <div className={styles.container} style={{ width: "80%", margin: "auto", marginTop: "20px" }}>
+      <div style={{ fontSize: "30px" }}>메일 작성</div>
+      <hr></hr>
       <div className={styles.mainHeader}>
 
-        <input type="text" className={styles.containerhalf} style={{ width: "93%", float: "left" }} placeholder="수신자를 입력하세요"
+        <input type="text" className={styles.containerhalf} style={{ width: "50%", float: "left", fontSize:"20px" }} placeholder="수신자를 입력하세요"
           onChange={handleChange} name="recipientName" value={mail.recipientName} />
-        <div style={{ width: "5%", float: "left" }}> <button onClick={handleAddContacts}> + </button></div>
+        <div style={{ width: "40%", marginLeft: "30px", float: "left" }}> <button onClick={handleAddContacts}> 주소록 </button></div>
 
         <input type="text" className={styles.containerhalf} placeholder="제목을 입력하세요"
-          onChange={handleChange} name="title" value={mail.title} />
+          onChange={handleChange} name="title" value={mail.title} style={{ fontSize:"20px"}}/>
       </div>
 
       <div className={styles.mainBody}>
@@ -123,20 +121,29 @@ const MailWrite = () => {
 
         />
       </div>
-      <div style={{ marginTop: "10px" }}>
-        {/* <button style={{ float: "left" }}>파일 업로드</button> */}
+      <button onClick={handleFileClick} style={{ marginTop: "10px", float: "left" }}>파일 추가</button>
+      <div style={{ marginTop: "10px", marginLeft: "50px", width: "40%", float: "left" }}>
+
         <input
           type="file"
           multiple
           ref={fileRef}
-          onChange={(e) => setFiles(e.target.files)}
-          style={{ marginBottom: "10px" }}
+          // onChange={(e) => setFiles(e.target.files)}
+          onChange={(e) => {
+            const selectedFiles = Array.from(e.target.files);
+            setFiles(prev => [...prev, ...selectedFiles]);
+          }}
+          style={{ marginBottom: "10px", display: "none" }}
         />
-        {/* <button style={{ float: "left" }} onClick={handleMailUpload}>파일 업로드</button> */}
-        <button className={styles.backBtn} onClick={() => Navigate(-1)}>뒤로가기</button>
-        <button style={{ float: "right" }} onClick={handleMailWrite}>전송</button>
-      </div>
 
+        {files.map((file, idx) => (
+          <li key={idx} style={{ marginBottom: "3px" }}>
+            {file.name}
+          </li>))}
+
+      </div>
+      <button className={styles.backBtn} onClick={() => Navigate(-1)} style={{ marginTop: "10px" }}>뒤로가기</button>
+      <button style={{ float: "right", marginRight: "40px", marginTop: "10px" }} onClick={handleMailWrite}>전송</button>
       <Modal
 
         centered={false}
