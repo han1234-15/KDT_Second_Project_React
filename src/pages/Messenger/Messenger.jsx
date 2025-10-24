@@ -17,11 +17,11 @@ const Messenger = () => {
     const token = params.get("token");
     if (token) {
       sessionStorage.setItem("token", token);
-      console.log("✅ JWT 토큰 저장됨:", token);
+      console.log(" JWT 토큰 저장됨:", token);
     }
   }, []);
 
-  // ✅ 현재 경로가 "chat" 포함 시 여백 제거 클래스 적용
+  //  현재 경로가 "chat" 포함 시 여백 제거 클래스 적용
   const isChatPage = location.pathname.includes("chat");
 
   return (

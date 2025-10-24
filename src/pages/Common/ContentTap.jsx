@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./ContentTap.module.css";
+import { useSocket } from "../../config/SocketContext";
 
 const ContentTap = ({
   mainTabs = [],
