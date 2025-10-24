@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "./UserRegister.module.css";
+import styles from "./Mypage.module.css";
 import { UserOutlined } from '@ant-design/icons';
 import { Input, Space, Select } from 'antd';
 import { useNavigate, useParams } from "react-router-dom";
@@ -7,7 +7,7 @@ import { caxios } from "../../config/config";
 import { departmentOptions, jobOptions, positionOptions } from '../../config/options';
 import { useDaumPostcodePopup } from 'react-daum-postcode'; // Daum 주소 검색 관련 hook
 
-const UserDetail = () => {
+const Mypage = () => {
     
     //다음 주소 api
     const postcodeScriptUrl = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
@@ -427,4 +427,4 @@ const UserDetail = () => {
     );
 }
 
-export default UserDetail;
+export default Mypage;

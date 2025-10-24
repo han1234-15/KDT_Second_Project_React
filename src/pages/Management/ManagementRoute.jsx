@@ -1,5 +1,5 @@
-
-import History from "./History";
+import MailArchive from "./MailArchive";
+import ConnectHistory from "./ConnectHistory";
 import Management from "./Management";
 import ManagementTabs from "./ManagementTabs";
 import Manager from "./Manager";
@@ -14,10 +14,11 @@ const ManagementRoute = () => {
             <Route path="/" element={<ManagementTabs />}>
                 <Route index element={<Navigate to="user" replace />} />
                  <Route path="user" element={<Management />} />
-                 <Route path="history" element={<History />} />
+                 <Route path="history" element={<ConnectHistory />} />
                  <Route path="manager" element={<Manager />} />
-                 <Route path="archive" element={<Management />} />
+                 <Route path="archive" element={<MailArchive />} />
             </Route>
+            
             <Route path="register" element={<UserRegister />} />
             <Route path="user/detail/:id" element={<UserDetail />} />
         </Routes >

@@ -1,5 +1,5 @@
-import style from './Management.module.css'
-import {  useNavigate } from 'react-router-dom';
+import style from './Manager.module.css'
+import { useNavigate } from 'react-router-dom';
 import { Input } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Button, Flex, Table, Modal } from 'antd';
@@ -52,12 +52,12 @@ const Manager = () => {
         try {
             await fetchUserData();
             await caxios.delete("/admin", { data: { id: userId } });
-            
+
             alert("관리자 삭제 성공");
             getAdminList();
         } catch (err) {
             console.log(err.response?.data || err.message);  // 관리자 삭제 실패;
-            alert(err.response?.data || err.message);
+            alert("관리자 삭제 실패");
         }
     };
 
@@ -103,8 +103,8 @@ const Manager = () => {
             closeModal();
         } catch (err) {
             console.log(err.response?.data || err.message);   // "존재하지 않는 ID 입니다."
-            alert(err.response?.data || err.message);
-            
+            alert("관리자 등록 실패");
+
         }
     };
 
@@ -124,22 +124,20 @@ const Manager = () => {
                 <div >
                     <Flex gap="middle" vertical>
                         <Flex align="center" gap="middle">
-                            <button name="admin" onClick={handleClick} >관리자 등록</button>
+                            <div className={style.searchLine}>
+                                <button name="admin" onClick={handleClick}>관리자 등록</button>
 
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', width: '30%', minWidth: '100px', border: '1px solid gray', borderRadius: '8px', backgroundColor: 'white' }}>
-
-                                <AiOutlineSearch style={{ fontSize: '20px', marginLeft: '8px', marginTop: '5px', color: '#ddddddff' }} />
-                                <Input
-                                    type="text"
-                                    placeholder="검색 (이름, ID, 사번)"
-                                    value={search}
-                                    onChange={e => { setSearch(e.target.value); }}
-                                    style={{
-                                        width: '100%', border: 'none', outline: 'none',
-                                        boxShadow: 'none'
-                                    }} // 부모 div의 width를 꽉 채움
-                                />
-
+                                <div className={style.searchBox}>
+                                    <AiOutlineSearch style={{ fontSize: '20px', color: '#ddddddff', marginRight: '5px' }} />
+                                    <Input
+                                        type="text"
+                                        placeholder="검색 (이름, ID, 사번)"
+                                        value={search}
+                                        onChange={e => setSearch(e.target.value)}
+                                        variant="borderless"
+                                        style={{ width: '100%', border:'none'}}
+                                    />
+                                </div>
                             </div>
                         </Flex>
 

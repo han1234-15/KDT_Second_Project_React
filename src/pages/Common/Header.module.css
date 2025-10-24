@@ -27,6 +27,10 @@
     -webkit-text-fill-color: transparent;
 }
 
+.header .logo:hover {
+     cursor: pointer;
+}
+
 button {
     background: linear-gradient(45deg, #8e44ad, #2196f3);
     border: none;
@@ -35,4 +39,29 @@ button {
     width: 120px;
     height: 30px;
     border-radius: 5px;
+}
+
+
+.profileContainer {
+  width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.profileImage {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: 0.3s ease;
+}
+
+.profilePopupImage{
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: 0.3s ease;
 }
