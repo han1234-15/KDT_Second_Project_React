@@ -12,7 +12,7 @@ const TaskResponsible = () => {
     // 업무 그룹 추가
     const [TaskResponsibleAddOpen, setTaskResponsibleAddOpen] = useState(false);
 
-    const showTaskResponsibleAddOpen = () => { // 개인 주소록 추가
+    const showTaskResponsibleAddOpen = () => { 
         setTaskResponsibleAddOpen(true);
     };
 

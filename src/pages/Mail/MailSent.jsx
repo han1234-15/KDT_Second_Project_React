@@ -56,6 +56,9 @@ const MailSent = () => {
         caxios.delete("/mail", { data: { seqList: checkedList }, withCredentials: true }).then(resp => {
             setMail(prev => prev.filter(mail => !checkedList.includes(mail.seq)));
         });
+        setCheckedList([]);
+        setAllChecked(false);
+        handleMailList();
     }
 
 
@@ -93,7 +96,7 @@ const MailSent = () => {
     };
 
 
-    return (<div className={styles.container}>
+    return (<div className={styles.container} style={{ fontSize: "20px" }}>
 
 
         {/* 메인 주소록창 */}
@@ -115,8 +118,8 @@ const MailSent = () => {
                 <div className={styles.mainHeaderbottom} >
                     {checkedList.length === 0 ? (
                         <>
-                            <input type="text" placeholder="검색할 수신자 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
-                                onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => {if (e.key === "Enter") { handleMailList();}}}></input>
+                            <input type="text" placeholder="검색할 수신자 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center", fontSize: "20px" }}
+                                onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleMailList(); } }}></input>
                             <button onClick={handleMailList}>검색</button>
                         </>) : (
                         <>
@@ -130,19 +133,18 @@ const MailSent = () => {
 
 
             </div> {/* 주소록 헤더  */}
-            <hr></hr>
+           
 
             {/* 메일 양식 */}
-            <div className={styles.mainBody}>
+            <div className={styles.mainBody} style={{ fontSize: "20px" }}>
 
-                <div className={styles.mainBodyHeader}>
+                <div className={styles.mainBodyHeader} >
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                     <div className={styles.mainBodytag}>수신자</div>
                     <div className={styles.mainBodytag}>수신자 이메일</div>
                     <div className={styles.mainBodytagTitle}>제목</div>
-                    <div className={styles.mainBodytag}>발신날짜</div>
-                    <br></br>
-                    <hr></hr>
+                    <div className={styles.mainBodytag}>발신날짜</div><br></br>
+                   
                 </div>
 
 
@@ -157,9 +159,8 @@ const MailSent = () => {
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.recipientId}</div>
                             <div className={styles.mainBodytagTitle} onClick={() => handleMailView(e)} >{e.title}</div>
                             <div className={styles.mainBodytag} onClick={() => handleMailView(e)} >{e.sendDateStr}</div>
-
                             <br></br>
-                            <hr></hr>
+                          <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
                             {/* 페이지네이션 */}
 
 

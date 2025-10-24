@@ -22,21 +22,27 @@ const TaskDataAdd = ({ onClose }) => {
         onClose();
     }
 
-
     return (
 
-
-        <div className={styles.container}>
-
-            <div className={styles.mainHeader} style={{ fontSize: "30px" }}>
+        <div className={styles.container} style={{ width: "100%", height: "100%" }}>
+            <div style={{ fontSize: "30px", marginLeft: "10px" }}>
                 데이터 등록
-                <hr></hr>
             </div>
-            <br></br>
+            <hr style={{ clear: "both", border: "1px solid black" }} />
+            <div className={styles.mainHeader} style={{ fontSize: "30px" }}>
+
+                <div style={{ width: "100%", float: "left" }}>
+                    <input type="text" placeholder="제목을 입력해 주세요" style={{ border: "none", marginLeft: "10px" }} />
+                </div>
+
+            </div>
+            <hr style={{ width: "50%", clear: "both", border: "1px solid black" }} />
+
             <div className={styles.mainBody}>
 
+                {/* 왼쪽 */}
                 {/* 에디터 api */}
-                <div style={{ width: "50%", float: "left" }}>
+                <div style={{ width: "50%", height: "100%", float: "left", fontSize: "15px" }}>
                     <CKEditor
                         editor={ClassicEditor}
                         data={''}
@@ -52,7 +58,9 @@ const TaskDataAdd = ({ onClose }) => {
 
                 </div>
 
-                <div style={{ width: "50%", float: "left" }}>
+
+                {/* 오른쪽 */}
+                <div style={{ width: "50%", height: "100%", float: "left", fontSize: "20px" }}>
 
                     <div className={styles.NewSharedMailbox1}>그룹 이름 </div>
                     <select style={{ width: "20%", marginLeft: "10px" }}>
@@ -71,9 +79,9 @@ const TaskDataAdd = ({ onClose }) => {
                     <br></br>
                     <br></br>
 
-                    <div className={styles.NewSharedMailbox1}  style={{ textAlign: "left"}}>파일 </div>
+                    <div className={styles.NewSharedMailbox1} style={{ textAlign: "left" }}>파일 </div>
                     <input type="file"
-                        style={{ textAlign: "left", verticalAlign: "top", color: "black", borderRadius: "5px", border: "1px solid grey" }} />
+                        style={{ color: "black", borderRadius: "5px", border: "none", cursor: "pointer" }} />
                     <br></br>
                     <br></br>
                     <br></br>
@@ -86,16 +94,11 @@ const TaskDataAdd = ({ onClose }) => {
 
                     <br></br>
 
+                    <button style={{ float: "right", marginLeft: "50px", marginRight: "50px", marginTop: "40%" }} onClick={handleAdd}>저장</button>
+                    <button style={{ float: "right", marginTop: "40%" }} onClick={handleOut}>취소</button>
                 </div>
 
-                <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}></div>
-
             </div>
-
-
-            <button style={{ float: "right", marginLeft: "50px", marginRight: "50px" }} onClick={handleAdd}>저장</button>
-            <button style={{ float: "right" }} onClick={handleOut}>취소</button>
-
 
         </div>
 

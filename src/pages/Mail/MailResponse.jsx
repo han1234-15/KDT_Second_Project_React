@@ -52,6 +52,9 @@ const MailResponse = () => {
   };
 
 
+  const handleFileClick = () => {
+    fileRef.current.click();
+  }
 
   // // 전송 버튼
   const handleMailWrite = async () => {
@@ -68,7 +71,7 @@ const MailResponse = () => {
         form.append('mailSeq', mailSeq); // mailSeq 포함
         Array.from(files).forEach(file => form.append('files', file));
 
-        await caxios.post(`/files/mailSeq`, form, {
+        await caxios.post(`/file/mailSeq`, form, {
           headers: { "Content-Type": "multipart/form-data" }
         });
 
@@ -100,17 +103,18 @@ const MailResponse = () => {
 
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={{ width: "80%", margin: "auto", marginTop: "20px" }}>
+      <div style={{ fontSize: "30px" }}>답장</div>
+      <hr></hr>
+
+      <div className={styles.mainHeader} >
 
 
-      <div className={styles.mainHeader}>
+        <input type="text" className={styles.containerhalf} style={{ width: "50%", fontSize: "20px" }}
+          onChange={handleChange} name="recipientName" value={mail.recipientName} /><br></br>
 
 
-        <input type="text" className={styles.containerhalf} style={{ width: "93%", float: "left" }}
-          onChange={handleChange} name="recipientName" value={mail.recipientName} />
-
-
-        <input type="text" className={styles.containerhalf}
+        <input type="text" className={styles.containerhalf} style={{ fontSize: "20px" }}
           onChange={handleChange} name="title" value={mail.title} />
       </div>
 
@@ -131,20 +135,32 @@ const MailResponse = () => {
 
         />
       </div>
-      <div style={{ marginTop: "10px" }}>
-        {/* <button style={{ float: "left" }}>파일 업로드</button> */}
+
+      <button onClick={handleFileClick} style={{ marginTop: "10px", float: "left" }}>파일 추가</button>
+      <div style={{ marginTop: "10px", marginLeft: "50px", width: "40%", float: "left" }}>
+
         <input
           type="file"
           multiple
           ref={fileRef}
-          onChange={(e) => setFiles(e.target.files)}
-          style={{ marginBottom: "10px" }}
+          // onChange={(e) => setFiles(e.target.files)}
+          onChange={(e) => {
+            const selectedFiles = Array.from(e.target.files);
+            setFiles(prev => [...prev, ...selectedFiles]);
+          }}
+          style={{ marginBottom: "10px", display: "none" }}
         />
 
+        {files.map((file, idx) => (
+          <li key={idx} style={{ marginBottom: "3px" }}>
+            {file.name}
+          </li>))}
 
-        <button className={styles.backBtn} onClick={() => Navigate(-1)}>뒤로가기</button>
-        <button style={{ float: "right", marginRight: "40px" }} onClick={handleMailWrite}>전송</button>
       </div>
+
+      <button className={styles.backBtn} onClick={() => Navigate(-1)} style={{ marginTop: "10px" }}>뒤로가기</button>
+      <button style={{ float: "right", marginRight: "40px", marginTop: "10px" }} onClick={handleMailWrite}>전송</button>
+
 
       <Modal
 
