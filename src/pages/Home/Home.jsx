@@ -70,7 +70,7 @@ function Home() {
               </span>
             }
             className={styles.card}
-            bodyStyle={{ padding: "14px 18px" }}
+            styles={{ body: { padding: "14px 18px" } }}
           >
             <List
               dataSource={notifications}
@@ -88,7 +88,7 @@ function Home() {
               </span>
             }
             className={styles.card}
-            bodyStyle={{ padding: "14px 18px" }}
+            styles={{ body: { padding: "14px 18px" } }}
           >
             <List
               dataSource={mails}
@@ -106,7 +106,7 @@ function Home() {
               </span>
             }
             className={styles.card}
-            bodyStyle={{ padding: "14px 18px" }}
+            styles={{ body: { padding: "14px 18px" } }}
           >
             <p>
               잔여 휴가: <span className={styles.highlight}>12일</span>
@@ -120,7 +120,7 @@ function Home() {
           <Card
             title={<span className={styles.cardHeader}>📅 일정 달력</span>}
             className={styles.card}
-            bodyStyle={{ padding: "0 0 8px 0" }}
+            styles={{ body: { padding: "0 0 8px 0" } }}
           >
             <div className={styles.calendarWrap}>
               <Calendar fullscreen={false} />
@@ -130,7 +130,7 @@ function Home() {
 
         {/* 프로필 카드 */}
         <div key="profile">
-          <Card className={styles.card} bodyStyle={{ padding: "16px" }}>
+          <Card className={styles.card} styles={{ body: { padding: "16px" } }}>
             <div className={styles.profileWrap}>
               <Avatar size={80} icon={<PersonCircle />} />
               <h5 className={styles.profileName}>박지은</h5>
