@@ -153,7 +153,6 @@ const Header = () => {
         }
     };
       
-  // ✅ 로그인 토큰 확인 및 유저 정보 불러오기
   useEffect(() => {
     const token = sessionStorage.getItem("token");
 
@@ -168,6 +167,8 @@ const Header = () => {
   if (loading) {
     return null; // 혹은 스켈레톤 화면, 로딩 스피너
   }
+
+
 
     return (
         <div className={styles.header}>
