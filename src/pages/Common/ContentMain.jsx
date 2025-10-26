@@ -23,7 +23,6 @@ import ContactsTabs from "../Contacts/ContactsTab";
 import MyPage from "./Mypage.jsx";
 import LeaveRoute from "../WorkExpense/LeaveRoute";
 
-
 const ContentMain = () => {
 
   const location = useLocation();

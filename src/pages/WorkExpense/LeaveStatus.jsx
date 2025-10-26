@@ -125,7 +125,7 @@ function LeaveStatus() {
          {isAdmin && selectedRow.status === "N" && selectedRow.member_id !== loginUser.id && (
   <>
     <button onClick={approveHandler}>승인</button>
-    <button onClick={() => setShowRejectInput(true)}>반려</button>
+    <button onClick={() => setShowRejectInput(true)}>반려</button> {/*반려*/}
 
     {showRejectInput && (
       <div style={{ marginTop: "10px" }}>
