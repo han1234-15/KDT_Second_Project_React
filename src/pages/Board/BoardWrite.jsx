@@ -10,7 +10,7 @@ const { Option } = Select;
 
 const BoardWrite = () => {
 
-   const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   // 게시글 상태
   const [board, setBoard] = useState({
@@ -50,8 +50,9 @@ const BoardWrite = () => {
     setBoard((prev) => ({ ...prev, category_id: val }));
   };
 
-  // 파일
+  // 파일 상태
   const [files, setFiles] = useState([]);
+  // 파일 선택
   const handleFileSelect = (e) => {
     setFiles(Array.from(e.target.files));
   };
@@ -59,15 +60,35 @@ const BoardWrite = () => {
   // 글 작성 submit 버튼
   const handleSubmit = async () => {
     try {
-      const resp = await caxios.post("/board", board);
-      console.log("등록 완료:", resp.data);
+      // 게시글 먼저 등록 (board 테이블)
+      const boardResp = await caxios.post("/board", board);
+      const boardSeq = boardResp.data; // controller가 seq 리턴 중
+
+      console.log("게시글 등록 완료, seq:", boardSeq);
+
+      // 파일이 있을 경우 전역 파일 업로드
+      if (files.length > 0) {
+        const formData = new FormData();
+        formData.append("module_type", "board");
+        formData.append("module_seq", boardSeq); // 게시글 PK
+
+        files.forEach((file) => {
+          formData.append("files", file);
+        });
+
+        await caxios.post("/files/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        console.log("파일 업로드 완료");
+      }
 
       alert("게시글이 등록되었습니다!");
 
-      Navigate("/board");
+      navigate(`/board/${board.category_id}`);
     } catch (err) {
       console.error("등록 실패:", err);
-      
+
       alert("등록 중 오류가 발생했습니다.");
     }
   };
@@ -111,10 +132,19 @@ const BoardWrite = () => {
         </Checkbox>
       </div>
 
+      {/* 파일 업로드 */}
       <div className={styles.fileBox}>
         <div className={styles.file}>
           <label>파일 첨부</label>
         </div>
+        {/* 선택된 파일 목록 표시 */}
+        {files.length > 0 && (
+          <ul className={styles.filePreview}>
+            {files.map((file, i) => (
+              <li key={i}>{file.name}</li>
+            ))}
+          </ul>
+        )}
         <div className={styles.fileBtnBox}>
           <label htmlFor="file" className={styles.customFileLabel}>
             <span className={styles.labelText}>파일 선택</span>
