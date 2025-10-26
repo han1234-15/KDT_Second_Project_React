@@ -10,7 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const BoardDetail = () => {
 
-  // URL 파라미터에서 seq 꺼내오기
+  // URL 게시글 번호 
   const { seq } = useParams();
   const navigate = useNavigate();
 
@@ -19,20 +19,48 @@ const BoardDetail = () => {
     category_id: "", category_name: "", title: "", content: "",
     writer_id: "", noticeYn: "", hit: "", createdAt: "",
   });
+
   // board backup
   const [originalBoard, setOriginalBoard] = useState(null);
+
+  // file
+  const [files, setFiles] = useState([]);
 
   // 속성 
   const [fixMode, setFixMode] = useState(false);
 
   // 서버에서 상세 데이터 불러오기
   useEffect(() => {
-    caxios.get(`/board/detail/${seq}`).then(resp => {
-      console.log(resp)
-      setBoard(resp.data);
-      setOriginalBoard(resp.data);
-    });
+
+    // 게시글 내용
+    caxios.get(`/board/detail/${seq}`).then((resp) => setBoard(resp.data));
+
+    // 첨부파일 목록 (전역 파일 API)
+    caxios
+      .get(`/files/fileList?module_type=board&module_seq=${seq}`)
+      .then((resp) => setFiles(resp.data))
+      .catch((err) => console.error("파일 목록 불러오기 실패:", err));
   }, [seq]);
+
+  // 파일 다운로드
+  const handleDownload = async (sysname, orgname) => {
+    try {
+      const response = await caxios.get(`/files/download?sysname=
+        ${encodeURIComponent(sysname)}`, {responseType: "blob",
+});
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", orgname); // 원본 파일명 지정
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error("파일 다운로드 실패:", err);
+      alert("파일 다운로드 중 오류가 발생했습니다.");
+    }
+  };
 
   // 수정 버튼
   const handleEdit = () => {
@@ -198,6 +226,20 @@ const BoardDetail = () => {
           <div dangerouslySetInnerHTML={{ __html: board.content }} />
         )}
       </div>
+      <div className={styles.file}>첨부파일</div>
+      {/* 첨부파일 목록 */}
+      {files.length > 0 && (
+        <div className={styles.fileList}>
+          <ul>
+            {files.map((f) => (
+              <li key={f.sysname}>
+                <button onClick={() => handleDownload(f.sysname, f.orgname)}
+                  className={styles.fileBtn}> {f.orgname}</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {/* 댓글 영역 */}
       {!fixMode && (
         <div className={styles.reply}>
@@ -226,7 +268,7 @@ const BoardDetail = () => {
               comments.map((c) => (
                 <div key={c.seq} className={styles.commentItem}>
                   <div className={styles.commentProfile}>
-                    <RedditOutlined style={{ fontSize: "40px"}} />
+                    <RedditOutlined style={{ fontSize: "40px" }} />
                   </div>
                   <div className={styles.commentMain}>
                     <div className={styles.commentHeader}>
