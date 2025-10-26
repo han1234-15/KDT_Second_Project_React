@@ -21,6 +21,8 @@ import BoardTabs from "../Board/BoardTabs";
 import ManagementTabs from "../Management/ManagementTabs";
 import ContactsTabs from "../Contacts/ContactsTab";
 import MyPage from "./Mypage.jsx";
+import LeaveRoute from "../WorkExpense/LeaveRoute";
+
 
 const ContentMain = () => {
 
@@ -57,6 +59,7 @@ const ContentMain = () => {
               <Route path="/task/*" element={<TaskRoute />} />
               <Route path="/management/*" element={<ManagementRoute />} />
               <Route path="/mypage" element={<MyPage />} />
+              <Route path="/leave/*" element={<LeaveRoute />} />
               <Route path="*" element={<h2>404 Not Found</h2>} />
             </Routes>
           </div>
