@@ -1,0 +1,75 @@
+.container {
+  width: 100%;
+  padding: 30px 10px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.tabArea {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+  margin-bottom: 25px;
+}
+
+.tabArea span {
+  color: #555;
+  cursor: pointer;
+}
+
+.active {
+  font-weight: 700;
+  color: #000;
+}
+
+.searchBox {
+  border: 1px solid #e0e0e0;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.row label {
+  width: 90px;
+  text-align: right;
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.keywordInput {
+  width: 220px;
+  margin-left: 10px;
+}
+
+.searchBtn {
+  margin-left: 10px;
+}
+
+.tableHeader {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.table {
+  border: 1px solid #e0e0e0;
+}
+
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  margin: 0 5px;
+}

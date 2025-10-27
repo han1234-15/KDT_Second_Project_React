@@ -1,14 +1,12 @@
 .container {
-    
+
     height: 100%;
     font-size: 15px;
     min-width: 900px;
     width: 100%;
-
-
-    padding-left: 30px;
-    padding-top:30px;
+    padding: 30px 10px;
 }
+
 
 .userManageBtn {
     margin-bottom: 10px;
@@ -30,11 +28,11 @@
     /* 링크 밑줄 제거 */
     cursor: pointer;
     display: inline-block;
-    
+
 }
 
 .buttonLink:hover {
-    color:rgb(141, 141, 141);
+    color: rgb(141, 141, 141);
 }
 
 .select>* {
@@ -70,5 +68,5 @@
 }
 
 .cancelBtn {
-  color: rgb(45, 45, 45) !important;
+    color: rgb(45, 45, 45) !important;
 }

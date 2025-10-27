@@ -306,7 +306,7 @@ const UserDetail = () => {
                         <Space wrap>
                             <Select
                                 value={memberInfo.employmentType}
-                                style={{ width: 200 }}
+                                style={{ width: 288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, employmentType: value }))
                                 }
@@ -340,7 +340,7 @@ const UserDetail = () => {
                         <Space wrap>
                             <Select
                                 value={memberInfo.dept_code}
-                                style={{ width: 200 }}
+                                style={{ width: 288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, dept_code: value }))
                                 }
@@ -352,7 +352,7 @@ const UserDetail = () => {
                         <label>직위*</label><Space wrap>
                             <Select
                                 value={memberInfo.rank_code}
-                                style={{ width: 200 }}
+                                style={{ width: 288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, rank_code: value }))
                                 }
@@ -365,7 +365,7 @@ const UserDetail = () => {
                         <label>직무*</label><Space wrap>
                             <Select
                                 value={memberInfo.job_code}
-                                style={{ width: 200 }}
+                                style={{ width: 288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, job_code: value }))
                                 }
@@ -397,7 +397,7 @@ const UserDetail = () => {
                         </span>
                     </div>
 
-                    <div>
+                    <div className={styles.address}>
                         <label>주소</label>
                         <Input readOnly name='zip_code' value={memberInfo.zip_code} onChange={handleMemberInfoChange} placeholder="우편 번호" />
                         <button onClick={handleClickZipcode} >우편번호 검색</button>

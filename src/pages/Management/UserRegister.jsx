@@ -298,7 +298,7 @@ const UserRegister = () => {
                         <Space wrap>
                             <Select
                                 defaultValue="일반직"
-                                style={{ width: 200 }}
+                                style={{ width: 288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, employmentType: value }))
                                 }
@@ -332,7 +332,7 @@ const UserRegister = () => {
                         <Space wrap>
                             <Select
                                 defaultValue="연구&개발"
-                                style={{ width: 200 }}
+                                style={{ width:  288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, dept_code: value }))
                                 }
@@ -344,7 +344,7 @@ const UserRegister = () => {
                         <label>직위*</label><Space wrap>
                             <Select
                                 defaultValue="사원"
-                                style={{ width: 200 }}
+                                style={{ width:  288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, rank_code: value }))
                                 }
@@ -357,7 +357,7 @@ const UserRegister = () => {
                         <label>직무*</label><Space wrap>
                             <Select
                                 defaultValue="기획"
-                                style={{ width: 200 }}
+                                style={{ width:  288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, job_code: value }))
                                 }
@@ -389,7 +389,7 @@ const UserRegister = () => {
                         </span>
                     </div>
 
-                    <div>
+                    <div className={styles.address}>
                         <label>주소</label>
                         <Input readOnly name='zip_code' value={memberInfo.zip_code} onChange={handleMemberInfoChange} placeholder="우편 번호" />
                         <button onClick={handleClickZipcode} >우편번호 검색</button>
@@ -397,6 +397,7 @@ const UserRegister = () => {
                     <div>
                         <label></label>
                         <Input readOnly name="address_line1"
+                            style={{width:'100px'}}
                             value={memberInfo.address_line1}
                             onChange={handleMemberInfoChange}
                             placeholder="주소" />

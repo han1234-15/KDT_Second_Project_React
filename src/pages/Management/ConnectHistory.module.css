@@ -1,0 +1,124 @@
+.container {
+  width: 100%;
+  padding: 30px 10px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 25px;
+}
+
+/*필터 영역 */
+.filterArea {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.filterItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterItem label {
+  font-weight: 500;
+  font-size: 18px;
+  color: #333;
+  min-width: 80px;
+  text-align: right;
+}
+
+.filterItem input {
+  height: 32px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 13px;
+  width: 180px;
+}
+
+.filterItem2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterItem2 label {
+  font-weight: 500;
+  font-size: 18px;
+  color: #333;
+  min-width: 25px;
+  max-width: 25px;
+  text-align: right;
+}
+
+.filterItem2 input {
+  height: 32px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 13px;
+  width: 180px;
+}
+
+.searchBtn {
+  cursor: pointer;
+  
+  height: 31px;
+  margin-left: 10px;
+  margin-bottom: 1px;
+}
+.searchBtn:hover {
+  background-color: #4096ff;
+}
+
+/* 🧾 테이블 */
+.tableWrap {
+  margin-top: 10px;
+}
+
+/* antd 헤더 커스터마이징 */
+:global(.ant-table-thead > tr > th) {
+  background-color: #fafafa !important;
+  text-align: center !important;
+  font-weight: 600 !important;
+  border-bottom: 2px solid #ddd !important;
+  color: #333;
+  font-size: 14px;
+}
+
+/* antd 본문 */
+:global(.ant-table-tbody > tr > td) {
+  text-align: center !important;
+  font-size: 13px;
+  border-bottom: 1px solid #eee !important;
+  padding: 10px 8px !important;
+}
+
+/* 페이지네이션 */
+:global(.ant-pagination) {
+  margin-top: 16px !important;
+  justify-content: center;
+}
+
+/* 반응형 대응 */
+@media (max-width: 768px) {
+  .filterArea {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .filterItem label {
+    min-width: 70px;
+  }
+
+  .filterItem input {
+    width: 160px;
+  }
+}

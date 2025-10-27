@@ -127,18 +127,15 @@
 
 .right :global(.ant-input) {
   flex: 1;
-  
 }
-
 .right .birth {
-  min-width: 370px;
-   max-width:370px;
+  min-width: 410px;
+  max-width: 410px;
 }
-
 .birthSpan{
   width: 120px;
   display: flex;
-  gap: 6px;
+  gap: 4px;
   align-items: center;
   justify-content: center;
 }
@@ -151,7 +148,12 @@
   min-width: 237px;
   max-width:237px;
 }
-
+.address :global(.ant-input[name="zip_code"]) {
+  width: 410px !important;
+  flex: 0 0 165px !important;
+  /* ✅ width만 고정, 나머지는 flex 구조 유지 */
+  margin-left: 10px;
+}
 .address>div {
   display: block;
   /* 한 줄씩 아래로 내려가게 */
@@ -162,9 +164,13 @@
   width: 100%;
 }
 
-.bottomButton button {
-  margin-right: 0.3%;
-  margin-top: 1%;
+.bottomButton{
+  margin-left: 228px;
+}
+
+
+.bottomButton button{
+  width: 80px;
 }
 
 .idBtn {
