@@ -12,6 +12,7 @@ const MailRoute = () => {
     return (
 
         <Routes>
+            
             <Route path="/" element={<MailTab />} >
                 <Route index element={<Navigate to="all" replace />} />
                 <Route path="all" element={<Mail />} />
@@ -21,7 +22,7 @@ const MailRoute = () => {
             <Route path="mailview" element={<MailView />} /> {/* Mail 보는 페이지 추가 10.05 박민규  */}
             <Route path="mailwrite" element={<MailWrite />} /> {/* Mail 쓰는 페이지 추가 10.05 박민규 */}
             <Route path="addcontacts" element={<MailAddContacts />} />
-            <Route path="response" element={<MailResponse/>} />
+            <Route path="response" element={<MailResponse />} />
 
         </Routes>
     );

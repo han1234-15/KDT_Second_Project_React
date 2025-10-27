@@ -104,14 +104,14 @@ const MailResponse = () => {
 
   return (
     <div className={styles.container} style={{ width: "80%", margin: "auto", marginTop: "20px" }}>
-      <div style={{ fontSize: "30px" }}>답장</div>
+      <div style={{ fontSize: "30px" }} aria-readonly>답장</div>
       <hr></hr>
 
       <div className={styles.mainHeader} >
 
 
         <input type="text" className={styles.containerhalf} style={{ width: "50%", fontSize: "20px" }}
-          onChange={handleChange} name="recipientName" value={mail.recipientName} /><br></br>
+          onChange={handleChange} name="recipientName" value={mail.recipientName}  readOnly/><br></br>
 
 
         <input type="text" className={styles.containerhalf} style={{ fontSize: "20px" }}

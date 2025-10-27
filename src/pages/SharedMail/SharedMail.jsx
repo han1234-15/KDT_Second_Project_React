@@ -1,8 +1,6 @@
 import styles from "./SharedMail.module.css";
 
 
-
-
 const SharedMail = () => {
 
     const handleNewSharedMail = () => {
@@ -46,14 +44,6 @@ const SharedMail = () => {
 
 
     </div>
-
-
-
-
-
-
-
-
     );
 }
 

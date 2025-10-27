@@ -67,27 +67,29 @@ const MailView = () => {
                 <div className={styles.mainHeadertop}>
                     {mail.title}
                 </div>
-                <hr />
             </div>
-
-            <div className={styles.mainBody}>
-                <div className={styles.mainBodyViewContent} dangerouslySetInnerHTML={{ __html: safeContent }} />
+            <hr />
+            <div className={styles.mainBody} >
+                {/* api 받는 문자열  */}
+                <div className={styles.mainBodyViewContent} dangerouslySetInnerHTML={{ __html: safeContent }}
+                    style={{ fontSize: "25px" }} />
 
                 <button className={styles.downloadBtn} style={{ marginRight: "20px" }}>파일 목록</button>
                 <br></br>
                 <br></br>
 
                 <ul>
-
                     {List.map((e, i) => (
 
                         <li key={i} style={{ width: "20%" }}>
 
-                            {e.orgname || e.sysname}
-                            <button onClick={() => handleDownload(mail.seq, e.sysname, e.orgname)}
-                                style={{ marginLeft: "20px" }}>다운받기</button>
-                            <hr></hr>
+                            <div>
+                                {e.orgname || e.sysname}
+                                <button onClick={() => handleDownload(mail.seq, e.sysname, e.orgname)}
+                                    style={{ float: "right", marginRight: "20px" }}>다운받기</button>
+                            </div>
 
+                            <br></br>
                         </li>
                     ))}
                 </ul>
@@ -96,7 +98,7 @@ const MailView = () => {
             <button className={styles.backBtn} onClick={handleMailReturn} style={{ marginRight: "50px" }}>뒤로가기</button>
             {/* 보낸 메일은 답장 기능 */}
             {!Mailres && (<button style={{ float: "right", marginRight: "40px" }} onClick={handleMailResponse}>답장</button>)}
-        </div>
+        </div >
 
     );
 };
