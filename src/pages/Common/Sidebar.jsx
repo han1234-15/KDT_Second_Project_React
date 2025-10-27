@@ -24,44 +24,26 @@ const Sidebar = () => {
   const [title, setTitle] = useState("");
 
   useEffect(() => {
-  //  경로별 페이지 이름 매핑
-  const pathTitles = {
-    "/": "홈",
-    "/mail": "메일",
-    "/sharedMail": "공용 메일",
-    "/contacts": "주소록",
-    "/board": "게시판",
-    "/schedule": "일정",
-    "/Eapproval": "전자결재",
-    "/workExpense": "근무/경비",
-    "/task": "업무관리",
-    "/management": "관리",
-  };
-   
-  const pathname = location.pathname;
-  //  가장 긴 경로부터 검사 ( "/" 보다 "/board" 우선 )
-  const sortedKeys = Object.keys(pathTitles).sort((a, b) => b.length - a.length);
-  const key = sortedKeys.find((k) => pathname.startsWith(k));
-  setTitle(key ? pathTitles[key] : "");
-}, [location.pathname]);
+    //  경로별 페이지 이름 매핑
+    const pathTitles = {
+      "/": "홈",
+      "/mail": "메일",
+      "/sharedMail": "공용 메일",
+      "/contacts": "주소록",
+      "/board": "게시판",
+      "/schedule": "일정",
+      "/Eapproval": "전자결재",
+      "/workExpense": "근무/경비",
+      "/task": "업무관리",
+      "/management": "관리",
+    };
 
-  //  메신저 팝업 열기 함수
-  const openMessenger = () => {
-    const width = 400;
-    const height = 550;
-    const left = window.screen.width - width - 40;
-    const top = window.screen.height - height - 100;
-
-    //  token을 쿼리스트링으로 전달
-    const url = `${window.location.origin}/messenger-popup?token=${token}`;
-    console.log(" Messenger popup URL:", url);
-
-    window.open(
-      url,
-      "MessengerPopup",
-      `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no,status=no`
-    );
-  };
+    const pathname = location.pathname;
+    //  가장 긴 경로부터 검사 ( "/" 보다 "/board" 우선 )
+    const sortedKeys = Object.keys(pathTitles).sort((a, b) => b.length - a.length);
+    const key = sortedKeys.find((k) => pathname.startsWith(k));
+    setTitle(key ? pathTitles[key] : "");
+  }, [location.pathname]);
 
   return (
     <div className={styles.side}>
@@ -78,12 +60,6 @@ const Sidebar = () => {
         <Link to="/Eapproval" className={styles.menu}><FileDoneOutlined />전자결재</Link>
         <Link to="/workExpense" className={styles.menu}><SolutionOutlined />근무/경비</Link>
         <Link to="/task" className={styles.menu}><DesktopOutlined />업무관리</Link>
-
-        {/*  메신저 버튼은 Link 대신 팝업으로 작동 */}
-        <button onClick={openMessenger} className={styles.menu}>
-          <MessageOutlined /> 메신저
-        </button>
-
         <Link to="/management" className={styles.menu}><SettingOutlined />관리</Link>
       </div>
     </div>

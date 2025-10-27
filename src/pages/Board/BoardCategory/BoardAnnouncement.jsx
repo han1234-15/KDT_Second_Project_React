@@ -87,6 +87,10 @@ const BoardAnnouncement = () => {
             defaultPageSize: 10,
             onChange: handlePageChange,
           }}
+           onRow={(record) => ({
+            onClick: () => handleRowClick(record), // 클릭 시 navigate 작동
+          })}
+          rowClassName={() => styles.tableRow} // (선택) 클릭 시 hover 스타일 주기용
         />
       </div>
     </div>

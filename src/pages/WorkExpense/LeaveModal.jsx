@@ -140,7 +140,7 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
         locale="ko"
       />
 
-      {/* ✅ 휴가 타입 + 사유 */}
+      {/* 휴가 타입 + 사유 */}
       <div style={{ marginTop: 20 }}>
         <Select
           value={vacType}
@@ -163,7 +163,7 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
         />
       </div>
 
-      {/* ✅ 버튼 */}
+      {/*  버튼 */}
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
         <Button onClick={onClose}>취소</Button>
         <Button type="primary" onClick={submitVacation}>
@@ -171,7 +171,7 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
         </Button>
       </div>
 
-      {/* ✅ 결재선 모달 */}
+      {/*  결재선 모달 */}
       {!isCEO && (
         <ApprovalLineModal
           open={approvalModalOpen}
