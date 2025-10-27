@@ -1,16 +1,16 @@
-
+import { Routes, Route, Navigate } from "react-router-dom";
+import ScheduleTabs from "./ScheduleTabs";
 import Schedule from "./Schedule";
-import { Routes, Route } from "react-router-dom";
 
 const ScheduleRoute = () => {
-
-    return (
-
-        <Routes>
-            <Route path="/" element={<Schedule />} />
-
-        </Routes>
-    );
-}
+  return (
+    <Routes>
+      <Route path="/" element={<ScheduleTabs />}>
+        <Route index element={<Navigate to="schedule" replace />} />
+        <Route path="schedule" element={<Schedule />} />
+      </Route>
+    </Routes>
+  );
+};
 
 export default ScheduleRoute;
