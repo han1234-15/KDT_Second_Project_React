@@ -27,15 +27,6 @@ const ContactsTabs = () => {
           onSubClick={(path) => navigate(path)}
         />
 
-        {/* 오른쪽 버튼 영역 */}
-        {location.pathname.startsWith("/board") && (
-          <button
-
-            onClick={() => navigate("/board/boardWrite")}
-          >
-            글 작성하기
-          </button>
-        )}
       </div>
 
       {/* 실제 콘텐츠 출력 */}

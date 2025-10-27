@@ -101,3 +101,41 @@
 .gradientInfo {
   background: linear-gradient(90deg, #3b82f6, #06b6d4);
 }
+
+
+/* 메일 css */
+.mailListItem {
+  display: flex;
+  align-items: center; /* 수직 중앙 정렬 */
+  padding: 6px 0;
+  gap: 8px; /* 항목 간 간격 */
+   text-align: center;
+}
+
+.mailListItem:hover{
+  cursor: pointer;
+   background-color: rgb(252, 252, 252);
+}
+
+.mailSender {
+  width: 20%; /* 발신자 폭 고정 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.mailTitle {
+  width: 50%; /* 제목 폭 고정 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+   text-align: center;
+}
+
+.mailDate {
+  width: 30%; /* 날짜 폭 고정 */
+  text-align: right;
+  color: #6b7280;
+   text-align: center;
+}

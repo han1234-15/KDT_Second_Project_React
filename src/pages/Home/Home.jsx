@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { caxios } from "../../config/config.js";
 import GridLayout from "react-grid-layout";
 import { WidthProvider } from "react-grid-layout";   // ✅ 추가
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+
 import { Card, Button, Calendar, List, Avatar, Select } from "antd";
 import {
   BellFill,
@@ -18,6 +21,7 @@ import styles from "./Home.module.css";
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
 function Home() {
+  const navigate = useNavigate();
   const [status, setStatus] = useState("근무중");
 
   const defaultLayout = [
@@ -37,8 +41,18 @@ function Home() {
     }
   }, []);
 
+  //최근 메일 useEffect (어제~오늘까지 메일 출력)00:00~23:59 
+  useEffect(() => {
+    caxios.get("/mail/recent", { withCredentials: true })
+      .then((resp) => {
+        const recently = resp.data
+        setMails(recently);
+      })
+      .catch((err) => console.error("메일 알림 불러오기 실패:", err));
+  }, []);
+
   const notifications = ["공지사항 1", "공지사항 2", "공지사항 3"];
-  const mails = ["새 메일 1", "새 메일 2"];
+  const [mails, setMails] = useState([]);
   const attendanceLogs = [
     { date: "2025-10-24", in: "09:05", out: "18:10" },
     { date: "2025-10-23", in: "09:00", out: "18:00" },
@@ -79,23 +93,43 @@ function Home() {
           </Card>
         </div>
 
+
         {/* 메일 알림 */}
-        <div key="mail">
+        <div key="mail" >
           <Card
             title={
               <span className={styles.cardHeader}>
-                <EnvelopeFill className={styles.headerIcon} /> 메일 알림
+                <EnvelopeFill className={styles.headerIcon} /> 최근 메일 {mails.length}개
               </span>
             }
             className={styles.card}
             bodyStyle={{ padding: "14px 18px" }}
           >
-            <List
-              dataSource={mails}
-              renderItem={(item) => <List.Item>{item}</List.Item>}
-            />
+    
+          
+            {/* card height 에 알맞게 overflow 스크롤 작용 */}
+            <div style={{ maxHeight: `calc(${70 * 2}px - 45px)`, overflowY: "auto", }}>
+              <List
+                dataSource={mails}
+
+                renderItem={(item) => (
+                  <List.Item
+                    className={styles.mailListItem}
+                    style={{}}
+                    onClick={() =>
+                      navigate("/mail/mailview", { state: { mail: item } })
+                    }
+                  >
+                    <div className={styles.mailSender}>{item.senderName}</div>
+                    <div className={styles.mailTitle}>{item.title}</div>
+                    <div className={styles.mailDate}>{item.sendDateStr}</div>
+                  </List.Item>
+                )}
+              />
+            </div>
           </Card>
         </div>
+
 
         {/* 잔여 휴가 */}
         <div key="vacation">
@@ -112,6 +146,7 @@ function Home() {
               잔여 휴가: <span className={styles.highlight}>12일</span>
             </p>
             <Button type="primary">휴가 신청</Button>
+
           </Card>
         </div>
 

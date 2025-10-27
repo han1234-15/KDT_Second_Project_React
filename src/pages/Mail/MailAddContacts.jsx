@@ -107,7 +107,7 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
         setAllChecked(false);
     };
 
-    return (<div className={styles.container}>
+    return (<div className={styles.container} style={{ fontSize: "20px", marginTop: "20px" }}>
 
 
         {/* 메인 주소록창 */}
@@ -127,42 +127,43 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
                 {/* 주소록 헤더 2 */}
                 <div className={styles.mainHeaderbottom} >
 
-                    <input type="text" placeholder="검색할 주소록 이름" style={{ width: "81%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
+                    <input type="text" placeholder="주소록 성함" style={{ width: "81%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
                         onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
                     <button onClick={handleContactsList}>검색</button>
                 </div>
-                <br></br>
+
             </div> {/* 주소록 헤더  */}
-            <hr></hr>
+
 
             {/* 주소록 바디 여기가 계속 변하는곳 Route */}
-            <div className={styles.mainBody}>
-                <div className={styles.mainBodyHeader}>
-                    <div className={styles.mainBodycheckbox}>
-                        <input type="checkbox" checked={allChecked} onChange={handleAllcheckbox} />
+            <div className={styles.mainBody} style={{ marginTop: "20px" }}>
+                <div className={styles.mainBodyHeader} style={{ fontSize: "20px" }}>
+                    <div className={styles.mainBodycheckbox} >
+                       선택
                     </div>
                     <div className={styles.mainBodytag}>성함</div>
                     <div className={styles.mainBodytag}>전화번호</div>
-                    <div className={styles.mainBodytag}>이메일</div>
+                    <div className={styles.mainBodytag}>아이디</div>
                     <div className={styles.mainBodytag}>부서</div>
-                    <div className={styles.mainBodytag}>직급</div><br></br>
-                    <hr></hr>
+                    <div className={styles.mainBodytag}>직위</div>
+                    <br></br>
+
                 </div>
 
 
                 {/* 주소록 출력  */}
 
-                <div className={styles.mainBodylist}>
+                <div className={styles.mainBodylist} style={{ fontSize: "18px" }}>
 
                     {view === "all" && currentContacts.map(e => // 전체출력
-                        <div key={e.seq} style={{ height: "5%" }} >
+                        <div key={e.seq} >
                             <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
                             <div className={styles.mainBodytag}>{e.name}</div>
                             <div className={styles.mainBodytag}>{e.phone}</div>
                             <div className={styles.mainBodytag}>{e.email}</div>
                             <div className={styles.mainBodytag}>{e.job_code}</div>
                             <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
-                            <hr></hr>
+                            <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
                         </div>
 
                     )}
@@ -171,28 +172,28 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
                     {view === "solo" && currentContacts
                         .filter(contact => contact.type === "solo") // 개인 주소록만
                         .map(e => (
-                            <div key={e.seq} style={{ height: "5%" }} >
+                            <div key={e.seq}  >
                                 <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
                                 <div className={styles.mainBodytag}>{e.name}</div>
                                 <div className={styles.mainBodytag}>{e.phone}</div>
                                 <div className={styles.mainBodytag}>{e.email}</div>
                                 <div className={styles.mainBodytag}>{e.job_code}</div>
                                 <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
-                                <hr></hr>
+                               <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
                             </div>
                         ))}
 
                     {view === "multi" && currentContacts
                         .filter(contact => contact.type === "multi") // 공용 주소록만
                         .map(e => (
-                            <div key={e.seq} style={{ height: "5%" }} >
+                            <div key={e.seq} >
                                 <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
                                 <div className={styles.mainBodytag}>{e.name}</div>
                                 <div className={styles.mainBodytag}>{e.phone}</div>
                                 <div className={styles.mainBodytag}>{e.email}</div>
                                 <div className={styles.mainBodytag}>{e.job_code}</div>
                                 <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
-                                <hr></hr>
+                              <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
                             </div>
 
                         ))}
