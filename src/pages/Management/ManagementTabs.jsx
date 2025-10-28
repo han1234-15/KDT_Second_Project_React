@@ -14,9 +14,8 @@ const ManagementTabs = () => {
     { label: "메일 아카이빙", path: "/management/archive" },
   ];
   const subTabs = [];
-
   const [loading, setLoading] = useState(true); //로딩 확인용 상태변수
-  
+
   useEffect(() => {
     const token = sessionStorage.getItem("token");
 
@@ -40,12 +39,13 @@ const ManagementTabs = () => {
     fetchUserData();
   }, []);
 
-
+  const subActivePath = location.pathname;
   //토큰을 확인하는데 시간이 걸려서 loading으로 토큰 확인이 끝나기 전까지 다른 컴포넌트가 렌더링 되지 않도록 함.
   if (loading) {
     return null; // 혹은 스켈레톤 화면, 로딩 스피너
   }
 
+  console.log(subActivePath);
   return (
     <div >
       <div >
@@ -53,6 +53,7 @@ const ManagementTabs = () => {
           mainTabs={mainTabs}
           subTabs={subTabs}
           activePath={location.pathname}
+          activeSubPath={subActivePath} // (서브 탭 기준)
           onMainClick={(path) => navigate(path)}
           onSubClick={(path) => navigate(path)}
         />

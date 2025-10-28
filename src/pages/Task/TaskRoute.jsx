@@ -15,8 +15,7 @@ const TaskRoute = () => {
 
         <Routes>
             <Route path="/" element={<TaskTab />} >
-                <Route index element={<Navigate to="all" replace />} />
-                <Route path="all" element={<Task />} />
+                <Route index element={<Navigate to="group" replace />} />
                 <Route path="group" element={<TaskGroup />} />
                 <Route path="responsible" element={<TaskResponsible />} />
             </Route>

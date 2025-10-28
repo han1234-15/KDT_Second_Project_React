@@ -1,6 +1,6 @@
 .container {
   width: 100%;
-  padding: 30px 10px;
+  padding: 0px 7px;
 }
 .title {
   font-size: 22px;
@@ -26,29 +26,59 @@
   color: #000;
 }
 
-.subTab {
+/* 서브탭 */
+.subTabs {
   display: flex;
-  gap: 15px;
-  margin-bottom: 25px;
+  gap: 50px;
+  background: #ffffff;
+  padding: 7px 8px;
+  border-radius: 8px;
+  margin: 8px -5;
+  margin-left: -10px;
 }
 
-.subTab span {
-  color: #777;
+.subTab {
   cursor: pointer;
+  font-size: 15px;
+  color: #555;
+  padding: 5px 12px;
+  border-radius: 6px;
+  transition: 0.25s;
 }
 
-.subTab .active {
-  color: #000;
-  font-weight: 600;
-  border-bottom: 2px solid #000;
-  padding-bottom: 3px;
+.subTab.active {
+  background-color: rgba(60, 102, 222, 0.85);
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(60, 102, 222, 0.25);
 }
 
+.subTab:hover {
+  background-color: rgba(60, 102, 222, 0.15);
+  color: #2d4fc2;          
+}
+
+.subTabActive {
+  cursor: pointer;
+  font-size: 15px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  transition: 0.25s;
+  background-color: rgba(60, 102, 222, 0.85);
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(60, 102, 222, 0.25);
+}
+.subTabActive:hover {
+  background-color: rgba(60, 102, 222, 0.15);
+  color: #2d4fc2;          
+}
 .searchBox {
   border: 1px solid #e0e0e0;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .row {
