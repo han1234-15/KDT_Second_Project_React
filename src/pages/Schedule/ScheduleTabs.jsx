@@ -10,7 +10,13 @@ const ScheduleTabs = () => {
 
   const mainTabs = [{ label: "내 일정", path: "/schedule" }];
 
-  const subTabs = [];
+  const subTabs = [
+    { label: "전체 일정", path: "/schedule" },
+    { label: "개인 일정", path: "/schedule" },
+    { label: "중요 일정", path: "/schedule" },
+    { label: "전사 일정", path: "/schedule" },
+    { label: "프로젝트", path: "/schedule" },
+  ];
 
   return (
     <div className={styles.wrapper}>
