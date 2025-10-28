@@ -22,22 +22,45 @@ const ApprovalLineModal = ({
   const [approvers, setApprovers] = useState(initialApprovers);
   const [referenceList, setReferenceList] = useState(initialReferences);
 
-  useEffect(() => {
-    if (open) {
-      setApprovers(initialApprovers);
-      setReferenceList(initialReferences);
-    }
-  }, [open, initialApprovers, initialReferences]);
+ useEffect(() => {
+  if (open) {
 
-  const available = useMemo(
+    let initial = [...initialApprovers];
+
+   
+    const ceo = candidates.find(c => c.rank_code === "사장");
+    if (ceo && !initial.some(a => a.id === ceo.id)) {
+      initial.push({ id: ceo.id, name: ceo.name, rank_code: ceo.rank_code });
+    }
+
+    setApprovers(initial);
+    setReferenceList(initialReferences);
+  }
+}, [open, initialApprovers, initialReferences, candidates]);
+
+
+  // ✅ 결재자 후보: 과장 이상, 본인 제외, 이미 선택된 사람 제외
+  const approverCandidates = useMemo(
     () =>
       candidates.filter(
         (c) =>
           c.id !== applicant?.id &&
           !approvers.some((a) => a.id === c.id) &&
-          !referenceList.some((r) => r.id === c.id)
+          !referenceList.some((r) => r.id === c.id) &&
+          ["과장", "차장", "부장", "임원", "사장"].includes(c.rank_code)
       ),
     [candidates, applicant, approvers, referenceList]
+  );
+
+  // ✅ 참조 후보: 본인 제외, 이미 참조나 결재자에 없는 사람
+  const referenceCandidates = useMemo(
+    () =>
+      candidates.filter(
+        (c) =>
+          c.id !== applicant?.id &&
+          !approvers.some((a) => a.id === c.id)
+      ),
+    [candidates, applicant, approvers]
   );
 
   const onDragEnd = (result) => {
@@ -48,35 +71,36 @@ const ApprovalLineModal = ({
     setApprovers(items);
   };
 
-const addApprover = (id) => {
-  const found = available.find((u) => u.id === id);
-  if (found) {
-    setApprovers(prev => [
-      ...prev,
-      { id: found.id, name: found.name, rank_code: found.rank_code }  // ✅ 이렇게 저장
-    ]);
-  }
-};
+  const addApprover = (id) => {
+    const found = approverCandidates.find((u) => u.id === id);
+    if (found) {
+      setApprovers(prev => [
+        ...prev,
+        { id: found.id, name: found.name, rank_code: found.rank_code }
+      ]);
+    }
+  };
 
   const removeApprover = (id) => {
     setApprovers((prev) => prev.filter((a) => a.id !== id));
   };
 
   const toggleReference = (user) => {
-  setReferenceList(prev =>
-    prev.some(ref => ref.id === user.id)
-      ? prev.filter(ref => ref.id !== user.id)
-      : [...prev, { id: user.id, name: user.name, rank_code: user.rank_code }]  // ✅ 이렇게 저장
-  );
-};
+    setReferenceList(prev =>
+      prev.some(ref => ref.id === user.id)
+        ? prev.filter(ref => ref.id !== user.id)
+        : [...prev, { id: user.id, name: user.name, rank_code: user.rank_code }]
+    );
+  };
 
   const applyAndClose = () => {
+     console.log("✅ applyAndClose 실행됨 / approvers:", approvers);
     onApply?.({ approverList: approvers, referenceNames: referenceList });
     onClose?.();
   };
 
   return (
-    <Modal open={open} onCancel={onClose} onOk={applyAndClose} okText="저장" cancelText="취소" width={600}>
+    <Modal open={open} onCancel={onClose} onOk={applyAndClose} okText="저장" cancelText="취소" width={600}  destroyOnClose>
       <h3 style={{ marginBottom: 12 }}>결재선 설정</h3>
 
       <table style={{ width: "100%", marginBottom: 12 }}>
@@ -109,7 +133,7 @@ const addApprover = (id) => {
         style={{ padding: "6px 10px", marginBottom: 10 }}
       >
         <option value="">결재자 선택</option>
-        {available.map((u) => (
+        {approverCandidates.map((u) => (
           <option key={u.id} value={u.id}>
             {u.name} ({u.rank_code})
           </option>
@@ -154,7 +178,7 @@ const addApprover = (id) => {
 
       <h4>참조</h4>
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-        {available.map((u) => (
+        {referenceCandidates.map((u) => (
           <label key={u.id}>
             <input
               type="checkbox"
