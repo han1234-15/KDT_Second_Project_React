@@ -9,13 +9,11 @@ const TaskTab = () => {
     const location = useLocation();
 
     const mainTabs = [
-        { label: "업무 관리", path: "all" }
+          { label: "업무 그룹", path: "/task/group" },
+        { label: "담당 업무", path: "/task/responsible" }
     ];
 
-    const subTabs = [
-        { label: "업무 그룹", path: "group" },
-        { label: "담당 업무", path: "responsible" }
-    ];
+    const subTabs = [];
 
     return (
         <div className={styles.wrapper}>

@@ -17,7 +17,8 @@ const ManagementRoute = () => {
                  <Route path="user" element={<Management />} />
                  <Route path="history" element={<ConnectHistory />} />
                  <Route path="manager" element={<Manager />} />
-                 <Route path="archive" element={<MailArchive />} />
+                 <Route path="archive/*" element={<Navigate to="/management/archive/search" replace />} />
+                 <Route path="archive/search" element={<MailArchive />} />
                  <Route path="archive/history" element={<MailArchiveHistory />} />
             </Route>
             

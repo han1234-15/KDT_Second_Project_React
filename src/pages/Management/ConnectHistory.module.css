@@ -66,16 +66,8 @@
   width: 180px;
 }
 
-.searchBtn {
-  cursor: pointer;
-  
-  height: 31px;
-  margin-left: 10px;
-  margin-bottom: 1px;
-}
-.searchBtn:hover {
-  background-color: #4096ff;
-}
+
+
 
 /* 🧾 테이블 */
 .tableWrap {

@@ -92,14 +92,14 @@ const ConnectHistory = () => {
                         onChange={handleChange} />
                 </div>
                 <button className={styles.searchBtn} onClick={handleSearch}>검색</button>
-                <button className={styles.searchBtn} onClick={handleClear}>초기화</button>
+                <button className={styles.clearBtn} onClick={handleClear}>초기화</button>
             </div>
 
             <div className={styles.tableWrap}>
                 <Table
                     columns={columns}
                     dataSource={logs}
-                    rowKey="log_id"
+                    rowKey={(record, index) => record.seq || index}
                     pagination={{ pageSize: 15 }}
                 />
             </div>

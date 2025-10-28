@@ -30,7 +30,7 @@
 .header .logo:hover {
      cursor: pointer;
 }
-
+/* 
 button {
     background: linear-gradient(45deg, #8e44ad, #2196f3);
     border: none;
@@ -39,8 +39,7 @@ button {
     width: 120px;
     height: 30px;
     border-radius: 5px;
-}
-
+} */
 
 .profileContainer {
   width: 100%;

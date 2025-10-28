@@ -125,7 +125,7 @@ const Manager = () => {
                     <Flex gap="middle" vertical>
                         <Flex align="center" gap="middle">
                             <div className={style.searchLine}>
-                                <button name="admin" onClick={handleClick}>관리자 등록</button>
+                                <button className={style.addBtn} name="admin" onClick={handleClick}>관리자 등록</button>
 
                                 <div className={style.searchBox}>
                                     <AiOutlineSearch style={{ fontSize: '20px', color: '#ddddddff', marginRight: '5px' }} />
