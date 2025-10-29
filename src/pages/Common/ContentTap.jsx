@@ -32,18 +32,17 @@ const ContentTap = ({
       {/* 서브탭 */}
       {subTabs.length > 0 && (
         <div className={styles.subTabs}>
-          {subTabs.map((tab) => (
+          {subTabs.map((tab, index) => (
             <div
               key={tab.path}
-              className={`${styles.subTab} ${
-                activeSubPath
-                  ? activeSubPath === tab.path // 전자결재일떄만
-                    ? styles.active
-                    : ""
-                  : isActive(tab.path) // 다른 메뉴는 동일하게 유지
-                    ? styles.active
-                    : ""
-              }`}
+              className={`${styles.subTab} ${activeSubPath
+                ? activeSubPath === tab.path // 전자결재일떄만
+                  ? styles.active
+                  : ""
+                : isActive(tab.path) // 다른 메뉴는 동일하게 유지
+                  ? styles.active
+                  : ""
+                }`}
               onClick={() => onSubClick(tab.path)}
             >
               {tab.label}

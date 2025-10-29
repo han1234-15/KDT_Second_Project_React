@@ -1,0 +1,58 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 한 줄 정렬 */
+.row {
+  display: flex;
+  align-items: flex-start; /* 첫 글자 맞춤 */
+  gap: 12px;
+}
+
+/* 라벨 영역 */
+label {
+  display: block;
+  font-weight: 600;
+  color: #444;
+  min-width: 70px; /* 고정 폭으로 간격 일정하게 */
+  margin-right: 4px;
+  text-align: left; /* 왼쪽 정렬 */
+  line-height: 1.5;
+}
+
+/* 일반 텍스트 */
+.text {
+  flex: 1;
+  color: #222;
+  font-size: 15px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* 내용(여러 줄) */
+.textArea {
+  flex: 1;
+  color: #222;
+  line-height: 1.6;
+  background: #f9f9f9;
+  border-radius: 6px;
+  padding: 8px 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 색상 원 */
+.colorBox {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+  margin-top: 3px; /* 라벨 첫줄 기준으로 맞춤 */
+}
+
+.selected {
+  border-color: #000;
+}
