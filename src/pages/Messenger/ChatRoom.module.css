@@ -92,7 +92,7 @@
   color: #333;
   border: 1px solid #ddd;
   align-self: flex-start;
-  border-radius: 16px 16px 16px 0;
+  border-radius: 0px 12px 12px 12px; 
 }
 
 /* 내 메시지 (오른쪽) */
@@ -104,14 +104,14 @@
 .me .msgBubble {
   background: linear-gradient(45deg, #4e73df, #1e88e5);
   color: #fff;
-  border-radius: 16px 16px 0 16px;
+  border-radius: 12px 12px 0 12px;
 }
 
 /* ===== 말풍선 ===== */
 .msgBubble {
   padding: 10px 14px;
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1;
   word-break: break-word;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   
@@ -165,7 +165,7 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 400px; /* ✅ 기존 팝업의 절반 크기 */
+  width: 400px; /*  기존 팝업의 절반 크기 */
   height: 100%;
   background: #fff;
   border-left: 1px solid #ddd;
@@ -229,9 +229,9 @@
 
 .panelHeader {
   display: flex;
-  justify-content: space-between; /* ✅ X 오른쪽 끝 */
+  justify-content: space-between; /*  X 오른쪽 끝 */
   align-items: center;
-  padding: 10px 12px; /* ✅ 상단바 높이 과하지 않게 */
+  padding: 10px 12px; /*  상단바 높이 과하지 않게 */
   background: #fff;
   border-bottom: 1px solid #ddd;
 }
@@ -264,7 +264,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  
 }
 
 .profileThumb {
@@ -274,15 +275,23 @@
   object-fit: cover;
 }
 
+/* 가짜 프로필 공간 - 프로필 숨겨도 정렬 유지 */
+.emptyProfileSpace {
+  width: 32px;
+  height: 32px;
+}
+
 .senderMeta {
   display: flex;
   flex-direction: column;
+
 }
 
 .senderName {
   font-size: 14px;
   font-weight: 600;
   color: #333;
+  margin-bottom: 2px;
 }
 
 .menuContainer {
@@ -291,3 +300,38 @@
   font-size: 22px;
   color: #121212 !important;
 }
+
+.msgTime {
+  font-size: 11px;
+  color: #555;
+  margin-top: 4px;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+.myWrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+/*  내 메시지 (시간 + 말풍선 정렬) */
+.msgRowMe {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.msgRowYou {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  margin-left: 4px; /* 프로필 아래 정렬 보정 */
+}
+
+.msgTime {
+  font-size: 11px;
+  color: #555;
+  white-space: nowrap;
+  margin: 4px;
+}
+
