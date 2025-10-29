@@ -28,7 +28,6 @@ const Sidebar = () => {
     const pathTitles = {
       "/": "홈",
       "/mail": "메일",
-      "/sharedMail": "공용 메일",
       "/contacts": "주소록",
       "/board": "게시판",
       "/schedule": "일정",
@@ -53,7 +52,6 @@ const Sidebar = () => {
       <div className={styles.menubar}>
         <Link to="/" className={styles.menu}><HomeOutlined />홈</Link>
         <Link to="/mail" className={styles.menu}><MailOutlined />메일</Link>
-        <Link to="/sharedMail" className={styles.menu}><CommentOutlined />공용 메일</Link>
         <Link to="/contacts" className={styles.menu}><TeamOutlined />주소록</Link>
         <Link to="/board" className={styles.menu}><FileTextOutlined />게시판</Link>
         <Link to="/schedule" className={styles.menu}><ScheduleOutlined />일정</Link>

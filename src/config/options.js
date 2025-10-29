@@ -9,7 +9,7 @@ export const departmentOptions = [
 
 export const jobOptions = [
   { value: '기획', label: '기획' },
-  { value: '전산', label: '전산' },
+  { value: '전산', label: '전산' }, 
   { value: '영업', label: '영업' },
   { value: '생산', label: '생산' },
   { value: '개발', label: '개발' },

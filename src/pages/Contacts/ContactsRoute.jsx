@@ -6,6 +6,7 @@ import ContactsAddMulti from "./ContactsAddMulti";
 import ContactsSolo from "./ContactsSolo";
 import ContactsMulti from "./ContactsMulti";
 import ContactsTab from "./ContactsTab";
+import Organization from "./Organization";
 
 const ContactsRoute = () => {
 
@@ -16,7 +17,7 @@ const ContactsRoute = () => {
                 <Route path="all" element={<Contacts />} ></Route>
                 <Route path="solo" element={<ContactsSolo />} />
                 <Route path="multi" element={<ContactsMulti />} />
-
+                <Route path="organization" element={<Organization />} />
             </Route>
 
             <Route path="add" element={<ContactsAdd />} />
