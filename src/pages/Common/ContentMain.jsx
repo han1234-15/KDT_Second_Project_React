@@ -9,7 +9,6 @@ import Home from "../Home/Home";
 import MailRoute from "../Mail/MailRoute";
 import BoardRoute from "../Board/BoardRoute";
 import ScheduleRoute from "../Schedule/ScheduleRoute";
-import SharedMailRoute from "../SharedMail/SharedMailRoute";
 import ContactsRoute from "../Contacts/ContactsRoute";
 import MessengerRoute from "../Messenger/MessengerRoute";
 import WorkExpenseRoute from "../WorkExpense/WorkExpenseRoute";
@@ -49,7 +48,6 @@ const ContentMain = () => {
               <Route path="/mail/*" element={<MailRoute />} />
               <Route path="/board/*" element={<BoardRoute />} />
               <Route path="/schedule/*" element={<ScheduleRoute />} />
-              <Route path="/sharedmail/*" element={<SharedMailRoute />} />
               <Route path="/contacts/*" element={<ContactsRoute />} />
               <Route path="/messenger/*" element={<MessengerRoute />} />
               <Route path="/workExpense/*" element={<WorkExpenseRoute />} />

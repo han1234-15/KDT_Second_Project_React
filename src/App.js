@@ -7,7 +7,6 @@ import Home from "./pages/Home/Home";
 import MailRoute from "./pages/Mail/MailRoute";
 import BoardRoute from "./pages/Board/BoardRoute";
 import ScheduleRoute from "./pages/Schedule/ScheduleRoute";
-import SharedMailRoute from "./pages/SharedMail/SharedMailRoute";
 import ContactsRoute from "./pages/Contacts/ContactsRoute";
 import MessengerRoute from "./pages/Messenger/MessengerRoute";
 import WorkExpenseRoute from "./pages/WorkExpense/WorkExpenseRoute";

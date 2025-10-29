@@ -6,7 +6,6 @@ import { caxios } from '../../config/config.js';
 const ContactsAdd = ({ onClose, handleContactsList }) => {
 
 
-
     const [Contacts, setContacts] = useState(
         { user_id: "", name: "", phone: "", email: "", type: "solo", job_code: "", rank_code: "" }
     );
@@ -47,40 +46,45 @@ const ContactsAdd = ({ onClose, handleContactsList }) => {
 
         <div className={styles.container}>
 
-            <div className={styles.mainHeader} style={{ fontSize: "40px", backgroundColor: "#007bff", color: "white", textAlign: "center" }}>
+            <div className={styles.mainHeader} style={{ fontSize: "40px", textAlign: "center" }}>
                 개인 주소록 추가
             </div>
             <br></br>
-            <div className={styles.mainBody}>
+          <div className={styles.mainBody}>
 
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1}>성함 : </div>
-                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
+                    <div className={styles.NewSharedMailbox1} style={{marginLeft:"30px"}}>성함 : </div>
+                    <input type="text" className={styles.NewSharedMailbox2}
+                        style={{marginLeft:"20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                         onChange={handlechange} name="name" value={Contacts.name} />
                 </div>
 
                 <br></br>
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1}>전화번호 : </div>
-                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
+                    <div className={styles.NewSharedMailbox1}  style={{marginLeft:"30px"}}>전화번호 : </div>
+                    <input type="text" className={styles.NewSharedMailbox2}
+                        style={{marginLeft:"20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                         onChange={handlechange} name="phone" value={Contacts.phone} />
                 </div>
                 <br></br>
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1}>아이디 : </div>
-                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
+                    <div className={styles.NewSharedMailbox1}  style={{marginLeft:"30px"}}>아이디 : </div>
+                    <input type="text" className={styles.NewSharedMailbox2}
+                        style={{marginLeft:"20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                         onChange={handlechange} name="email" value={Contacts.email} />
                 </div>
                 <br></br>
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1}>부서 : </div>
-                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
+                    <div className={styles.NewSharedMailbox1}  style={{marginLeft:"30px"}}>부서 : </div>
+                    <input type="text" className={styles.NewSharedMailbox2}
+                        style={{marginLeft:"20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                         onChange={handlechange} name="job_code" value={Contacts.job_code} />
                 </div>
                 <br></br>
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1}> 직위: </div>
-                    <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
+                    <div className={styles.NewSharedMailbox1}  style={{marginLeft:"30px"}}> 직위: </div>
+                    <input type="text" className={styles.NewSharedMailbox2}
+                        style={{marginLeft:"20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                         onChange={handlechange} name="rank_code" value={Contacts.rank_code} />
                 </div>
 

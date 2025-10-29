@@ -60,32 +60,19 @@ const Contacts = () => {
 
 
 
-
     // 공유 주소록으로 이동
-    const handleContactsUpdateTypeMulti = () => {
-        caxios.put("/contacts", { seqList: checkedList, type: "multi" }, { withCredentials: true })
-            .then(resp => {
-                setContacts(prev => prev.map(contact =>
-                    checkedList.includes(contact.seq)
-                        ? { ...contact, type: "multi" }
-                        : contact
-                ));
-            });
+    const handleContactsUpdateTypeMulti = async () => {
+        await caxios.put("/contacts", { seqList: checkedList, type: "multi" }, { withCredentials: true });
+
         setCheckedList([]);
         setAllChecked(false);
         handleContactsList();
     }
 
     // 개인 주소록으로 이동
-    const handleContactsUpdateTypeSingle = () => {
-        caxios.put("/contacts", { seqList: checkedList, type: "solo" }, { withCredentials: true })
-            .then(resp => {
-                setContacts(prev => prev.map(contact =>
-                    checkedList.includes(contact.seq)
-                        ? { ...contact, type: "solo" }
-                        : contact
-                ));
-            });
+    const handleContactsUpdateTypeSingle = async () => {
+        caxios.put("/contacts", { seqList: checkedList, type: "solo" }, { withCredentials: true });
+
         setCheckedList([]);
         setAllChecked(false);
         handleContactsList();
@@ -204,6 +191,16 @@ const Contacts = () => {
         setCheckedList([]);
     };
 
+    // 메일 쓰기
+
+    const handleMail = () => {
+        if (checkedList.length === 1) {
+            const selectedContacts = contacts.filter(c => checkedList.includes(c.seq));
+            Navigate("/mail/mailwrite", { state: { selectedContacts } });
+        } else {
+            alert("1명의 수신인을 선택해주세요.");
+        }
+    };
 
 
     return (<div className={styles.container}>
@@ -221,8 +218,8 @@ const Contacts = () => {
                     <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button>
                     <button onClick={handleContactsMulti} className={styles.headerbutton}>공용 주소록</button> */}
                     전체 주소록 : {contacts.length} 명 <br></br>
-                    <button className={styles.createbtn} onClick={showModalSingleAdd}> 개인주소록 추가 </button>
-                    <button className={styles.createbtn} onClick={showModalMultiAdd}> 공용주소록 추가 </button>
+                    <button className={styles.createbtn} onClick={showModalSingleAdd}> 개인 주소록 추가 </button>
+                    <button className={styles.createbtn} onClick={showModalMultiAdd}> 공용 주소록 추가 </button>
 
                 </div>
 
@@ -240,7 +237,7 @@ const Contacts = () => {
                             <button onClick={showUpdateModal} style={{ margin: "10px" }}> 수정 </button>
                             <button onClick={handleContactsUpdateTypeSingle} style={{ margin: "10px" }}> 개인 주소록으로 </button>
                             <button onClick={handleContactsUpdateTypeMulti} style={{ margin: "10px" }}> 공용 주소록으로 </button>
-
+                            <button onClick={handleMail} style={{ margin: "10px" }}> 메일쓰기 </button>
                         </>
                     )}
                 </div>
@@ -312,7 +309,7 @@ const Contacts = () => {
                         )}
 
                     >
-                        <ContactsAdd onClose={() => setIsSingleModalOpen(false)}  handleContactsList={handleContactsList} />
+                        <ContactsAdd onClose={() => setIsSingleModalOpen(false)} handleContactsList={handleContactsList} />
                     </Modal>
 
                     {/* 공용 주소록 추가 modal */}
@@ -337,7 +334,7 @@ const Contacts = () => {
                             </div>
                         )}
                     >
-                        <ContactsAddMulti onClose={() => setIsMultiModalOpen(false)}  handleContactsList={handleContactsList}  />
+                        <ContactsAddMulti onClose={() => setIsMultiModalOpen(false)} handleContactsList={handleContactsList} />
                     </Modal>
 
                     {/* 수정 modal */}
@@ -363,36 +360,41 @@ const Contacts = () => {
                         )}
                     >
 
-                        <div className={styles.mainHeader} style={{ fontSize: "40px", backgroundColor: "#007bff", color: "white", textAlign: "center" }}>
+                        <div className={styles.mainHeader} style={{ fontSize: "40px", textAlign: "center" }}>
                             수정
                         </div>
                         <br></br>
 
-                        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                            <div className={styles.NewSharedMailbox1}>성함 : </div>
-                            <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
+                        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px"  }}>
+                            <div className={styles.NewSharedMailbox1}  style={{marginLeft:"30px"}}>성함 : </div>
+                            <input type="text" className={styles.NewSharedMailbox2}
+                                style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                                 onChange={handleUpdateChange} value={updateData.name} name="name" />
                         </div>
 
-                        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                            <div className={styles.NewSharedMailbox1}>전화번호 : </div>
-                            <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
+                        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
+                            <div className={styles.NewSharedMailbox1}  style={{marginLeft:"30px" ,}}>전화번호 : </div>
+                            <input type="text" className={styles.NewSharedMailbox2}
+                                style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                                 onChange={handleUpdateChange} value={updateData.phone} name="phone" />
                         </div>
 
-                        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                            <div className={styles.NewSharedMailbox1}>아이디 : </div>
-                            <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
+                        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
+                            <div className={styles.NewSharedMailbox1}  style={{marginLeft:"30px"}}>아이디 : </div>
+                            <input type="text" className={styles.NewSharedMailbox2}
+                                style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                                 onChange={handleUpdateChange} value={updateData.email} name="email" readOnly />
                         </div>
-                        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                            <div className={styles.NewSharedMailbox1}>부서 : </div>
-                            <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
+                        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px"  }}>
+                            <div className={styles.NewSharedMailbox1}  style={{marginLeft:"30px"}}>부서 : </div>
+                            <input type="text" className={styles.NewSharedMailbox2}
+                                style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                                 onChange={handleUpdateChange} value={updateData.job_code} name="job_code" />
                         </div>
-                        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                            <div className={styles.NewSharedMailbox1}>직위 : </div>
-                            <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
+                        <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px"  }}>
+                            <div className={styles.NewSharedMailbox1}  style={{marginLeft:"30px"}}>직위 : </div>
+                            <input type="text" className={styles.NewSharedMailbox2}
+                                style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                                 onChange={handleUpdateChange} value={updateData.rank_code} name="rank_code" />
                         </div>
 
