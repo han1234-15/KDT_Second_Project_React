@@ -96,7 +96,7 @@ const MailSent = () => {
     };
 
 
-    return (<div className={styles.container} style={{ fontSize: "20px" }}>
+    return (<div className={styles.container} >
 
 
         {/* 메인 주소록창 */}
@@ -136,14 +136,14 @@ const MailSent = () => {
            
 
             {/* 메일 양식 */}
-            <div className={styles.mainBody} style={{ fontSize: "20px" }}>
+            <div className={styles.mainBody} style={{ fontSize: "20px" , marginTop:"20px"}}>
 
                 <div className={styles.mainBodyHeader} >
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                     <div className={styles.mainBodytag}>수신자</div>
-                    <div className={styles.mainBodytag}>수신자 이메일</div>
+                    <div className={styles.mainBodytag}>수신자 아이디</div>
                     <div className={styles.mainBodytagTitle}>제목</div>
-                    <div className={styles.mainBodytag}>발신날짜</div><br></br>
+                    <div className={styles.mainBodytag}>발신 날짜</div><br></br>
                    
                 </div>
 

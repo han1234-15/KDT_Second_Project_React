@@ -163,7 +163,6 @@ const Mypage = () => {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             alert("회원 수정 성공");
-            navigate("/management");
             window.location.reload();
         } catch (err) {
             alert("회원 수정 실패");
@@ -204,8 +203,6 @@ const Mypage = () => {
 
     const [loading, setLoading] = useState(true); //로딩 확인용 상태변수
 
-    const { id: checkUserId } = useParams(); // URL에서 id를 userId로 가져옴
-
     useEffect(() => {
         const token = sessionStorage.getItem("token");
 
@@ -216,10 +213,7 @@ const Mypage = () => {
 
         const fetchUserData = async () => {
             try {
-                await caxios.get("/auth/check");
-                //관리자인지 체크 먼저하고
-
-                const memberResp = await caxios.get(`/member/info/${checkUserId}`);
+                const memberResp = await caxios.get(`/member/userInfo`);
                 const data = memberResp.data;
 
                 // 날짜 변환
@@ -264,7 +258,7 @@ const Mypage = () => {
     return (
         <div className={styles.container}>
 
-            <h1>사용자 수정</h1>
+            <h1>사용자 정보 수정</h1>
 
             <div className={styles.content}>
                 {/* ----------left는 프로필 들어가는 자리 */}
@@ -303,76 +297,30 @@ const Mypage = () => {
 
                     <div>
                         <label>근로형태*</label>
-                        <Space wrap>
-                            <Select
-                                value={memberInfo.employmentType}
-                                style={{ width: 200 }}
-                                onChange={(value) =>                     // 선택하면 state 업데이트
-                                    setMemberInfo(prev => ({ ...prev, employmentType: value }))
-                                }
-                                options={[
-
-                                    { value: '일반직', label: '일반직' },
-                                    { value: '임원,촉탁', label: '임원,촉탁' },
-                                ]}
-                            />
-
-                        </Space>
+                        <div style={{ paddingLeft: '2px' }}>{memberInfo.employmentType}</div>
                     </div>
 
                     <div className={styles.hire_date}>
                         <label>입사일*</label>
-                        <Input
-                            type="date"
-                            placeholder="YYYY-MM-DD"
-                            value={memberInfo.hire_date ? memberInfo.hire_date.slice(0, 10) : ""}
-
-                            onChange={(e) =>
-                                setMemberInfo(prev => ({ ...prev, hire_date: e.target.value }))
-                            }
-                        />
+                        <div style={{ paddingLeft: '2px' }}>{memberInfo.hire_date ? memberInfo.hire_date.slice(0, 10) : ""}</div>
                     </div>
                     {/* <div><label>사번*</label><Input placeholder="사번 입력" /></div> */}
 
 
                     <div>
                         <label>부서*</label>
-                        <Space wrap>
-                            <Select
-                                value={memberInfo.dept_code}
-                                style={{ width: 200 }}
-                                onChange={(value) =>                     // 선택하면 state 업데이트
-                                    setMemberInfo(prev => ({ ...prev, dept_code: value }))
-                                }
-                                options={departmentOptions}
-                            />
-                        </Space>
+                        <div style={{ paddingLeft: '2px' }}>{memberInfo.dept_code}</div>
+                       
                     </div>
                     <div>
-                        <label>직위*</label><Space wrap>
-                            <Select
-                                value={memberInfo.rank_code}
-                                style={{ width: 200 }}
-                                onChange={(value) =>                     // 선택하면 state 업데이트
-                                    setMemberInfo(prev => ({ ...prev, rank_code: value }))
-                                }
-                                options={positionOptions}
-                            />
-
-                        </Space>
+                        <label>직위*</label>
+                        <div style={{ paddingLeft: '2px' }}>{memberInfo.rank_code}</div>
+                           
                     </div>
                     <div>
-                        <label>직무*</label><Space wrap>
-                            <Select
-                                value={memberInfo.job_code}
-                                style={{ width: 200 }}
-                                onChange={(value) =>                     // 선택하면 state 업데이트
-                                    setMemberInfo(prev => ({ ...prev, job_code: value }))
-                                }
-                                options={jobOptions}
-                            />
-
-                        </Space>
+                        <label>직무*</label>
+                              <div style={{ paddingLeft: '2px' }}>{memberInfo.job_code}</div>
+                           
                     </div>
 
                     <div><label>개인 이메일</label><Input placeholder="example@email.com" name='personalEmail' value={memberInfo.personalEmail} onChange={handleMemberInfoChange} /></div>
@@ -397,7 +345,7 @@ const Mypage = () => {
                         </span>
                     </div>
 
-                    <div>
+                    <div className={styles.address}>
                         <label>주소</label>
                         <Input readOnly name='zip_code' value={memberInfo.zip_code} onChange={handleMemberInfoChange} placeholder="우편 번호" />
                         <button onClick={handleClickZipcode} >우편번호 검색</button>

@@ -81,6 +81,9 @@ const Header = () => {
                             <div style={{ fontSize: 15, color: '#666', marginTop: '2px' }}>
                                 {memberInfo.rank_code} / {memberInfo.dept_code}
                             </div>
+                            <div style={{ fontSize: 12, color: '#666', marginTop: '2px' }}>
+                                {memberInfo.officeEmail}
+                            </div>
                         </div>
                     </div>
                     <div
@@ -150,7 +153,6 @@ const Header = () => {
         }
     };
       
-  // ✅ 로그인 토큰 확인 및 유저 정보 불러오기
 //   useEffect(() => {
 //     const token = sessionStorage.getItem("token");
 
@@ -161,10 +163,10 @@ const Header = () => {
 //     fetchUserData();
 //   }, []);
 
-//   // ✅ 로딩 중일 때 렌더링 차단
-//   if (loading) {
-//     return null; // 혹은 스켈레톤 화면, 로딩 스피너
-//   }
+  // ✅ 로딩 중일 때 렌더링 차단
+  if (loading) {
+    return null; // 혹은 스켈레톤 화면, 로딩 스피너
+  }
 
     return (
         <div className={styles.header}>

@@ -37,6 +37,7 @@ const Mail = () => {
             setMail(prev => resp.data);
         });
     }
+
     // 페이지 로딩시 리스트 출력
     useEffect(() => {
         handleMailList();
@@ -97,20 +98,19 @@ const Mail = () => {
     // }
 
     const handleMailResponse = () => {
-        if (checkedList.length === 0) {
-            alert("답장할 메일을 선택해주세요.");
-            return;
+        if (checkedList.length == 1) {
+            const selectedMailSeq = checkedList[0];
+            const selectedMail = mail.find(m => m.seq === selectedMailSeq);
+
+            if (!selectedMail) {
+                alert("선택한 메일을 찾을 수 없습니다.");
+                return;
+            }
+
+            navigate("/mail/response", { state: selectedMail });
+        } else {
+            alert("1개의 메일만 답장이 가능합니다.")
         }
-
-        const selectedMailSeq = checkedList[0];
-        const selectedMail = mail.find(m => m.seq === selectedMailSeq);
-
-        if (!selectedMail) {
-            alert("선택한 메일을 찾을 수 없습니다.");
-            return;
-        }
-
-        navigate("/mail/response", { state: selectedMail });
     };
 
 
@@ -122,8 +122,6 @@ const Mail = () => {
 
             {/* 메일 헤더  */}
             <div className={styles.mainHeader}>
-
-
 
                 {/* 메일 헤더 1 */}
                 <div className={styles.mainHeadertop} >
@@ -147,33 +145,22 @@ const Mail = () => {
 
                         </>
                     )}
-
-                    {/* <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-                        <label style={{ marginTop: "15px" }}>   
-                            <input type="checkbox" /> 모든 메일
-                        </label>
-                        <label style={{ marginTop: "15px" }}>
-                            <input type="checkbox" /> 중요 메일
-                        </label>
-                    </div> */}
-
                 </div>
 
-
             </div> {/* 메일 헤더  */}
-            
+
 
             {/* 메일 양식 */}
-            <div className={styles.mainBody} style={{ fontSize: "20px" , marginTop:"20px"}}>
+            <div className={styles.mainBody} style={{ fontSize: "20px", marginTop: "20px" }}>
 
                 <div className={styles.mainBodyHeader}>
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                     <div className={styles.mainBodytag}>발신자</div>
-                    <div className={styles.mainBodytag}>발신자 이메일</div>
+                    <div className={styles.mainBodytag}>발신자 아이디</div>
                     <div className={styles.mainBodytagTitle}>제목</div>
-                    <div className={styles.mainBodytag}>발신날짜</div>
+                    <div className={styles.mainBodytag}>수신 날짜</div>
                     <br></br>
-                   
+
                 </div>
 
 

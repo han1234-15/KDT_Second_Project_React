@@ -149,10 +149,13 @@ const Contacts = () => {
         { name: "", phone: "", email: "", job_code: "", rank_code: "" });
 
     const showUpdateModal = () => {
+
         if (checkedList.length === 1) {
             // 체크된 seq 가져오기
-            const contactToUpdate = contacts.find(c => c.seq === checkedList[0]);
+            const contactToUpdate = contacts.find(c => c.seq == checkedList[0]);
+
             if (contactToUpdate) {
+
                 setUpdateData({
                     name: contactToUpdate.name,
                     phone: contactToUpdate.phone,
@@ -162,10 +165,6 @@ const Contacts = () => {
                 });
             }
             setUpdateModalOpen(true);
-            setCheckedList([]);
-            setAllChecked(false);
-            handleContactsList();
-
         } else {
             alert("하나의 주소록 수정만 가능합니다!")
         }
@@ -181,6 +180,10 @@ const Contacts = () => {
         caxios.put("/contacts/update", { dto: updateData, seqList: checkedList }, { withCredentials: true }
         ).then(resp => {
             setUpdateModalOpen(false);
+            setCheckedList([]);
+            setAllChecked(false);
+            handleContactsList();
+
         });
     };
 
@@ -244,19 +247,19 @@ const Contacts = () => {
 
 
             </div> {/* 주소록 헤더  */}
-          
+
 
             {/* 주소록 바디 여기가 계속 변하는곳 Route */}
-            <div className={styles.mainBody} style={{ fontSize: "20px", marginTop:"20px" }}>
+            <div className={styles.mainBody} style={{ fontSize: "20px", marginTop: "20px" }}>
                 <div className={styles.mainBodyHeader}>
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                     <div className={styles.mainBodytag}>성함</div>
                     <div className={styles.mainBodytag}>전화번호</div>
-                    <div className={styles.mainBodytag}>이메일</div>
+                    <div className={styles.mainBodytag}>아이디</div>
                     <div className={styles.mainBodytag}>부서</div>
-                    <div className={styles.mainBodytag}>직급</div><br></br>
+                    <div className={styles.mainBodytag}>직위</div><br></br>
                 </div>
-               
+
 
                 {/* 주소록 출력  */}
                 <div className={styles.mainBodylist}>
@@ -274,7 +277,6 @@ const Contacts = () => {
                             <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
                             <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
                         </div>
-
 
                     )}
                     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
@@ -310,7 +312,7 @@ const Contacts = () => {
                         )}
 
                     >
-                        <ContactsAdd onClose={() => setIsSingleModalOpen(false)} />
+                        <ContactsAdd onClose={() => setIsSingleModalOpen(false)}  handleContactsList={handleContactsList} />
                     </Modal>
 
                     {/* 공용 주소록 추가 modal */}
@@ -335,7 +337,7 @@ const Contacts = () => {
                             </div>
                         )}
                     >
-                        <ContactsAddMulti onClose={() => setIsMultiModalOpen(false)} />
+                        <ContactsAddMulti onClose={() => setIsMultiModalOpen(false)}  handleContactsList={handleContactsList}  />
                     </Modal>
 
                     {/* 수정 modal */}
@@ -379,7 +381,7 @@ const Contacts = () => {
                         </div>
 
                         <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                            <div className={styles.NewSharedMailbox1}>이메일 : </div>
+                            <div className={styles.NewSharedMailbox1}>아이디 : </div>
                             <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
                                 onChange={handleUpdateChange} value={updateData.email} name="email" readOnly />
                         </div>
@@ -389,7 +391,7 @@ const Contacts = () => {
                                 onChange={handleUpdateChange} value={updateData.job_code} name="job_code" />
                         </div>
                         <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                            <div className={styles.NewSharedMailbox1}>직급 : </div>
+                            <div className={styles.NewSharedMailbox1}>직위 : </div>
                             <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
                                 onChange={handleUpdateChange} value={updateData.rank_code} name="rank_code" />
                         </div>
@@ -406,9 +408,7 @@ const Contacts = () => {
 
         </div> {/* 메인 주소록창  */}
 
-
     </div>
-
 
 
     );

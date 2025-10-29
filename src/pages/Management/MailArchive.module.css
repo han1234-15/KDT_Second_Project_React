@@ -1,0 +1,129 @@
+.container {
+  width: 100%;
+  padding: 0px 7px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.tabArea {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+  margin-bottom: 25px;
+}
+
+.tabArea span {
+  color: #555;
+  cursor: pointer;
+}
+
+.active {
+  font-weight: 700;
+  color: #000;
+}
+
+.searchBox {
+  border: 1px solid #e0e0e0;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  margin-top: 20px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.row label {
+  width: 90px;
+  text-align: right;
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.keywordInput {
+  width: 220px;
+  margin-left: 10px;
+}
+
+.searchBtn {
+  margin-left: 10px;
+}
+
+.tableHeader {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.table {
+  border: 1px solid #e0e0e0;
+}
+
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  margin: 0 5px;
+}
+
+
+
+
+
+/* 서브탭 */
+.subTabs {
+  display: flex;
+  gap: 50px;
+  background: #ffffff;
+  padding: 7px 8px;
+  border-radius: 8px;
+  margin: 8px -5;
+  margin-left: -10px;
+
+}
+
+.subTab {
+  cursor: pointer;
+  font-size: 15px;
+  color: #555;
+  padding: 5px 12px;
+  border-radius: 6px;
+  transition: 0.25s;
+}
+
+.subTab.active {
+  background-color: rgba(60, 102, 222, 0.85);
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(60, 102, 222, 0.25);
+}
+
+.subTab:hover {
+  background-color: rgba(60, 102, 222, 0.15);
+  color: #2d4fc2;          
+}
+
+.subTabActive {
+  cursor: pointer;
+  font-size: 15px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  transition: 0.25s;
+  background-color: rgba(60, 102, 222, 0.85);
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(60, 102, 222, 0.25);
+}
+.subTabActive:hover {
+  background-color: rgba(60, 102, 222, 0.15);
+  color: #2d4fc2;          
+}

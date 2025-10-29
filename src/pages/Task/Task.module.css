@@ -9,6 +9,7 @@
     height: 100%;
     font-size: 15px;
 
+    margin-top: 30px;
 
 }
 
@@ -183,4 +184,16 @@
     padding: 20px;
     max-height: 100vh;
     overflow-y: auto;
+}
+
+
+.groupBtn{
+    width: 150px;
+    height: 150px;
+    padding:40px;
+    margin: 0px 10px;
+    color:  rgb(112, 112, 112);
+    border: 1px solid rgb(159, 159, 159);
+    border-radius: 10px;
+    background-color: white;
 }

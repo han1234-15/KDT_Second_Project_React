@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./style/WorkExpense.css";
+import { useNavigate } from "react-router-dom";
 import { caxios } from "../../config/config";
 import LeaveModal from "./LeaveModal";
 
 
 const WorkExpense = () => {
+
+  const navigate=useNavigate();
   const [time, setTime] = useState(new Date());
   const [checkIn, setCheckIn] = useState(null);
   const [checkOut, setCheckOut] = useState(null);
@@ -262,7 +265,7 @@ const WorkExpense = () => {
             </div>
           </div>
           <div className="field-footer">
-            <button className="link-btn">휴가 현황</button>
+             <button className="link-btn" onClick={() => navigate("/leave")}>휴가 현황</button>
             <button className="link-btn" onClick={showLeaveModal}>
               휴가 신청
             </button>

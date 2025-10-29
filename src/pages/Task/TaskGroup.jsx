@@ -9,8 +9,13 @@ import TaskDataAdd from './TaskDataAdd.jsx';
 //업무 그룹 페이지
 const TaskGroup = () => {
 
+    // useEffect(() => {
+    //     const totalPages = Math.ceil(selectedMembers.length / pageSize);
+    //     if (currentPage > totalPages) setCurrentPage(totalPages || 1);
+    // }, [selectedMembers]);
+    // // modal
 
-    // modal
+    
     // 업무 그룹 추가
     const [TaskGroupAddOpen, setTaskGroupAddOpen] = useState(false);
 
@@ -31,8 +36,8 @@ const TaskGroup = () => {
 
             <div className={styles.mainHeader} >
             </div>
-            <button onClick={showTaskGroupAdd}> 업무 그룹 추가 </button>
-            <button onClick={showTaskDataAdd}> 데이터 추가 </button>
+            <button className={styles.groupBtn} onClick={showTaskGroupAdd}> 업무 그룹 추가 </button>
+            <button className={styles.groupBtn} onClick={showTaskDataAdd}> 데이터 추가 </button>
             <br></br>
             <div className={styles.mainBody}>
 
@@ -55,8 +60,8 @@ const TaskGroup = () => {
                             xl: '50%',
                             xxl: '30%', // 큰 화면
                         }}
-                        style={{ top: 100, height: '500px', marginTop: '100px' }}
-                        bodyStyle={{ height: '600px' }}
+                        style={{ top: 100, marginTop: '50px' }}
+
                     >
                         <TaskGroupAdd onClose={() => setTaskGroupAddOpen(false)} />
                     </Modal>

@@ -3,7 +3,7 @@ import styles from "./Contacts.module.css";
 import { caxios } from '../../config/config.js';
 
 
-const ContactsAdd = ({ onClose }) => {
+const ContactsAdd = ({ onClose, handleContactsList }) => {
 
 
 
@@ -19,20 +19,16 @@ const ContactsAdd = ({ onClose }) => {
 
     const handleAdd = () => {
 
-        const payload = {
-            ...Contacts,
-            phone: String(Contacts.phone)  // 문자열 강제
-        };
+        const payload = { ...Contacts, phone: String(Contacts.phone) }; // 문자열 강제
 
-        caxios.post("/contacts", payload, {
-            headers: { "Content-Type": "application/json" }
-        }).then((res) => {
-            setContacts(res.data);
-            onClose();
-        })
+        caxios.post("/contacts", payload, { headers: { "Content-Type": "application/json" } })
+            .then((res) => {
+                setContacts(res.data);
+                handleContactsList();
+                onClose();
+            })
             .catch((err) => {
                 console.error("주소록 등록 오류:", err);
-
                 if (err.response && err.response.data) {
                     alert(err.response.data);
                 } else {
@@ -71,7 +67,7 @@ const ContactsAdd = ({ onClose }) => {
                 </div>
                 <br></br>
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1}>이메일 : </div>
+                    <div className={styles.NewSharedMailbox1}>아이디 : </div>
                     <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
                         onChange={handlechange} name="email" value={Contacts.email} />
                 </div>
@@ -83,16 +79,16 @@ const ContactsAdd = ({ onClose }) => {
                 </div>
                 <br></br>
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1}> 직급: </div>
+                    <div className={styles.NewSharedMailbox1}> 직위: </div>
                     <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
                         onChange={handlechange} name="rank_code" value={Contacts.rank_code} />
                 </div>
-                <br></br>
+
 
 
             </div>
-            <button style={{ float: "right", marginLeft: "10px" }} onClick={handleOut}>취소</button>
-            <button style={{ float: "right" }} onClick={handleAdd}>완료</button>
+            <button style={{ float: "right", marginTop: "10px", marginLeft: "10px" }} onClick={handleOut}>취소</button>
+            <button style={{ float: "right", marginTop: "10px" }} onClick={handleAdd}>완료</button>
 
 
         </div>

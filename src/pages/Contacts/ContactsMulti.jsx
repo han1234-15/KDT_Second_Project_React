@@ -164,9 +164,7 @@ const ContactsMulti = () => {
                 });
             }
             setUpdateModalOpen(true);
-            setCheckedList([]);
-            setAllChecked(false);
-            handleContactsList();
+
         } else {
             alert("하나의 주소록 수정만 가능합니다!")
         }
@@ -180,6 +178,9 @@ const ContactsMulti = () => {
         caxios.put("/contacts/update", { dto: updateData, seqList: checkedList }, { withCredentials: true }
         ).then(resp => {
             setUpdateModalOpen(false);
+            setCheckedList([]);
+            setAllChecked(false);
+            handleContactsList();
         });
     };
 
@@ -233,10 +234,10 @@ const ContactsMulti = () => {
 
 
             </div> {/* 주소록 헤더  */}
-         
+
 
             {/* 주소록 바디 여기가 계속 변하는곳 Route */}
-            <div className={styles.mainBody} style={{ fontSize: "20px" }}>
+            <div className={styles.mainBody} style={{ fontSize: "20px", marginTop: "20px" }}>
 
 
 
@@ -244,12 +245,12 @@ const ContactsMulti = () => {
                     <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                     <div className={styles.mainBodytag}>성함</div>
                     <div className={styles.mainBodytag}>전화번호</div>
-                    <div className={styles.mainBodytag}>이메일 </div>
+                    <div className={styles.mainBodytag}>아이디 </div>
                     <div className={styles.mainBodytag}>부서</div>
-                    <div className={styles.mainBodytag}>직급</div> <br></br>
+                    <div className={styles.mainBodytag}>직위</div> <br></br>
 
                 </div>
-             
+
 
                 {/* 주소록 출력  */}
                 <div className={styles.mainBodylist}>
@@ -298,7 +299,7 @@ const ContactsMulti = () => {
                             </div>
                         )}
                     >
-                        <ContactsAddMulti onClose={() => setIsMultiModalOpen(false)} />
+                        <ContactsAddMulti onClose={() => setIsMultiModalOpen(false)} handleContactsList={handleContactsList}/>
                     </Modal>
 
                     {/* 수정 modal */}
@@ -342,7 +343,7 @@ const ContactsMulti = () => {
                         </div>
 
                         <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                            <div className={styles.NewSharedMailbox1}>이메일 : </div>
+                            <div className={styles.NewSharedMailbox1}>아이디 : </div>
                             <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
                                 onChange={handleUpdateChange} value={updateData.email} name="email" readOnly />
                         </div>
@@ -352,7 +353,7 @@ const ContactsMulti = () => {
                                 onChange={handleUpdateChange} value={updateData.job_code} name="job_code" />
                         </div>
                         <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                            <div className={styles.NewSharedMailbox1}>직급 : </div>
+                            <div className={styles.NewSharedMailbox1}>직위: </div>
                             <textarea type="text" className={styles.NewSharedMailbox2} style={{ textAlign: "left", verticalAlign: "top", color: "black" }}
                                 onChange={handleUpdateChange} value={updateData.rank_code} name="rank_code" />
                         </div>
