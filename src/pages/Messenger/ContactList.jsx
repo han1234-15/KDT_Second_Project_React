@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Accordion, ListGroup, Badge } from "react-bootstrap";
 import { caxios } from "../../config/config";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import styles from "./ContactList.module.css";
 
 const ContactList = () => {
-  const [member, setMember] = useState([]); // 전체 멤버 데이터
-  const [tokenReady, setTokenReady] = useState(false); // JWT 토큰 준비 여부
-  const [showSearch, setShowSearch] = useState(false); // 검색창 표시 여부
-  const [searchTerm, setSearchTerm] = useState(""); // 검색어
+  // 전체 멤버 데이터
+  const [member, setMember] = useState([]);
+  // JWT 토큰 준비 여부
+  const [tokenReady, setTokenReady] = useState(false);
+  // 검색창 표시 여부
+  const [showSearch, setShowSearch] = useState(false);
+  // 검색어
+  const [searchTerm, setSearchTerm] = useState("");
 
-  //  부서 리스트
+  // 부서 리스트 (표시용)
   const departments = [
     { name: "연구개발", code: "RND" },
     { name: "사업관리팀", code: "BM" },
@@ -20,7 +23,7 @@ const ContactList = () => {
     { name: "마케팅팀", code: "MKT" },
   ];
 
-  //  직급 매핑
+  // 직급 코드 → 명칭 매핑
   const ranks = {
     J000: "사장",
     J001: "사원",
@@ -33,7 +36,7 @@ const ContactList = () => {
     J008: "부사장",
   };
 
-  //  근무 상태 → 색상
+  // 근무 상태 → 배지 색상
   const statusVariant = {
     working: "success",
     busy: "warning",
@@ -41,7 +44,7 @@ const ContactList = () => {
     offline: "dark",
   };
 
-  //  근무 상태 → 한글 텍스트
+  // 근무 상태 → 한글 텍스트
   const statusText = {
     working: "근무중",
     busy: "다른용무중",
@@ -49,22 +52,24 @@ const ContactList = () => {
     offline: "오프라인",
   };
 
-  //  토큰 확인
+  // 토큰 감시: 로그인 완료 전이라면 polling 으로 대기
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-    if (token) setTokenReady(true);
-    else {
-      const interval = setInterval(() => {
-        const newToken = sessionStorage.getItem("token");
-        if (newToken) {
-          setTokenReady(true);
-          clearInterval(interval);
-        }
-      }, 100);
+    if (token) {
+      setTokenReady(true);
+      return;
     }
+    const interval = setInterval(() => {
+      const newToken = sessionStorage.getItem("token");
+      if (newToken) {
+        setTokenReady(true);
+        clearInterval(interval);
+      }
+    }, 100);
+    return () => clearInterval(interval);
   }, []);
 
-  //  토큰 준비되면 서버에서 멤버 정보 로드
+  // 토큰 준비되면 멤버 목록 로드
   useEffect(() => {
     if (!tokenReady) return;
     caxios
@@ -73,7 +78,7 @@ const ContactList = () => {
       .catch((err) => console.error("데이터 요청 실패:", err));
   }, [tokenReady]);
 
-  //  부서별 필터링 (검색 + 오프라인 정렬)
+  // 부서별 필터링 (검색 + 오프라인은 하단 정렬)
   const getDeptMembers = (deptCode) => {
     return member
       .filter(
@@ -82,54 +87,80 @@ const ContactList = () => {
           m.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .sort((a, b) => {
-        if (a.work_status === "offline" && b.work_status !== "offline")
-          return 1;
-        if (a.work_status !== "offline" && b.work_status === "offline")
-          return -1;
+        if (a.work_status === "offline" && b.work_status !== "offline") return 1;
+        if (a.work_status !== "offline" && b.work_status === "offline") return -1;
         return 0;
       });
   };
 
-  //  더블클릭 시 채팅 팝업 열기
-  const openChatPopup = (member) => {
-    const width = 400;
-    const height = 550;
-    const left = window.screen.width - width - 40;
-    const top = window.screen.height - height - 100;
-    const token = sessionStorage.getItem("token");
+  /**
+   * 더블클릭 시 채팅 팝업 오픈
+   * 1) 로그인한 사용자 id(LoginID)와 상대 id(member.id)로 방 키를 만든다.
+   * 2) 서버에 방 생성/조회 요청(같은 조합이면 같은 방을 재사용).
+   * 3) room_id(UUID)를 응답받아 팝업 URL 쿼리에 넣어 연다.
+   */
+  const openChatPopup = async (member) => {
+    const myId = sessionStorage.getItem("LoginID"); // 로그인한 사용자 식별자(id)
+    if (!myId) {
+      alert("로그인 정보가 없습니다. 다시 로그인 해주세요.");
+      return;
+    }
 
-    const url = `${window.location.origin}/chatroom?token=${token}&target=${encodeURIComponent(
-      member.name
-    )}&rank=${encodeURIComponent(ranks[member.rank_code] || "")}`;
+    const targetId = member.id; // 상대방 식별자(id) - 백엔드 Member.id
+    const targetName = member.name;
+    const targetRank = ranks[member.rank_code] || "";
 
-    window.open(
-      url,
-      `ChatWith_${member.name}`,
-      `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no,status=no`
-    );
+    // 두 사용자 id를 정렬하여 고유 키 생성 (동일 조합은 동일 방)
+    const roomMembersKey = [myId, targetId].sort().join("_");
 
-    console.log(
-      `💬 ${member.name} ${ranks[member.rank_code] || ""} 님과의 채팅방 팝업 열림`
-    );
+    try {
+      // 방 생성/조회 요청 (이미 있으면 조회, 없으면 생성)
+      const resp = await caxios.post(
+        `/api/chat/room?key=${encodeURIComponent(roomMembersKey)}`
+      );
+
+      // 서버가 반환하는 채팅방 PK(UUID)
+      const roomId = resp.data.roomId;
+
+      // 팝업 파라미터: room_id, 상대 표시용 이름/직급
+      const url = `${window.location.origin}/chatroom?room_id=${roomId}&target=${encodeURIComponent(
+        targetName
+      )}&rank=${encodeURIComponent(targetRank)}`;
+
+      // 팝업 창 크기/위치 계산
+      const width = 400;
+      const height = 550;
+      const left = window.screen.width - width - 40;
+      const top = window.screen.height - height - 100;
+
+      window.open(
+        url,
+        `ChatWith_${targetId}`,
+        `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no,status=no`
+      );
+    } catch (err) {
+      console.error("채팅방 생성 또는 조회 실패:", err);
+      alert("채팅방 생성에 실패했습니다.");
+    }
   };
 
   return (
     <div className={styles.contactContainer}>
-      {/*  상단바 */}
+      {/* 상단바 */}
       <div className={styles.header}>
         <span className={styles.title}>주소록</span>
-        <i
-          className="bi bi-search"
+        <span
+          className={styles.searchToggle}
           onClick={() => setShowSearch(!showSearch)}
-        ></i>
+          role="button"
+          aria-label="검색창 열기"
+        >
+          검색
+        </span>
       </div>
 
-      {/*  검색창 */}
-      <div
-        className={`${styles.searchBox} ${
-          showSearch ? styles.searchBoxVisible : ""
-        }`}
-      >
+      {/* 검색창 */}
+      <div className={`${styles.searchBox} ${showSearch ? styles.searchBoxVisible : ""}`}>
         <input
           type="text"
           placeholder="이름 검색..."
@@ -138,7 +169,7 @@ const ContactList = () => {
         />
       </div>
 
-      {/*  본문 - 스크롤 영역 */}
+      {/* 본문 - 스크롤 영역 */}
       <div className={styles.scrollArea}>
         <Accordion alwaysOpen>
           {departments.map((dept, idx) => {
@@ -169,21 +200,15 @@ const ContactList = () => {
                             </span>
                           </div>
                           <Badge
-                            bg={
-                              statusVariant[m.work_status?.toLowerCase()] ||
-                              "secondary"
-                            }
+                            bg={statusVariant[m.work_status?.toLowerCase()] || "secondary"}
                           >
-                            {statusText[m.work_status?.toLowerCase()] ||
-                              "상태미상"}
+                            {statusText[m.work_status?.toLowerCase()] || "상태미상"}
                           </Badge>
                         </ListGroup.Item>
                       ))}
                     </ListGroup>
                   ) : (
-                    <div className="text-muted small">
-                      등록된 인원이 없습니다.
-                    </div>
+                    <div className="text-muted small">등록된 인원이 없습니다.</div>
                   )}
                 </Accordion.Body>
               </Accordion.Item>
