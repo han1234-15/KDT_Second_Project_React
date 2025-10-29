@@ -67,8 +67,7 @@ function SocketProvider({ children }) {
       `/topic/chatroom/${room_id}`,
       (message) => {
         const body = JSON.parse(message.body);
-        console.log("수신:", body);
-
+        body.sendTime = body.sendTime || new Date().toISOString(); 
         setMessages((prev) => ({
           ...prev,
           [room_id]: [...(prev[room_id] || []), body],

@@ -99,7 +99,7 @@ export default function ChatRoomList() {
           >
             {/*  프로필 이미지 */}
             <img
-              src={chat.avatar || "/default-profile.png"}
+              src={chat.avatar || "/defaultprofile.png"}
               className={styles.avatar}
               alt="프로필"
             />
