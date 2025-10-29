@@ -18,7 +18,16 @@ const WorkExpense = () => {
   const [workTime, setWorkTime] = useState(null);
 
   const [loginUser, setLoginUser] = useState(null);
+    const [workDays, setWorkDays] = useState(0);
 
+  const fetchWorkDays = async () => {
+  try {
+    const res = await caxios.get("/attendance/workdays");
+    setWorkDays(parseInt(res.data) || 0);
+  } catch (err) {
+    console.error("근무일수 조회 실패:", err);
+  }
+};
 
   useEffect(() => {
     caxios.get("/member/me")
@@ -194,6 +203,7 @@ const WorkExpense = () => {
     fetchToday();
     fetchAttendanceCount();
     fetchRemainLeave();
+    fetchWorkDays();
   };
 
 
@@ -203,6 +213,7 @@ const WorkExpense = () => {
     fetchToday();
     fetchAttendanceCount();
     fetchRemainLeave();
+    fetchWorkDays(); 
   }, []);
 
   //  카운트 자동 갱신
@@ -288,9 +299,8 @@ const WorkExpense = () => {
         <fieldset className="info-box">
           <legend>근무시간</legend>
           <div className="field-content">
-            <div className="field-item"><strong>근무일수</strong><div>0일</div></div>
+            <div className="field-item"><strong>근무일수</strong><div>{workDays}일</div></div>
             <div className="field-item"><strong>총근무시간</strong><div>{workTime || "0시간 0분"}</div></div>
-            <div className="field-item"><strong>보정정근</strong><div>0시간</div></div>
           </div>
         </fieldset>
       </div>

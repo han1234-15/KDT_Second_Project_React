@@ -69,19 +69,25 @@ const submitVacation = async () => {
     return;
   }
 
-  const payload = {
-    items: selectedDates.map((d) => ({
-      date: d,
-      type: vacType,
-      reason: vacReason,
-    })),
-    approvers: approverList.map((a, idx) => ({
-      id: a.id,
-      name: a.name,
-      rank_code: a.rank_code,
-      orderNo: idx + 1,
-    })),
-  };
+const payload = {
+  items: selectedDates.map((d) => ({
+    date: d,
+    type: vacType,
+    reason: vacReason,
+  })),
+  approvers: approverList.map((a, idx) => ({
+    id: a.id,
+    name: a.name,
+    rank_code: a.rank_code,
+    orderNo: idx + 1,
+  })),
+  references: referenceList.map((r) => ({
+    id: r.id,          
+    name: r.name,
+    rank_code: r.rank_code,
+  })),
+};
+
 
   try {
     await caxios.post("/leave/request", payload);
