@@ -40,6 +40,10 @@ const WorkExpense = () => {
 
   //  모달 열기
   const showLeaveModal = () => {
+     if (leavecounts.leavecount <= 0) {
+    alert("잔여 연차가 없습니다. 휴가 신청이 불가능합니다.");
+    return;
+  }
     setIsLeaveModalOpen(true);
   };
 
@@ -139,7 +143,6 @@ const WorkExpense = () => {
       setCheckIn(startTime ? formatDateTime(startTime) : null);
       setCheckOut(endTime ? formatDateTime(endTime) : null);
 
-      // ✅ 근무시간 계산을 이 안으로 옮겨야 한다!
       if (startTime && endTime) {
         setWorkTime(calcWorkTime(startTime, endTime));
       } else if (startTime && !endTime) {

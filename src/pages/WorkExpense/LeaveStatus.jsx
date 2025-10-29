@@ -12,19 +12,29 @@ function LeaveStatus() {
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectInput, setShowRejectInput] = useState(false);
 
+ const getCurrentApprover = () => {
+  if (!selectedRow?.approvalLine) return null;
+
+  const waiting = selectedRow.approvalLine.find(
+    (a) => a.STATUS === "WAITING"
+  );
+
+  return waiting ? waiting.ID : null;
+};
+
   const leaveCodeMap = {
     half_pm: "반차(오후)",
     half_am: "반차(오전)",
     annual: "연차",
     sick: "병가",
+   
   };
 
   const statusMap = {
-    WAIT: "결재대기",
+    WAITING: "결재대기",
     APPROVED: "승인",
     REJECTED: "반려",
-    N: "대기중",
-    A: "승인",
+    CHECKING: "확인중"
   };
 
   const isAdmin =
@@ -79,14 +89,14 @@ function LeaveStatus() {
   };
 
   const openModal = async (row) => {
-    console.log("🟢 클릭된 행 데이터:", row);
+    console.log(" 클릭된 행 데이터:", row);
     setSelectedRow(row);
     setIsModalOpen(true);
 
     if (row.approvalId) {
       try {
         const res = await caxios.get(`/Eapproval/line/${row.approvalId}`);
-        console.log("🟡 결재선 API 응답:", res.data);
+        console.log(" 결재선 API 응답:", res.data);
 
         let lineData = res.data;
         if (lineData.approvers) lineData = lineData.approvers;
@@ -97,7 +107,7 @@ function LeaveStatus() {
         }));
 
       } catch (err) {
-        console.error("❌ 결재선 불러오기 실패:", err);
+        console.error(" 결재선 불러오기 실패:", err);
       }
     }
   };
@@ -126,7 +136,7 @@ function LeaveStatus() {
         <tbody>
           {list.map((row, index) => (
             <tr key={`${row.seq}-${index}`}>
-              <td>{row.memberId}</td>
+              <td>{row.memberName} ({row.rankCode})</td>
               <td>
                 {leaveCodeMap[row.leaveCode?.toLowerCase()] || row.leaveCode || "-"}
               </td>
@@ -146,43 +156,52 @@ function LeaveStatus() {
           <div style={modalBox}>
             <h3>휴가 상세</h3>
 
-            <p><strong>신청자:</strong> {selectedRow.memberId}</p>
+           <p><strong>신청자:</strong> {selectedRow.memberName} ({selectedRow.rankCode})</p>
             <p><strong>휴가종류:</strong> {leaveCodeMap[selectedRow.leaveCode]}</p>
             <p><strong>기간:</strong> {formatLeaveRange(selectedRow)}</p>
             <p><strong>사유:</strong> {selectedRow.reason}</p>
             <p><strong>상태:</strong> {statusMap[selectedRow.status]}</p>
 
+            {selectedRow.status === "REJECTED" && (
+              <div style={{ marginTop: "12px", padding: "10px", background: "#ffeaea", borderRadius: "6px" }}>
+                <p style={{ color: "red", margin: 0 }}><strong>반려 사유:</strong> {selectedRow.rejectReason}</p>
+                <p style={{ fontSize: "12px", marginTop: "4px", color: "#555" }}>
+                  반려일시: {selectedRow.rejectTime?.replace("T", " ").substring(0, 19)}
+                </p>
+              </div>
+            )}
+
             {isAdmin && selectedRow?.approvalLine?.length > 0 && (
               <div style={{ margin: "10px 0" }}>
                 <strong>결재선:</strong>
-               <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "8px", textAlign: "center" }}>
-  <thead>
-    <tr>
-      <th style={thStyle}>구분</th>
-      {selectedRow.approvalLine.map((a, idx) => (
-        <th key={idx} style={thStyle}>
-          {a.NAME} ({a.RANK_CODE})
-        </th>
-      ))}
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style={tdStyle}>결재</td>
-      {selectedRow.approvalLine.map((a, idx) => (
-        <td key={idx} style={tdStyle}>
-          {statusMap[a.STATUS] || "대기중"}
-        </td>
-      ))}
-    </tr>
-  </tbody>
-</table>
+                <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "8px", textAlign: "center" }}>
+                  <thead>
+                    <tr>
+                      <th style={thStyle}>구분</th>
+                      {selectedRow.approvalLine.map((a, idx) => (
+                        <th key={idx} style={thStyle}>
+                          {a.NAME} ({a.RANK_CODE})
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={tdStyle}>결재</td>
+                      {selectedRow.approvalLine.map((a, idx) => (
+                        <td key={idx} style={tdStyle}>
+                          {statusMap[a.STATUS] || "대기중"}
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             )}
 
             {isAdmin &&
-              selectedRow.status === "N" &&
-              selectedRow.member_id !== loginUser.id && (
+            (selectedRow.status === "WAITING" || selectedRow.status === "CHECKING")  &&
+              getCurrentApprover() === loginUser.id && (
                 <>
                   <button onClick={approveHandler}>승인</button>
                   <button onClick={() => setShowRejectInput(true)}>반려</button>
