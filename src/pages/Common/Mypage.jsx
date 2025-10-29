@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { caxios } from "../../config/config";
 import { departmentOptions, jobOptions, positionOptions } from '../../config/options';
 import { useDaumPostcodePopup } from 'react-daum-postcode'; // Daum 주소 검색 관련 hook
+import defaultProfile from "../../assets/images/defaultProfile.png";
 
 const Mypage = () => {
     
@@ -267,9 +268,7 @@ const Mypage = () => {
                         {previewUrl ? (
                             <img src={previewUrl} alt="프로필 미리보기" className={styles.profileImage} />
                         ) : (
-                            <div className={styles.placeholder}>
-                                <UserOutlined style={{ fontSize: '36px', color: '#aaa' }} />
-                            </div>
+                            <img src={defaultProfile} alt="프로필 미리보기" className={styles.profileImage} />
                         )}
                         <div className={styles.profileButtons}>
                             <label htmlFor="profileUpload" className={styles.uploadBtn}>이미지 선택</label>
