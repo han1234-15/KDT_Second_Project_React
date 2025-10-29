@@ -1,86 +1,114 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import styles from "./ChatRoom.module.css";
 import { useSocket } from "../../config/SocketContext";
+import { caxios } from "../../config/config"; 
 
 export default function ChatRoom() {
-  // URL 쿼리에서 채팅 상대 이름/직책을 읽어옴 (예: ?target=김철수&rank=과장)
+  // URL 쿼리에서 채팅 상대 표시용 이름/직책, 방 아이디를 읽는다.
+  // 방 아이디(room_id)는 DB 채팅 저장과 STOMP 구독에 반드시 필요하다.
   const [params] = useSearchParams();
   const targetName = params.get("target") || "대화상대";
   const targetRank = params.get("rank") || "";
   const room_id = params.get("room_id");
-  const { messages, sendMessage, subscribeRoom } = useSocket();
+
+  // 소켓 컨텍스트: 메시지 목록, 보내기, 구독
+  const { messages, sendMessage, subscribeRoom, setMessages } = useSocket();
+
+  // 로그인 사용자의 식별자(id). 메시지 송신 시 sender 로 사용한다.
   const userId = sessionStorage.getItem("LoginID");
-  //  UI 상태들
-  const [menuOpen, setMenuOpen] = useState(false);     // 햄버거 메뉴 열림/닫힘
-  const [panelOpen, setPanelOpen] = useState(false);   // 오른쪽 사이드 패널 열림/닫힘
-  const [panelMode, setPanelMode] = useState("");      // "files" | "members"
-  const [chromeOffset, setChromeOffset] = useState(0); // 브라우저 프레임(타이틀바 등) 높이 보정값
-  const [input, setInput] = useState("");
-  
-  
-  
-  useEffect(()=>{
-    if(room_id) {subscribeRoom(room_id)}; // 스톰프 룸 아이디 구독
-  },[room_id]);
-  
+
+  // UI 상태
+  const [menuOpen, setMenuOpen] = useState(false);   // 햄버거 메뉴 열림/닫힘
+  const [panelOpen, setPanelOpen] = useState(false); // 오른쪽 사이드 패널 열림/닫힘
+  const [panelMode, setPanelMode] = useState("");    // "files" | "members"
+  const [chromeOffset, setChromeOffset] = useState(0); // 윈도우 프레임 보정
+  const [input, setInput] = useState("");            // 입력창 텍스트
+
+  // 채팅 리스트: room_id 키로 보관된 배열을 꺼낸다.
   const list = messages[room_id] || [];
-  const handleSend = ()=>{
-    if(!input.trim()) return;
-    sendMessage(room_id, {sender : userId, content: input});
-    setInput("");
-  }
+
+  // 자동 스크롤을 위한 ref (새 메시지 오면 하단으로 스크롤)
+  const chatEndRef = useRef(null);
+
+  // 기존 메시지 로드
+useEffect(() => {
+  if (!room_id) return;
+
+  caxios.get(`/api/chat/messages/${room_id}`)
+    .then(resp => {
+      const oldMsgs = resp.data || [];
+
+      setMessages(prev => ({
+        ...prev,
+        [room_id]: [...oldMsgs, ...(prev[room_id] || [])]
+      }));
+    })
+    .catch(err => console.error("기존 메시지 로드 실패:", err));
+}, [room_id]);
   
-  /**  컴포넌트 마운트 시 1회: 
-   *  윈도우의 outerHeight(전체창) - innerHeight(콘텐츠 영역) = 프레임 오프셋 계산
-   *  → resizeTo(height) 호출 시 내부 콘텐츠 높이가 줄어드는 문제를 방지하기 위함
-   */
+  // 방 아이디가 정해지면 해당 방을 WebSocket 으로 구독한다.
+  useEffect(() => {
+    if (room_id) {
+      subscribeRoom(room_id);
+    }
+  }, [room_id, subscribeRoom]);
+
+  // 메시지 전송
+  // room_id, sender(id), content, type를 포함하여 서버로 전송한다.
+  const handleSend = () => {
+    if (!input.trim()) return;
+    if (!room_id) {
+      alert("유효하지 않은 채팅방입니다. 창을 닫고 다시 시도하세요.");
+      return;
+    }
+    if (!userId) {
+      alert("로그인 정보가 없습니다. 다시 로그인 해주세요.");
+      return;
+    }
+
+    sendMessage(room_id, {
+      // room_id는 SocketContext에서 최종적으로 body에 포함시킨다.
+      sender: userId,
+      content: input,
+      type: "TALK",
+    });
+    setInput("");
+  };
+
+  // 컴포넌트 최초 로딩 시 프레임 보정값을 계산한다.
   useEffect(() => {
     const offset = window.outerHeight - window.innerHeight;
     setChromeOffset(offset);
   }, []);
 
+  // 새 메시지가 오면 채팅창 하단으로 자동 스크롤
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [list]);
 
-
-  /** 사이드 패널 열기
-   *  - 패널 모드 설정("files" 또는 "members")
-   *  - 패널 열림으로 전환
-   *  - 햄버거 메뉴 닫기
-   *  - 팝업 창을 가로 2배(800)로 확장하되, 현재 좌표는 유지
-   *  - 높이는 550px(콘텐츠 기준)로 유지하기 위해 프레임 보정값을 더함
-   */
+  // 오른쪽 사이드 패널 열기
   const openSidePanel = (mode) => {
     setPanelMode(mode);
     setPanelOpen(true);
     setMenuOpen(false);
 
-    // 현재 팝업의 좌표(화면 기준) 저장 → 리사이즈 후에도 그 자리에 유지
     const currentLeft = window.screenX;
     const currentTop = window.screenY;
-
-    // 목표 크기: 가로 800, 콘텐츠 높이 550 + 프레임 보정
     const targetWidth = 800;
     const targetHeight = 550 + chromeOffset;
 
-    //  그 자리에서 바로 리사이즈 + 좌표 재적용(점프 방지)
     window.resizeTo(targetWidth, targetHeight);
     window.moveTo(currentLeft, currentTop);
   };
 
-  /** 사이드 패널 닫기
-   *  - 패널 상태 초기화
-   *  - 창 크기를 원래(가로 400)로 복귀
-   *  - 현재 좌표 유지
-   *  - 높이는 동일하게 550px(콘텐츠 기준) 유지
-   */
+  // 오른쪽 사이드 패널 닫기
   const closeSidePanel = () => {
     setPanelOpen(false);
     setPanelMode("");
 
     const currentLeft = window.screenX;
     const currentTop = window.screenY;
-
     const targetWidth = 400;
     const targetHeight = 550 + chromeOffset;
 
@@ -90,17 +118,16 @@ export default function ChatRoom() {
 
   return (
     <div className={styles.popupContainer}>
-      {/* ===== 상단바: 채팅 상대 표시 + 햄버거 메뉴 ===== */}
+      {/* 상단바: 채팅 상대 표시 + 메뉴 */}
       <div className={styles.topbar}>
         {/* 좌측 타이틀: "OOO 직책 님과의 대화" */}
         <div className={styles.chatTitle}>
-          <i className="bi bi-chat-dots-fill me-2"></i>
           {targetName}
           {targetRank ? ` ${targetRank}` : ""} 님과의 대화
         </div>
 
-        {/* 우측: 햄버거 아이콘 + 드롭다운 메뉴 */}
-        <div className={styles.menuContainer}>
+        {/* 우측: 메뉴 버튼 */}
+         <div className={styles.menuContainer}>
           <i
             className="bi bi-list"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -109,73 +136,84 @@ export default function ChatRoom() {
           {/* 메뉴 열렸을 때만 표시 */}
           {menuOpen && (
             <div className={styles.dropdownMenu}>
-              {/* 대화상대 초대하기: 사이드 패널을 "members" 모드로 열기 */}
               <button onClick={() => openSidePanel("members")}>
-                <i className="bi bi-person-plus me-2"></i> 대화상대 초대하기
+                대화상대 초대하기
               </button>
-              {/* 첨부파일: 사이드 패널을 "files" 모드로 열기 */}
               <button onClick={() => openSidePanel("files")}>
-                <i className="bi bi-paperclip me-2"></i> 첨부파일
+                첨부파일
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* ===== 채팅 메시지 영역 =====
-          - 상대 메시지: 왼쪽(.you)
-          - 내 메시지: 오른쪽(.me)
-      */}
+      {/* 채팅 메시지 영역 */}
       <div className={styles.chatBox}>
-        <div className={`${styles.msg} ${styles.you}`}>
-          <div className={styles.msgBubble}>오늘 회의 자료 준비되었나요?</div>
-        </div>
-
-        <div className={`${styles.msg} ${styles.me}`}>
-          <div className={styles.msgBubble}>
-            네, 3시 회의 전에 업로드 예정이에요!
-          </div>
-        </div>
+        {list.map((msg, idx) => {
+          const isMine = msg.sender === userId;
+          return (
+            <div
+              key={idx}
+              className={`${styles.msg} ${isMine ? styles.me : styles.you}`}
+            >
+              {/* 상대 메시지일 경우 이름/직책 표시 블록 */}
+              {!isMine && (
+                <div className={styles.senderInfo}>
+                  {/* 실제 프로필 이미지를 사용할 계획이라면 아래 img 태그 유지.
+                     기본 이미지는 제거하고 레이아웃만 유지하려면 주석 처리 가능 */}
+                  {/* <img
+                    src={msg.profileImage || "/default-profile.png"}
+                    alt="프로필"
+                    className={styles.profileThumb}
+                  /> */}
+                  <div className={styles.senderMeta}>
+                    <div className={styles.senderName}>
+                      {msg.sender} {targetRank}
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className={styles.msgBubble}>{msg.content}</div>
+            </div>
+          );
+        })}
+        {/* 스크롤 하단 기준점 */}
+        <div ref={chatEndRef} />
       </div>
 
-      {/* ===== 하단 입력창 =====
-          - 입력 인풋 + 전송 버튼
-      */}
+      {/* 하단 입력창 */}
       <div className={styles.chatInput}>
-        <input type="text" placeholder="메시지를 입력하세요..."
-        value={input}
-        onChange={(e)=> setInput(e.target.value)}
-        onKeyDown={(e)=>e.key==="Enter" && handleSend()} />
-        <button onClick={handleSend}>
-          <i className="bi bi-send-fill me-1"></i> 전송
-        </button>
+        <input
+          type="text"
+          placeholder="메시지를 입력하세요..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+        />
+        <button onClick={handleSend}>전송</button>
       </div>
 
-      {/* ===== 오른쪽 슬라이드 패널 =====
-          - 패널이 열려 있을 때만 표시
-          - 헤더 우측 X 아이콘으로 닫기
-          - panelMode에 따라 내용 스위칭
-      */}
+      {/* 오른쪽 슬라이드 패널 */}
       {panelOpen && (
         <div className={styles.sidePanel}>
           <div className={styles.panelHeader}>
             <span>
-              {panelMode === "files" ? "📎 첨부파일 목록" : "👥 대화상대 초대"}
+              {panelMode === "files" ? "첨부파일 목록" : "대화상대 초대"}
             </span>
-            <i
-              className="bi bi-x-lg"
+            <button
               onClick={closeSidePanel}
-              style={{ cursor: "pointer" }}
-            ></i>
+              className={styles.closeBtn}
+              aria-label="닫기"
+            >
+              X
+            </button>
           </div>
 
           <div className={styles.panelBody}>
             {panelMode === "files" ? (
-              // TODO: 실제 파일 목록 컴포넌트로 교체 예정
-              <p>📁 첨부된 파일 목록을 여기에 표시합니다.</p>
+              <p>첨부된 파일 목록을 여기에 표시합니다.</p>
             ) : (
-              // TODO: 실제 멤버 검색/선택 컴포넌트로 교체 예정
-              <p>👤 초대 가능한 멤버 목록을 여기에 표시합니다.</p>
+              <p>초대 가능한 멤버 목록을 여기에 표시합니다.</p>
             )}
           </div>
         </div>

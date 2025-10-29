@@ -6,7 +6,7 @@ const useAuthStore = create((set) => ({
   userProfile: "",
   login: (token) => {
     set((state) => {
-      sessionStorage.setItem("token", token); // 
+      sessionStorage.setItem("token", token); 
       return { token: token, isLogin: true }; //인메모리 저장을 위한 리턴
     });
   },

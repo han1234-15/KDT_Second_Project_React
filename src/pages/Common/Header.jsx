@@ -153,22 +153,20 @@ const Header = () => {
         }
     };
       
-  useEffect(() => {
-    const token = sessionStorage.getItem("token");
+//   useEffect(() => {
+//     const token = sessionStorage.getItem("token");
 
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-    fetchUserData();
-  }, []);
+//     if (!token) {
+//       navigate("/login");
+//       return;
+//     }
+//     fetchUserData();
+//   }, []);
 
   // ✅ 로딩 중일 때 렌더링 차단
   if (loading) {
     return null; // 혹은 스켈레톤 화면, 로딩 스피너
   }
-
-
 
     return (
         <div className={styles.header}>

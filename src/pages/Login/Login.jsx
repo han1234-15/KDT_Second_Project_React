@@ -25,7 +25,12 @@ export default function Login() {
         caxios
             .post("/auth", form)
             .then((resp) => {
-                login(resp.data);
+                const { token, member } = resp.data;
+
+                sessionStorage.setItem("token", token);
+                sessionStorage.setItem("LoginID", member.id); //  중요
+
+                login(token); // 상태 저장
             })
             .catch(() => {
                 sessionStorage.removeItem("token");
