@@ -1,17 +1,20 @@
 import styles from "./Contacts.module.css";
 import { useEffect, useState } from 'react';
 import { caxios } from '../../config/config.js';
-
+import { useNavigate } from "react-router-dom";
+import OrganizationView from "./OrganizationView.jsx";
+import { Button, Modal } from 'antd';
 const Organization = () => {
 
     const [organization, setOrganization] = useState([]);
     const [openTeams, setOpenTeams] = useState({});
     const [selectedTeam, setSelectedTeam] = useState(null); // 선택된 팀
-
+    const [searchName, setSearchName] = useState(""); // 검색어 상태
     const [checkedList, setCheckedList] = useState([]); // 체크 상태 관리 seq 아닌 id 기준
     const [allChecked, setAllChecked] = useState(false); // 전체 체크 상태 seq 아닌 id 기준
 
     const teams = [
+
         { name: "연구&개발" },
         { name: "사업관리팀" },
         { name: "AI센터", },
@@ -21,10 +24,13 @@ const Organization = () => {
 
     ];
 
+    const Navigate = useNavigate();
+
     // 조직도 리스트 출력
     const handleOrganizationList = () => {
-
-        caxios.get("/contacts/organization", { withCredentials: true })
+        const params = {};
+        if (searchName) params.name = searchName;
+        caxios.get("/contacts/organization", { params, withCredentials: true })
             .then(resp => {
                 setOrganization(resp.data);
             });
@@ -77,116 +83,176 @@ const Organization = () => {
         handleOrganizationList();
     }
 
-    // 개인 주소록으로 이동
-    const handleContactsUpdateTypeSingle = async () => {
-        caxios.put("/contacts/orgType", { idList: checkedList, type: "solo" }, { withCredentials: true });
 
-        setCheckedList([]);
-        setAllChecked(false);
-        handleOrganizationList();
-    }
+    // // 개인 주소록으로 이동
+    // const handleContactsUpdateTypeSingle = async () => {
+    //     caxios.put("/contacts/orgType", { idList: checkedList, type: "solo" }, { withCredentials: true });
+
+    //     setCheckedList([]);
+    //     setAllChecked(false);
+    //     handleOrganizationList();
+    // }
+
+
+
+    // modal
+
+    const [orgModalOpen, setOrgModalOpen] = useState(false);
+
+    const showOrgModal = (memberData) => {
+        setMember(memberData);
+        setOrgModalOpen(true);
+    };
+
+    const [member, setMember] = useState(null); // 모달에 보낼 member
+
 
     return (
-        <div className={styles.container} style={{ height: "500px" }} >
+        <div className={styles.container} style={{ height: "700px", display: "flex", flexDirection: "column", gap: "20px" }}>
 
-            <div className={styles.mainHeader}>
-                <div className={styles.mainHeadertop}>
-                    조직도
-                </div>
-                <div className={styles.mainHeaderbottom} >
+            {/* Header */}
+            <div className={styles.mainHeader} style={{fontSize:"35px"}}>
+                {selectedTeam
+                    ? `조직도 총 ${organization.filter(e => e.dept_code === selectedTeam).length}명`
+                    : `조직도 총 ${organization.length}명`}
+                <div className={styles.mainHeaderbottom} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     {checkedList.length === 0 ? (
                         <>
-
-                        </>) : (
+                            <div style={{ display: "flex", gap: "10px", width: "50%" }}>
+                                <input
+                                    type="text"
+                                    placeholder="검색할 이름"
+                                    style={{
+                                        flex: 1,
+                                        borderRadius: "10px",
+                                        border: "none",
+                                        fontSize: "20px"
+                                    }}
+                                    onChange={(e) => setSearchName(e.target.value)}
+                                    onKeyDown={(e) => { if (e.key === "Enter") handleOrganizationList(); }}
+                                />
+                                <button
+                                    onClick={handleOrganizationList}
+                                    style={{ padding: "5px 15px", fontSize: "16px" }}
+                                >
+                                    검색
+                                </button>
+                            </div>
+                        </>
+                    ) : (
                         <>
-                            <button onClick={handleContactsUpdateTypeSingle} style={{ margin: "10px" }}> 개인 주소록으로 </button>
-                            <button onClick={handleContactsUpdateTypeMulti} style={{ margin: "10px" }}> 공용 주소록으로 </button>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                <span style={{ fontSize: "25px" }}>선택된 {checkedList.length}명</span>
+                                <Button type="primary" size="small" onClick={handleContactsUpdateTypeMulti} style={{marginLeft:"50px" ,fontSize: "20px" }}>
+                                    공용 주소록으로
+                                </Button>
+                            </div>
                         </>
                     )}
                 </div>
 
             </div>
-            <div style={{ width: "100%", height: "100%", alignItems: "center" , marginTop:"30px" }}>
 
+            {/* Body */}
+            <div style={{ flex: 1, display: "flex", overflow: "hidden", gap: "10px", fontSize: "20px" }}>
 
+                {/* Team Sidebar */}
+                <div style={{
+                    width: "15%",
+                    backgroundColor: "#f0f2f5",
+                    borderRadius: "6px",
+                    overflowY: "auto",
+                    padding: "10px",
+                    fontSize: "16px"
+                }}>
+                    <div style={{
+                        marginTop: "10px",
+                        cursor: "pointer",
+                        textAlign: "center",
+                        fontSize: "20px"
 
-                <div style={{ width: "10%", height: "100%", float: "left", overflowY: "scroll", fontSize: "20px", textAlign: "center", backgroundColor: "lightgrey" }}>
-
-
+                    }}
+                        onClick={() => { setSelectedTeam(null); setCheckedList([]); }}
+                    >
+                        전체
+                    </div>
                     {teams.map((team, i) => (
-                        <div key={i} style={{ marginTop: "45px" }}>
-                            <div
-                                style={{ cursor: team.name.length > 0 }}
-                                onClick={() => {
-
-                                    if (team.name.length > 0) {
-                                        setOpenTeams(prev => ({
-                                            ...prev,
-                                            [team.name]: !prev[team.name]
-
-                                        }
-                                        ));
-                                    }
-                                    setSelectedTeam(team.name)
-                                }}
-                            >
-                                <a style={{ cursor: "pointer" }}> {team.name}</a>
-                            </div>
-
-
+                        <div
+                            key={i}
+                            style={{
+                                marginTop: "35px",
+                                marginBottom: "25px",
+                                padding: "5px",
+                                cursor: "pointer",
+                                backgroundColor: selectedTeam === team.name ? "#1890ff" : "transparent",
+                                color: selectedTeam === team.name ? "#fff" : "#000",
+                                borderRadius: "4px",
+                                transition: "all 0.2s",
+                                textAlign: "center",
+                                fontSize: "20px"
+                            }}
+                            onClick={() => { setSelectedTeam(team.name); setCheckedList([]); }}
+                        >
+                            {team.name}
                         </div>
                     ))}
-
-
                 </div>
 
-
-                <div style={{ width: "30%", height: "100%", float: "left", overflowY: "scroll", borderRight: "1px solid lightgrey", borderBottom: "1px solid lightgrey" }}>
-                    <div className={styles.mainBodyHeader} >
-                        <div className={styles.mainBodycheckbox}><input type="checkbox" onClick={handleAllcheckbox} /></div>
-                        <div className={styles.mainBodytag}>부서</div>
-                        <div className={styles.mainBodytag}>이름</div>
-                        <div className={styles.mainBodytag}>직위</div>
-                        <div className={styles.mainBodytag}>직무</div>
-                        <div className={styles.mainBodytag}>재직여부</div>
+                {/* Organization Table */}
+                <div style={{ flex: 1, overflowY: "auto", borderRadius: "6px", border: "1px solid #d9d9d9" }}>
+                    <div style={{ display: "flex", backgroundColor: "#fafafa", padding: "10px", borderBottom: "1px solid #d9d9d9", textAlign: "center" }}>
+                        <div style={{ flex: 0.5 }}><input type="checkbox" onClick={handleAllcheckbox} /></div>
+                        <div style={{ flex: 1 }}>부서</div>
+                        <div style={{ flex: 1 }}>이름</div>
+                        <div style={{ flex: 1 }}>직위</div>
+                        <div style={{ flex: 1 }}>직무</div>
+                        <div style={{ flex: 1 }}>재직여부</div>
                     </div>
-                    {selectedTeam ? (
-                        organization.filter(e => e.dept_code === selectedTeam) // 서버 데이터에서 팀명 필터링
-                            .map(e => (
-                                <div key={e.id} className={styles.mainBodylistbox}>
-                                    <div className={styles.mainBodycheckbox}>
-                                        <input type="checkbox" checked={checkedList.includes(e.id)} onChange={() => handleSingleCheck(e.id)} />
-                                    </div>
-                                    <div className={styles.mainBodytag}>{e.dept_code}</div>
-                                    <div className={styles.mainBodytag}>{e.name}</div>
-                                    <div className={styles.mainBodytag}>{e.rank_code}</div>
-                                    <div className={styles.mainBodytag}>{e.job_code}</div>
-                                    <div className={styles.mainBodytag}>{e.status}</div>
-                                </div>
-                            ))
-                    ) : (
-                        organization.map(e => (
-                            <div key={e.id} className={styles.mainBodylistbox}>
-                                <div className={styles.mainBodycheckbox}>
-                                    <input type="checkbox" checked={checkedList.includes(e.id)} onChange={() => handleSingleCheck(e.id)} />
-                                </div>
-                                <div className={styles.mainBodytag}>{e.dept_code}</div>
-                                <div className={styles.mainBodytag}>{e.name}</div>
-                                <div className={styles.mainBodytag}>{e.rank_code}</div>
-                                <div className={styles.mainBodytag}>{e.job_code}</div>
-                                <div className={styles.mainBodytag}>{e.status}</div>
+
+                    {(selectedTeam ? organization.filter(e => e.dept_code === selectedTeam) : organization).map(e => (
+                        <div key={e.id} style={{
+                            display: "flex",
+                            alignItems: "center",
+                            padding: "10px",
+                            borderBottom: "1px solid #f0f0f0",
+                            backgroundColor: checkedList.includes(e.id) ? "#e6f7ff" : "transparent",
+                            cursor: "pointer",
+                            transition: "all 0.2s",
+                            textAlign: "center"
+                        }}>
+                            <div style={{ flex: 0.5 }}>
+                                <input type="checkbox" checked={checkedList.includes(e.id)} onChange={() => handleSingleCheck(e.id)} />
                             </div>
-                        ))
-                    )}
+                            <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.dept_code}</div>
+                            <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.name}</div>
+                            <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.rank_code}</div>
+                            <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.job_code}</div>
+                            <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.status}</div>
+                        </div>
+                    ))}
                 </div>
             </div>
 
-        </div >
-
-
-
+            {/* Modal */}
+            <Modal
+                centered={false}
+                open={orgModalOpen}
+                onCancel={() => setOrgModalOpen(false)}
+                footer={null}
+                destroyOnHidden
+                width={{
+                    xs: '90%',
+                    sm: '80%',
+                    md: '70%',
+                    lg: '60%',
+                    xl: '50%',
+                    xxl: '30%',
+                }}
+                modalRender={modal => <div style={{ marginTop: '100px' }}>{modal}</div>}
+            >
+                <OrganizationView member={member} onClose={() => setOrgModalOpen(false)} />
+            </Modal>
+        </div>
     );
-
 }
-
 export default Organization;
