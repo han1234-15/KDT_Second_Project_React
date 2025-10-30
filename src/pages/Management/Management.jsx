@@ -438,7 +438,7 @@ const Management = () => {
                             </div>
                         </Flex>
 
-                        <Table className={style.table} rowSelection={rowSelection} columns={columns} dataSource={filteredUsers} pagination={{ position: ['bottomCenter'], hideOnSinglePage: true, onChange: handlePageChange }} />
+                        <Table tableLayout="fixed" className={style.table} rowSelection={rowSelection} columns={columns} dataSource={filteredUsers} pagination={{ position: ['bottomCenter'], hideOnSinglePage: true, onChange: handlePageChange }} />
                     </Flex>
                     {/* 테이블 아래쪽에 추가 */}
                     <Modal

@@ -84,3 +84,15 @@ button {
   color: #fff;
   font-size: 18px;
 }
+
+.userName {
+  display: block;             /* 줄바꿈 허용 */
+  max-width: 120px;           
+  white-space: nowrap;        /* 한 줄 유지 */
+  overflow: hidden;           /* 넘치는 글자 숨김 */
+  text-overflow: ellipsis;    /* …으로 표시 */
+  font-weight: 600;
+  font-size: 22px;
+  text-align: left  ;         
+  margin-Top: 25px;
+}  

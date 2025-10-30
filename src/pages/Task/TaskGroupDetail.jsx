@@ -5,7 +5,7 @@ import { Modal, Input, Select, Drawer, Table, AutoComplete, Button } from "antd"
 import styles from "./TaskGroupDetail.module.css";
 import { FaUser, FaCog } from "react-icons/fa";
 import { caxios } from "../../config/config";
-
+import { FaUserAlt } from "react-icons/fa";
 const { TextArea } = Input;
 
 const TaskGroupDetail = () => {
@@ -17,41 +17,60 @@ const TaskGroupDetail = () => {
   const [tasks, setTasks] = useState([]);
   const [members, setMembers] = useState([]);
   const [membersCount, setMembersCount] = useState(0);
-  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false); // ✅ 멤버 모달 상태
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false); //  멤버 모달 상태
   const [searchValue, setSearchValue] = useState("");
   const [allMembers, setAllMembers] = useState([]);
+  const [loginId, setLoginId] = useState("");
+  const [commentText, setCommentText] = useState(""); //업무 상세 패널 댓글용 상태 변수
 
-  // ✅ 업무 추가 모달
+  //  업무 추가 모달
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTask, setNewTask] = useState({
+
     title: "",
     description: "",
     assignee_id: "",
     status: "대기",
   });
 
-  // ✅ 상세 패널 상태
+  //  상세 패널 상태
   const [selectedTask, setSelectedTask] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // ✅ 서버 데이터 가져오기
+  // 업무 수정 모달 상태 변수
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editTask, setEditTask] = useState(null);
+
+  //  서버 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
         const resp = await caxios.get(`/task/detail/${seq}`);
 
-        // 백엔드 응답 구조가 아래 예시처럼 되어 있다고 가정
-        // {
-        //   group: { seq: 1, group_name: "Infinity 프로젝트" },
-        //   membersCount: 3,
-        //   members: [{ id: "kim", name: "김유정" }, ...],
-        //   tasks: [{ seq: 1, title: "...", status: "...", ... }]
-        // }
         console.log(resp);
         setGroup(resp.data.group);
         setTasks(resp.data.tasks || []);
         setMembersCount(resp.data.membersCount || 0);
         setMembers(resp.data.members || []);
+
+        //  로그인id가 전송되지 않은 경우
+        if (!resp.data.loginId) {
+          navigate("/");
+          return;
+        }
+
+        //  그룹 멤버가 아닌 경우
+        const isMember = resp.data.members.some(
+          (m) => m.id === resp.data.loginId
+        );
+
+        if (!isMember) {
+          alert("이 그룹에 접근할 권한이 없습니다.");
+          navigate("/");
+          return;
+        }
+
+        setLoginId(resp.data.loginId);
 
         //멤버 리스트 가져오기용
         caxios
@@ -60,17 +79,91 @@ const TaskGroupDetail = () => {
             setAllMembers(resp.data);
             console.log(resp);
           })
-          .catch((err) => console.error("❌ 전체 멤버 조회 실패:", err));
+          .catch((err) => console.error(" 전체 멤버 조회 실패:", err));
 
       } catch (err) {
-        console.error("❌ 그룹 상세 불러오기 실패:", err);
+        console.error("그룹 상세 불러오기 실패:", err);
       }
     };
 
     fetchData();
   }, [seq]);
 
-  // ✅ 더미 데이터
+
+  //사이드바 열면 서버에서 코멘트 가져오기
+  useEffect(() => {
+    if (isDrawerOpen && selectedTask?.seq) {
+      caxios.get(`/task/comment/${selectedTask.seq}`)
+        .then(resp => {
+          console.log(resp);
+          setSelectedTask(prev => ({
+            ...prev,
+            comments: resp.data,
+          }));
+        })
+        .catch(err => console.error("댓글 불러오기 실패:", err));
+    }
+  }, [isDrawerOpen, selectedTask?.seq]);
+
+
+  const openEditModal = (task) => {
+    setEditTask({ ...task }); // 선택한 업무 복사
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateTask = async () => {
+    if (!editTask.title.trim()) {
+      alert("업무 제목을 입력해주세요.");
+      return;
+    }
+
+    try {
+      const resp = await caxios.put("/task/updateTask", editTask);
+
+      if (resp.status === 200) {
+        const updatedTask = resp.data; // ✅ 서버에서 최신 데이터 받기 (created_at, updated_at 포함)
+        alert("업무가 수정되었습니다.");
+        console.log("서버에서 받은 수정된 데이터:", updatedTask);
+
+        // ✅ 전체 목록 반영
+        setTasks((prev) =>
+          prev.map((t) => (t.seq === updatedTask.seq ? updatedTask : t))
+        );
+
+        // ✅ 상세 패널에도 반영
+        setSelectedTask(updatedTask);
+
+        // 모달 닫기
+        setIsEditModalOpen(false);
+        setIsDrawerOpen(false);
+      } else {
+        alert("업무 수정에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("업무 수정 실패:", err);
+      alert("업무 수정 중 오류가 발생했습니다.");
+    }
+  };
+
+  const taskDelete = async (task) => { //업무 삭제
+    if (!window.confirm(`"${task.title}" 업무를 삭제하시겠습니까?`)) return;
+
+    try {
+      const resp = await caxios.delete("/task/deleteTask", { data: { seq: task.seq } });
+
+      if (resp.status === 200) {
+        alert("업무가 삭제되었습니다.");
+        setTasks((prev) => prev.filter((t) => t.seq !== task.seq));
+        setIsDrawerOpen(false); // 상세창 닫기
+      } else {
+        alert("업무 삭제에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("업무 삭제 실패:", err);
+      alert("업무 삭제 중 오류가 발생했습니다.");
+    }
+  };
+  //  더미 데이터
   // useEffect(() => {
   //   const mockData = {
   //     group: { seq: 1, group_name: "Infinity 프로젝트" },
@@ -99,42 +192,6 @@ const TaskGroupDetail = () => {
   //         created_at: "2025-10-28",
   //         comments: ["이거 이번주까지 완료해야 해요."],
   //       },
-  //       {
-  //         seq: 3,
-  //         title: "요구사항 정리3",
-  //         description: "고객 요청사항 분석 및 정리",
-  //         assignee_id: "kim",
-  //         status: "대기",
-  //         created_at: "2025-10-28",
-  //         comments: ["이거 이번주까지 완료해야 해요."],
-  //       },
-  //       {
-  //         seq: 4,
-  //         title: "요구사항 정리4",
-  //         description: "고객 요청사항 분석 및 정리",
-  //         assignee_id: "kim",
-  //         status: "완료",
-  //         created_at: "2025-10-28",
-  //         comments: ["이거 이번주까지 완료해야 해요."],
-  //       },
-  //       {
-  //         seq: 5,
-  //         title: "요구사항 정리5",
-  //         description: "고객 요청사항 분석 및 정리",
-  //         assignee_id: "kim",
-  //         status: "대기",
-  //         created_at: "2025-10-28",
-  //         comments: ["이거 이번주까지 완료해야 해요."],
-  //       },
-  //       {
-  //         seq: 6,
-  //         title: "UI 시안 검토6",
-  //         description: "디자인 피드백 반영 필요",
-  //         assignee_id: "lee",
-  //         status: "진행중",
-  //         created_at: "2025-10-29",
-  //         comments: [],
-  //       },
   //     ],
   //   };
 
@@ -150,45 +207,104 @@ const TaskGroupDetail = () => {
   const grouped = {};
   statuses.forEach((s) => (grouped[s] = tasks.filter((t) => t.status === s)));
 
-  // ✅ 드래그핸들러
-  const handleDragEnd = (result) => {
+  //  드래그핸들러
+  const handleDragEnd = async (result) => {
     const { source, destination } = result;
     if (!destination) return;
-    if (
-      source.droppableId === destination.droppableId &&
-      source.index === destination.index
-    )
-      return;
 
     const sourceStatus = source.droppableId;
     const destStatus = destination.droppableId;
-
     const moved = grouped[sourceStatus][source.index];
-    moved.status = destStatus;
-    setTasks([...tasks]);
+
+    // UI 즉시 반영 (optimistic update)
+    const optimistic = tasks.map((t) =>
+      t.seq === moved.seq ? { ...t, status: destStatus } : t
+    );
+    setTasks(optimistic);
+
+    try {
+      const resp = await caxios.put("/task/updateStatus", {
+        seq: moved.seq,
+        status: destStatus,
+      });
+
+      if (resp.status === 200) {
+        const updated = resp.data; // ✅ 서버에서 받은 최신 DTO (updated_at 포함)
+
+        // ✅ 서버값으로 최종 반영
+        setTasks((prev) =>
+          prev.map((t) => (t.seq === updated.seq ? updated : t))
+        );
+
+        // ✅ 만약 이게 현재 열려 있는 상세창이라면 함께 반영
+        setSelectedTask((prev) =>
+          prev && prev.seq === updated.seq ? updated : prev
+        );
+      } else {
+        throw new Error("서버 오류");
+      }
+    } catch (err) {
+      console.error("상태 업데이트 실패:", err);
+      alert("상태 변경 중 오류가 발생했습니다.");
+
+      // 실패 시 롤백
+      window.location.reload();
+    }
   };
 
-  // ✅ 업무 클릭 → 상세 패널 열기
+  //  업무 클릭 → 상세 패널 열기
   const handleTaskClick = (task) => {
     setSelectedTask(task);
     setIsDrawerOpen(true);
   };
 
-  // ✅ 업무 추가
+  //  업무 추가
   const showModal = (status) => {
     setNewTask({ title: "", description: "", assignee_id: "", status });
     setIsModalOpen(true);
   };
 
-  const handleAddTask = () => {
+  const handleAddTask = async () => {
     if (!newTask.title.trim()) {
       alert("업무 제목을 입력해주세요.");
       return;
     }
-    const newSeq = tasks.length ? Math.max(...tasks.map((t) => t.seq)) + 1 : 1;
-    const added = { seq: newSeq, ...newTask, created_at: new Date().toLocaleDateString() };
-    setTasks((prev) => [...prev, added]);
-    setIsModalOpen(false);
+
+    if (!newTask.assignee_id.trim()) {
+      alert("담당자를 입력해주세요.");
+      return;
+    }
+
+    try {
+      const payload = {
+        group_seq: seq,              // 현재 그룹 번호 (URL에서 가져옴)
+        title: newTask.title,
+        description: newTask.description,
+        assignee_id: newTask.assignee_id,
+        status: newTask.status,
+        created_id: loginId,         // 현재 로그인한 사용자
+      };
+
+
+
+      setIsModalOpen(false);
+      const resp = await caxios.post("/task/insertTask", payload);
+
+      console.log(resp.data);
+      if (resp.status === 200) {
+        alert("업무가 등록되었습니다.");
+        const newSeq = resp.data.seq;
+        const newDate = resp.data.created_at;
+        const added = { seq: newSeq, ...newTask, created_at: newDate };
+        setTasks((prev) => [...prev, added]);
+        setIsModalOpen(false);
+      } else {
+        alert("업무 등록에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("업무 등록 실패:", err);
+      alert("업무 등록 중 오류가 발생했습니다.");
+    }
   };
 
   const memberSelect = async (value) => {
@@ -204,16 +320,139 @@ const TaskGroupDetail = () => {
       // 서버로 전송
       const resp = await caxios.post("/task/addMember", payload);
 
-      console.log("✅ 멤버 추가 완료:", resp.data);
+      console.log(" 멤버 추가 완료:", resp.data);
 
       // 성공 후 members 상태 업데이트 (UI 반영)
       setMembers((prev) => [...prev, value]);
       setMembersCount((prevCount) => prevCount + 1);
     } catch (err) {
-      console.error("❌ 멤버 추가 실패:", err);
+      console.error(" 멤버 추가 실패:", err);
       alert("멤버 추가 중 오류가 발생했습니다.");
     }
   };
+
+  const memberDelete = async (value) => {
+    try {
+
+      // payload (보낼 데이터)
+      const payload = {
+        group_seq: seq,      // 현재 그룹 번호
+        member_id: value.id, // 삭제할 멤버 ID
+      };
+
+
+      // 서버로 전송
+      const resp = await caxios.delete("/task/delMember", { data: payload });
+
+      console.log("멤버 삭제 성공:", resp.data);
+
+      // 상태 업데이트
+      setMembers(members.filter((m) => m.id !== value.id));
+      setMembersCount((prev) => prev - 1);
+    } catch (err) {
+      console.error("멤버 삭제 실패:", err);
+      alert("멤버 삭제 중 오류가 발생했습니다.");
+    }
+  }
+
+  const groupDelete = async () => {
+    try {
+      // 확인 창 띄우기
+      const isManager = group.manager_id === loginId;
+      const confirmMsg = isManager
+        ? "정말 이 그룹을 완전히 삭제하시겠습니까?\n(모든 멤버와 업무가 함께 삭제됩니다.)"
+        : "정말 이 그룹에서 나가시겠습니까?";
+
+      // 사용자가 취소 누르면 종료
+      if (!window.confirm(confirmMsg)) return;
+
+      // payload (보낼 데이터)
+      const payload = {
+        group_seq: seq, // 현재 그룹 번호
+      };
+
+      // 서버로 전송
+      const resp = await caxios.delete("/task/delGroup", { data: payload });
+
+      if (resp.status === 200) {
+        alert(isManager ? "그룹이 삭제되었습니다." : "그룹에서 나갔습니다.");
+        navigate("/task/group");
+      } else {
+        alert("요청 처리 중 오류가 발생했습니다.");
+      }
+    } catch (err) {
+      console.error("그룹 삭제 실패:", err);
+      alert("그룹 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
+
+  // ✅ 댓글 등록 함수 (등록 + 최신 목록 갱신)
+  const handleAddComment = async () => {
+    const text = commentText.trim();
+    if (!text) return;
+
+    const newComment = {
+      writer_name: members.find(m => m.id === loginId)?.name || "익명",
+      writer_id: loginId,
+      content: text,
+      created_at: new Date(),
+    };
+
+    // ✅ 1) 먼저 UI에 즉시 반영 (Optimistic)
+    setSelectedTask((prev) => ({
+      ...prev,
+      comments: [...(prev.comments || []), newComment],
+    }));
+    setCommentText("");
+
+    try {
+      // ✅ 2) 서버에 저장 요청
+      await caxios.post("/task/comment", {
+        task_seq: selectedTask.seq,
+        content: text,
+      });
+
+      console.log("댓글 등록 성공");
+
+      // ✅ 3) 최신 댓글 목록 다시 불러오기
+      const resp = await caxios.get(`/task/comment/${selectedTask.seq}`);
+      setSelectedTask((prev) => ({
+        ...prev,
+        comments: resp.data,
+      }));
+    } catch (err) {
+      console.error("댓글 등록 실패:", err);
+      alert("댓글 등록 중 오류가 발생했습니다.");
+
+      // ✅ 4) 실패 시 UI 롤백
+      setSelectedTask((prev) => ({
+        ...prev,
+        comments: prev.comments.filter((c) => c !== newComment),
+      }));
+    }
+  };
+
+  // ✅ 댓글 삭제 함수
+  const handleDeleteComment = async (commentSeq) => {
+    if (!window.confirm("이 댓글을 삭제하시겠습니까?")) return;
+
+    try {
+      await caxios.delete(`/task/comment/${commentSeq}`);
+      console.log("댓글 삭제 성공");
+
+      // ✅ 삭제 후 최신 댓글 목록 다시 불러오기
+      const resp = await caxios.get(`/task/comment/${selectedTask.seq}`);
+      setSelectedTask((prev) => ({
+        ...prev,
+        comments: resp.data,
+      }));
+    } catch (err) {
+      console.error("댓글 삭제 실패:", err);
+      alert("댓글 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -227,14 +466,22 @@ const TaskGroupDetail = () => {
           <span
             onClick={() => setIsMemberModalOpen(true)}
             style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "5px" }}
-          ><FaUser style={{ marginBottom: "3px" }} /> {membersCount}명 </span> <span><FaCog style={{ marginBottom: "3px", marginLeft: "10px" }} /> 그룹 제거</span>
+          ><FaUser style={{ marginBottom: "3px" }} /> {membersCount}명 </span>
+
+          {(loginId == group.manager_id) ?
+            <button className={styles.groupDelBtn} onClick={() => groupDelete()}><FaCog style={{ marginBottom: "3px", marginLeft: "10px" }} /> 그룹 제거</button>
+            :
+            <button className={styles.groupDelBtn} onClick={() => groupDelete()}><FaCog style={{ marginBottom: "3px", marginLeft: "10px" }} /> 그룹 나가기</button>
+          }
         </div>
       </div>
-
+      <div style={{ padding: "10px", width: "40%" }}>
+        {group.description}
+      </div>
       <div className={styles.dataInfo}>{tasks.length}개의 업무 데이터</div>
 
       <div className={styles.mainLayout}>
-        {/* ✅ 왼쪽 칸반 */}
+        {/*  왼쪽 칸반 */}
         <DragDropContext onDragEnd={handleDragEnd}>
           <div className={styles.kanbanWrapper}>
             {statuses.map((status) => (
@@ -265,7 +512,11 @@ const TaskGroupDetail = () => {
                             >
                               <div className={styles.taskTitle}>{task.title}</div>
                               <div className={styles.taskAssignee}>
-                                담당자: {task.assignee_id || "미지정"}
+                                담당자: {
+                                  task.assignee_id
+                                    ? (members.find(m => m.id === task.assignee_id)?.name || task.assignee_id)
+                                    : "미지정"
+                                }
                               </div>
                             </div>
                           )}
@@ -284,10 +535,10 @@ const TaskGroupDetail = () => {
           </div>
         </DragDropContext>
 
-        {/* ✅ 오른쪽 상세 패널 */}
+        {/*  오른쪽 상세 패널 */}
         <Drawer
           open={isDrawerOpen}
-          width={400}
+          width={500}
           onClose={() => setIsDrawerOpen(false)}
           title={selectedTask?.title || "업무 상세"}
           placement="right"
@@ -295,33 +546,70 @@ const TaskGroupDetail = () => {
           {selectedTask && (
             <div className={styles.detailPanel}>
               <p><strong>상태:</strong> {selectedTask.status}</p>
-              <p><strong>담당자:</strong> {selectedTask.assignee_id}</p>
+              <p>
+                <strong>담당자:</strong> {selectedTask.assignee_id
+                  ? (members.find(m => m.id === selectedTask.assignee_id)?.name || selectedTask.assignee_id)
+                  : "미지정"}
+              </p>
               <p><strong>생성일:</strong> {selectedTask.created_at}</p>
+              <p><strong>수정일:</strong> {selectedTask.updated_at}</p>
               <p><strong>설명:</strong></p>
               <div className={styles.descriptionBox}>
                 {selectedTask.description || "내용 없음"}
               </div>
-
+              <div>
+                <button
+                  className={styles.rightBtn}
+                  onClick={() => openEditModal(selectedTask)}
+                >
+                  수정
+                </button>
+                <button
+                  className={styles.rightBtn}
+                  onClick={() => taskDelete(selectedTask)}
+                >
+                  제거
+                </button>
+              </div>
               <hr />
+              {/* 💬 댓글 영역 */}
               <div>
                 <strong>💬 댓글</strong>
                 <ul className={styles.commentList}>
                   {selectedTask.comments?.map((c, i) => (
-                    <li key={i}>{c}</li>
+                    <li key={i} className={styles.commentItem}>
+                      <div className={styles.commentRow}>
+                        <div className={styles.commentHeader}>
+                          <span className={styles.commentName}>
+                            <FaUserAlt style={{ margin: "5px 5px 8px 5px" }} />{c.writer_name} ({c.writer_id})
+                          </span>
+                          <span className={styles.commentTime}>
+                            {c.created_at
+                              ? new Date(c.created_at).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                              : "방금 전"}
+                          </span>
+
+                          {/* 삭제 버튼 (오른쪽 끝 고정) */}
+                          <button className={styles.commentDeleteBtn} onClick={() => handleDeleteComment(c.seq)}>x</button>
+                        </div>
+
+                        <div className={styles.commentContent}>{c.content}</div>
+                      </div>
+                    </li>
                   ))}
                 </ul>
-                <Input.TextArea
-                  rows={2}
-                  placeholder="댓글을 입력하세요"
+
+                <Input
+                  style={{ width: "97%" }}  // ← 원하는 %나 px 단위로 지정
+                  placeholder="댓글을 입력하세요."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
                   onPressEnter={(e) => {
-                    const comment = e.target.value.trim();
-                    if (comment) {
-                      setSelectedTask({
-                        ...selectedTask,
-                        comments: [...(selectedTask.comments || []), comment],
-                      });
-                      e.target.value = "";
-                    }
+                    e.preventDefault();
+                    handleAddComment();
                   }}
                 />
               </div>
@@ -330,7 +618,7 @@ const TaskGroupDetail = () => {
         </Drawer>
       </div>
 
-      {/* ✅ 업무 추가 모달 */}
+      {/*  업무 추가 모달 */}
       <Modal
         open={isModalOpen}
         title="새 업무 추가"
@@ -344,7 +632,12 @@ const TaskGroupDetail = () => {
           <label>업무 제목</label>
           <Input
             value={newTask.title}
-            onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+            onChange={(e) =>
+              setNewTask(prev => ({
+                ...prev,
+                title: e.target.value
+              }))
+            }
           />
           <label style={{ marginTop: "10px" }}>담당자</label>
           <Select
@@ -362,35 +655,55 @@ const TaskGroupDetail = () => {
             rows={3}
             value={newTask.description}
             onChange={(e) =>
-              setNewTask({ ...newTask, description: e.target.value })
+              setNewTask(prev => ({
+                ...prev,
+                description: e.target.value
+              }))
             }
             placeholder="업무 내용을 입력하세요."
           />
         </div>
       </Modal>
 
-      {/* ✅ 멤버 목록 모달 */}
+      {/*  멤버 목록 모달 */}
       <Modal
         title={`그룹 멤버 (${members.length}명)`}
         open={isMemberModalOpen}
         onCancel={() => setIsMemberModalOpen(false)}
         footer={null}
         width={650}
+        modalRender={(modal) => (
+          <div style={{ marginTop: '20%' }}>
+            {modal}
+          </div>
+        )}
       >
-        {/* 🔍 검색 영역 */}
+        {/* 검색 영역 */}
         <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
           <AutoComplete
             style={{ flex: 1 }}
-            placeholder="이름으로 멤버 추가"
+            placeholder="이름 또는 ID로 멤버 추가"
             options={allMembers
-              .filter((m) => m.name.toLowerCase().includes(searchValue?.toLowerCase?.() || ""))
+              .filter((m) => {
+                const keyword = (searchValue || "").toLowerCase();
+                return (
+                  m.name.toLowerCase().includes(keyword) ||
+                  m.id.toLowerCase().includes(keyword) // ID 포함 검색
+                );
+              })
+              // 이미 그룹에 포함된 멤버 제외
+              .filter((m) => !members.some((mem) => mem.id === m.id))
               .map((m) => ({
-                value: m.name,
+                value: `${m.name} (${m.id})`, // 표시도 이름 + ID
                 label: `${m.name} (${m.id})`,
               }))}
             onSearch={(val) => setSearchValue(val)}
             onSelect={(val) => {
-              const found = allMembers.find((m) => m.name === val);
+              //  선택 시 id 추출
+              const idMatch = val.match(/\(([^)]+)\)$/);
+              const selectedId = idMatch ? idMatch[1] : null;
+
+              const found = allMembers.find((m) => m.id === selectedId);
               if (found && !members.some((mem) => mem.id === found.id)) {
                 memberSelect(found);
               }
@@ -400,13 +713,17 @@ const TaskGroupDetail = () => {
           />
         </div>
 
-        {/* 📋 테이블 영역 */}
+        {/*  테이블 영역 */}
         <Table
           dataSource={members}
+          tableLayout="fixed"
           rowKey="id"
           bordered
-          pagination={false}
           size="middle"
+          pagination={{
+            pageSize: 10, //  한 페이지에 표시할 행 개수
+
+          }}
           columns={[
             {
               title: "이름 (ID)",
@@ -433,23 +750,87 @@ const TaskGroupDetail = () => {
               align: "center",
             },
             {
-              title: "관리",
+              title: "비고",
               key: "actions",
               align: "center",
-              render: (_, record) => (
-                <Button
-                  type="link"
-                  danger
-                  onClick={() => setMembers(members.filter((m) => m.id !== record.id))}
-                >
-                  제거
-                </Button>
-              ),
+              render: (_, record) => {
+                if (record.id === group.manager_id) {
+                  return <span style={{ color: "#aaa" }}>관리자</span>;
+                }
+
+                if (loginId === group.manager_id) {
+                  return (
+                    <button
+                      style={{
+                        color: "#ff0000",
+                        border: "none",
+                        background: "none",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => memberDelete(record)}
+                    >
+                      제거
+                    </button>
+                  );
+                }
+
+                return null;
+              },
             },
           ]}
         />
-      </Modal>
 
+      </Modal>
+      <Modal
+        open={isEditModalOpen}
+        title="업무 수정"
+        onCancel={() => setIsEditModalOpen(false)}
+        onOk={handleUpdateTask}
+        okText="수정"
+        cancelText="취소"
+        width={400}
+      >
+        <div className={styles.modalContent}>
+          <label>업무 제목</label>
+          <Input
+            value={editTask?.title || ""}
+            onChange={(e) =>
+              setEditTask((prev) => ({ ...prev, title: e.target.value }))
+            }
+          />
+          <label style={{ marginTop: "10px" }}>담당자</label>
+          <Select
+            value={editTask?.assignee_id || ""}
+            onChange={(val) => setEditTask((prev) => ({ ...prev, assignee_id: val }))}
+            style={{ width: "100%" }}
+            placeholder="담당자 선택"
+            options={members.map((m) => ({
+              value: m.id,
+              label: `${m.name} (${m.id})`,
+            }))}
+          />
+          <label style={{ marginTop: "10px" }}>상태</label>
+          <Select
+            value={editTask?.status || ""}
+            onChange={(val) => setEditTask((prev) => ({ ...prev, status: val }))}
+            style={{ width: "100%" }}
+            placeholder="상태 선택"
+            options={statuses.map((m) => ({
+              value: m,
+              label: m,
+            }))}
+          />
+          <label style={{ marginTop: "10px" }}>업무 설명</label>
+          <TextArea
+            rows={3}
+            value={editTask?.description || ""}
+            onChange={(e) =>
+              setEditTask((prev) => ({ ...prev, description: e.target.value }))
+            }
+            placeholder="업무 내용을 입력하세요."
+          />
+        </div>
+      </Modal>
     </div>
   );
 };

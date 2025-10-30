@@ -78,7 +78,7 @@ const Header = () => {
                             />
                         )}
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                            <div style={{ fontSize: 22, fontWeight: 600, marginTop: '25px' }}>{memberInfo.name}</div>
+                            <div className={styles.userName} style={{ fontSize: 22, fontWeight: 600, marginTop: '25px' }}>{memberInfo.name}</div>
                             <div style={{ fontSize: 15, color: '#666', marginTop: '2px' }}>
                                 {memberInfo.rank_code} / {memberInfo.dept_code}
                             </div>
