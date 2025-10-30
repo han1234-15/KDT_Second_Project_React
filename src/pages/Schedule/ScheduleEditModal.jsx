@@ -1,13 +1,6 @@
+import useAuthStore from "../../store/authStore";
 import React, { useEffect, useState } from "react";
-import {
-    Modal,
-    Input,
-    Button,
-    Select,
-    DatePicker,
-    TimePicker,
-    Alert,
-} from "antd";
+import {  Modal, Input,Button,Select,DatePicker,TimePicker, Alert,} from "antd";
 import dayjs from "dayjs";
 import { caxios } from "../../config/config";
 import StarIcon from "@mui/icons-material/Star";
@@ -21,7 +14,6 @@ const ScheduleEditModal = ({ isOpen, onClose, onSuccess, initialData }) => {
     const [errorMsg, setErrorMsg] = useState("");
     const [saving, setSaving] = useState(false);
 
-    // 열릴 때 최초 데이터 세팅
     useEffect(() => {
         if (isOpen && initialData) {
             setForm({
@@ -46,7 +38,7 @@ const ScheduleEditModal = ({ isOpen, onClose, onSuccess, initialData }) => {
     const toggleImportant = () =>
         setForm((p) => ({ ...p, importantYn: p.importantYn === "Y" ? "N" : "Y" }));
 
-    // ✅ 유효성 검사 (실패 시 서버 호출 차단)
+    // 유효성 검사 (실패 시 서버 호출 차단)
     const validate = () => {
         const missing = [];
 
@@ -70,7 +62,7 @@ const ScheduleEditModal = ({ isOpen, onClose, onSuccess, initialData }) => {
         return true;
     };
 
-    // ✅ 일정 수정
+    // 일정 수정
     const handleEdit = async () => {
         if (saving) return;
         if (!validate()) return;

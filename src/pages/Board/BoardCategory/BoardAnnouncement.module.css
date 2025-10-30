@@ -5,7 +5,22 @@
 
 .search {
     width: 100%;
-    margin-left: 1400px;
+    display: flex; 
+    justify-content: flex-end;
+}
+:global(.ant-input-clear-icon) {
+  display: flex !important;
+  align-items: center !important;   /* ✅ 수직 중앙 정렬 */
+  justify-content: center !important; /* ✅ 수평 중앙 정렬 */
+  font-size: 12px !important;       /* ✅ X 크기 */
+  width: 20px !important;           /* ✅ 버튼 크기 */
+  height: 20px !important;
+  color: #fff !important;           /* ✅ 흰색 X */
+  background: linear-gradient(90deg, #8e2de2, #4a00e0) !important; /* ✅ 배경 그라데이션 */
+  border-radius: 50% !important;    /* ✅ 완전 동그랗게 */
+}
+:global(.ant-input-search-button .anticon) {
+  color: #7a7979 !important; /* ✅ 돋보기 아이콘 색 */
 }
 
 .boardHeader {
@@ -13,32 +28,38 @@
 }
 
 
-:global(.ant-table-tbody > tr > td) {
-    background-color: transparent ;
-    /* 셀 배경 제거 */
-    border-top: 1px solid #e0e0e0 ;
-    border-bottom: 1px solid #e0e0e0 ;
-    border-left: none ;
-    border-right: none ;
-    text-align: center ;
-}
-
-/* 헤더 배경 제거 */
+/* === 테이블 헤더 스타일 === */
 :global(.ant-table-thead > tr > th) {
-    background-color: transparent !important;
-    border-top: 1px solid #e0e0e0 !important;
-    border-bottom: 1px solid #e0e0e0 !important;
-    border-left: none ;
-    border-right: none ;
-    text-align: center !important;
+  background-color: #ffffff !important; /* ✅ 헤더 흰색 배경 */
+  border-top: 1px solid #e0e0e0 !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+  border-left: none;
+  border-right: none;
+  text-align: center !important;
+  height: 38px !important; /* ✅ 헤더 높이 축소 */
+  padding: 8px 0 !important; /* ✅ 내부 여백 줄이기 */
+  font-weight: 600 !important; /* ✅ 글씨 강조 (선택) */
 }
 
-/* hover 시에도 배경색 유지 */
+/* === 테이블 셀(td) 스타일 === */
+:global(.ant-table-tbody > tr > td) {
+  background-color: transparent;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  border-left: none;
+  border-right: none;
+  text-align: center;
+  height: 36px !important; /* ✅ 셀 높이 줄이기 */
+  padding: 6px 0 !important; /* ✅ 위아래 여백 축소 */
+  vertical-align: middle !important; /* ✅ 내용 세로 가운데 */
+}
+
+/* ✅ hover 시에도 배경 유지 */
 :global(.ant-table-tbody > tr:hover > td) {
-    background-color: transparent;
+  background-color: #fafafa !important; /* 살짝만 회색톤 hover 효과 (선택) */
 }
 
-/* 선택(체크박스 선택)된 행의 배경 제거 */
+/* ✅ 선택된 행 배경 제거 */
 :global(.ant-table-row-selected > td) {
-    background-color: transparent ;
+  background-color: transparent !important;
 }

@@ -1,37 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Select, Input, Checkbox } from "antd";
 import styles from "./BoardWrite.module.css";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { caxios } from "../../config/config.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const { Option } = Select;
 
 const BoardWrite = () => {
-
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  // 게시글 상태
+  const initialCategory = searchParams.get("category") || "";
+  const fromPath = searchParams.get("from") || "/board/1/announcement"; // ✅ 돌아갈 경로 기억
+
   const [board, setBoard] = useState({
     title: "",
     content: "",
-    noticeYn: "",
-    category_id: "",
+    noticeYn: "N",
+    category_id: initialCategory,
   });
 
-  // 제목 입력
+  const [category_id, setCategory_id] = useState(initialCategory);
+  const [files, setFiles] = useState([]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setBoard((prev) => ({ ...prev, [name]: value }));
-  }
-  // 컨텐츠 (에디터)
+  };
+
   const handleEditorChange = (event, editor) => {
     const data = editor.getData();
     setBoard((prev) => ({ ...prev, content: data }));
   };
 
-  // 체크박스
   const handleNoticeChange = (e) => {
     setBoard((prev) => ({
       ...prev,
@@ -39,56 +42,39 @@ const BoardWrite = () => {
     }));
   };
 
-  // 게시판 선택
-  const [category_id, setCategory_id] = useState("");
-
   const handleCategoryChange = (val) => {
-
-    console.log("선택된 게시판:", val);
-
     setCategory_id(val);
     setBoard((prev) => ({ ...prev, category_id: val }));
   };
 
-  // 파일 상태
-  const [files, setFiles] = useState([]);
-  // 파일 선택
   const handleFileSelect = (e) => {
     setFiles(Array.from(e.target.files));
   };
 
-  // 글 작성 submit 버튼
+  // ✅ 글 작성
   const handleSubmit = async () => {
     try {
-      // 게시글 먼저 등록 (board 테이블)
       const boardResp = await caxios.post("/board", board);
-      const boardSeq = boardResp.data; // controller가 seq 리턴 중
-
+      const boardSeq = boardResp.data;
       console.log("게시글 등록 완료, seq:", boardSeq);
 
-      // 파일이 있을 경우 전역 파일 업로드
       if (files.length > 0) {
         const formData = new FormData();
         formData.append("module_type", "board");
-        formData.append("module_seq", boardSeq); // 게시글 PK
-
-        files.forEach((file) => {
-          formData.append("files", file);
-        });
+        formData.append("module_seq", boardSeq);
+        files.forEach((file) => formData.append("files", file));
 
         await caxios.post("/files/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-
         console.log("파일 업로드 완료");
       }
 
       alert("게시글이 등록되었습니다!");
-
-      navigate(`/board/${board.category_id}`);
+      // ✅ 작성 후 원래 페이지로 돌아감
+      navigate(fromPath);
     } catch (err) {
       console.error("등록 실패:", err);
-
       alert("등록 중 오류가 발생했습니다.");
     }
   };
@@ -97,13 +83,13 @@ const BoardWrite = () => {
     <div className={styles.container}>
       <div className={styles.btns}>
         <button onClick={handleSubmit}>확인</button>
-        <button>임시저장</button>
+        <button onClick={() => navigate(fromPath)}>취소</button>
       </div>
 
       <div className={styles.boardGroup}>
         <label>게시판</label>
         <Select
-          value={category_id}
+          value={category_id || board.category_id} // ✅ 자동 선택
           onChange={handleCategoryChange}
           style={{ width: 240 }}
           placeholder="게시판을 선택하세요"
@@ -115,29 +101,30 @@ const BoardWrite = () => {
         </Select>
       </div>
 
-      <div className={styles.titleInput}>
-        <label>제목</label>
-        <Input
-          name="title"
-          onChange={handleChange}
-          value={board.title}
-          style={{ width: "500px" }}
-          placeholder="제목을 입력하세요"
-        />
-        <Checkbox
-          checked={board.noticeYn === "Y"}
-          onChange={handleNoticeChange}
-        >
-          공지로 등록
-        </Checkbox>
-      </div>
+<div className={styles.titleInput}>
+  <label>제목</label>
+  <Input
+    name="title"
+    onChange={handleChange}
+    value={board.title}
+    style={{ width: "500px" }}
+    placeholder="제목을 입력하세요"
+  />
 
-      {/* 파일 업로드 */}
+  <Checkbox
+    className={styles.noticeCheck}
+    checked={board.noticeYn === "Y"}
+    onChange={handleNoticeChange}
+  >
+    공지 등록
+  </Checkbox>
+</div>
+
+
       <div className={styles.fileBox}>
         <div className={styles.file}>
           <label>파일 첨부</label>
         </div>
-        {/* 선택된 파일 목록 표시 */}
         {files.length > 0 && (
           <ul className={styles.filePreview}>
             {files.map((file, i) => (

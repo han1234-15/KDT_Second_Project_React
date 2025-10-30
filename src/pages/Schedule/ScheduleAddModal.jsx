@@ -1,3 +1,4 @@
+import useAuthStore from "../../store/authStore";
 import React, { useEffect, useState } from "react";
 import {  Modal, Input,Button,Select,DatePicker,TimePicker, Alert,} from "antd";
 import dayjs from "dayjs";
@@ -9,7 +10,8 @@ import styles from "./Schedule.module.css";
 const { Option } = Select;
 
 const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
-  const [form, setForm] = useState({
+const { loginId } = useAuthStore();
+const [form, setForm] = useState({
     category: "1",
     title: "",
     content: "",
@@ -18,7 +20,7 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
     place: "",
     color: "#6BB5FF",
     importantYn: "N",
-    created_id: "testUser",
+    created_id: loginId,
   });
   const [errorMsg, setErrorMsg] = useState("");
   const [saving, setSaving] = useState(false);
@@ -45,7 +47,7 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
   const toggleImportant = () =>
     setForm((p) => ({ ...p, importantYn: p.importantYn === "Y" ? "N" : "Y" }));
 
-  // ✅ 유효성 검사 (실패 시 서버 호출 차단)
+  // 유효성 검사 (실패 시 서버 호출 차단)
   const validate = () => {
     const missing = [];
     if (!form.title?.trim()) missing.push("제목");
@@ -68,39 +70,39 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
     return true;
   };
 
-  // ✅ 일정 추가
+  // 일정 추가
   const handleAdd = async () => {
-    if (saving) return;
-    if (!validate()) return;
+  if (saving) return;
+  if (!validate()) return;
 
-    const payload = {
-      category: form.category,
-      title: form.title,
-      content: form.content || "",
-      startAt: dayjs(form.startAt).toISOString(),
-      endAt: dayjs(form.endAt).toISOString(),
-      place: form.place || "",
-      color: form.color || "#6BB5FF",
-      importantYn: form.importantYn || "N",
-      created_id: form.created_id || "testUser",
-    };
-
-    try {
-      setSaving(true);
-      const resp = await caxios.post("/schedule", payload);
-      const newEvent = {
-        ...payload,
-        id: resp.data,
-        startAt: dayjs(payload.startAt),
-        endAt: dayjs(payload.endAt),
-      };
-      onSuccess(newEvent);
-      onClose();
-    } catch (e) {
-      setErrorMsg("일정 추가 실패. 입력값을 다시 확인해주세요.");
-      setSaving(false);
-    }
+  const payload = {
+    category: form.category,
+    title: form.title,
+    content: form.content || "",
+    startAt: dayjs(form.startAt).toISOString(),
+    endAt: dayjs(form.endAt).toISOString(),
+    place: form.place || "",
+    color: form.color || "#6BB5FF",
+    importantYn: form.importantYn || "N",
+    created_id: form.created_id || "testUser",
   };
+
+  try {
+    setSaving(true);
+    const resp = await caxios.post("/schedule", payload);
+    const newEvent = {
+      ...payload,
+      id: resp.data,
+      start: payload.startAt,
+      end: payload.endAt,
+    };
+    onSuccess(newEvent);
+    onClose();
+  } catch (e) {
+    setErrorMsg("일정 추가 실패. 입력값을 다시 확인해주세요.");
+    setSaving(false);
+  }
+};
 
   return (
     <Modal
