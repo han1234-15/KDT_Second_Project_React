@@ -1,0 +1,107 @@
+.preview {
+  width: 340px;
+  min-height: 180px;
+  background: #fff;
+  border: 3px dashed #ddd;
+  border-radius: 8px;
+  padding: 30px 20px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.preview:hover {
+  border-color: #888;
+}
+
+.preview.active {
+  background-color: #f3f0fa;
+  border-color: #6f42c1;
+}
+
+.uploadIcon {
+  font-size: 60px;
+  color: #6f42c1;
+  margin-bottom: 10px;
+}
+
+.preview_msg {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.preview_desc {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.file {
+  display: none;
+}
+
+/* 파일 목록 */
+.fileList {
+  margin-top: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.fileItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  background: #fafafa;
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+
+.fileItem i {
+  color: #6f42c1;
+  margin-right: 5px;
+}
+
+.fileName {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileSize {
+  color: #999;
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.removeBtn:hover {
+  color: #ff4d4f;
+}
+
+/* 보내기 버튼 */
+.uploadBtn {
+  width: 100%;
+  padding: 10px;
+  background: #6f42c1;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.uploadBtn:hover {
+  background: #563d7c;
+}
