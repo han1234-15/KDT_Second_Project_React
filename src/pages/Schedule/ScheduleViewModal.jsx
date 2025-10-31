@@ -4,6 +4,7 @@ import styles from "./ScheduleViewModal.module.css";
 import dayjs from "dayjs";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
+import useAuthStore from "../../store/authStore";
 
 const ScheduleViewModal = ({ open, onClose, event, onEdit, onDelete }) => {
   if (!event) return null;

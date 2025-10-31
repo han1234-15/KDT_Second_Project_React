@@ -8,8 +8,6 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { message } from "antd";
 import dayjs from "dayjs";
-
-// 분리된 모달 3종
 import ScheduleAddModal from "./ScheduleAddModal";
 import ScheduleEditModal from "./ScheduleEditModal";
 import ScheduleViewModal from "./ScheduleViewModal";
@@ -29,13 +27,12 @@ const Schedule = () => {
   const handleEventClick = (info) => {
     const ev = info.event;
     const p = ev.extendedProps || {};
-    // 캘린더에서 온 값을 백엔드 컬럼명과 맞춘 형태로 정규화
     const normalized = {
       seq: ev.id,
       category: String(p.category ?? p.calendarType ?? "1"),
       title: ev.title || "",
       content: p.content || "",
-      startAt: p.startAt ? p.startAt : ev.start, // 문자열이든 Date든 dayjs가 처리함
+      startAt: p.startAt ? p.startAt : ev.start,
       endAt: p.endAt ? p.endAt : ev.end,
       place: p.place || p.location || "",
       color: p.color || ev.backgroundColor || "#6BB5FF",
@@ -78,27 +75,39 @@ const Schedule = () => {
   };
 
   // 추가/수정 성공 시 캘린더 즉시 반영
-  const upsertEvent = (payload) => {
-    // payload는 Add/Edit 모달에서 넘겨줌(정규화 완료)
-    const mapped = {
-      id: payload.id || payload.seq,
-      title: payload.title,
-      start: payload.startAt || payload.start,
-      end: payload.endAt || payload.end,
-      backgroundColor: payload.color || "#6BB5FF",
-      extendedProps: { ...payload },
-    };
+const upsertEvent = (payload) => {
+  if (!payload) return;
 
-    setEvents((prev) => {
-      const idx = prev.findIndex((e) => String(e.id) === String(mapped.id));
-      if (idx >= 0) {
-        const next = [...prev];
-        next[idx] = mapped;
-        return next;
-      }
-      return [...prev, mapped];
-    });
+  // 날짜·필드 정규화
+  const mapped = {
+    id: payload.id || payload.seq,
+    title: payload.title,
+    start: payload.startAt || payload.start,
+    end: payload.endAt || payload.end,
+    backgroundColor: payload.color || "#6BB5FF",
+    extendedProps: { ...payload },
   };
+
+  setEvents((prev) => {
+    // 현재 탭 필터와 일치하는지 확인
+    const matchesCurrentCategory =
+      category === "all" ||
+      (category === "important" && payload.importantYn === "Y") ||
+      (category !== "important" && String(payload.category) === String(category));
+
+    let next = [...prev];
+    const idx = next.findIndex((e) => String(e.id) === String(mapped.id));
+
+    if (idx >= 0) {
+      if (matchesCurrentCategory) next[idx] = mapped;
+      else next.splice(idx, 1);
+    } else {
+      if (matchesCurrentCategory) next.push(mapped);
+    }
+    return [...next];
+  });
+};
+
 
   useEffect(() => {
   if (isModalOpen) {
@@ -171,11 +180,11 @@ const Schedule = () => {
           // 수정 취소 시 상세 보기로 복귀(데이터 유지)
           setTimeout(() => setIsViewOpen(true), 0);
         }}
-        onSuccess={(updated) => {
-          upsertEvent(updated);
+        onSuccess={(newEvent) => {
+          upsertEvent(newEvent);
           setIsEditOpen(false);
           // 수정 후 상세 보기로 복귀
-          setSelectedEvent(updated);
+          setSelectedEvent(newEvent);
           setIsViewOpen(true);
         }}
       />

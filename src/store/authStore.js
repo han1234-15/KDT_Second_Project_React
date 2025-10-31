@@ -1,32 +1,28 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
-const useAuthStore = create((set) => ({
-  token: "",
-  isLogin: false,
-  userProfile: "",
-  login: (token) => {
-    set((state) => {
-      sessionStorage.setItem("token", token); 
-      return { token: token, isLogin: true }; //인메모리 저장을 위한 리턴
-    });
-  },
+const useAuthStore = create(
+  persist(
+    (set) => ({
+      token: "",
+      loginId: "",
+      isLogin: false,
 
-  logout: () => {
-    sessionStorage.removeItem("token");
-    set({
-      token: "", isLogin: false, 
-      userInfo: {
-        name: "",
-        dept_code: "",
-        rank_code: "",
-        officeEmail: "",
+      login: (token, loginId) => {
+        console.log("로그인 정보 저장됨:", token, loginId);
+        set({ token, loginId, isLogin: true });
       },
-    });
-  },
-   // 사용자 정보 업데이트
-   setUserProfile: (newInfo) => {
-    set({ userProfile: newInfo });
-  },
-}));
+
+      logout: () => {
+        console.log("로그아웃 실행됨");
+        set({ token: "", loginId: "", isLogin: false });
+      },
+    }),
+    {
+      name: "auth-storage", // 세션스토리지 키 이름
+      storage: createJSONStorage(() => sessionStorage), 
+    }
+  )
+);
 
 export default useAuthStore;
