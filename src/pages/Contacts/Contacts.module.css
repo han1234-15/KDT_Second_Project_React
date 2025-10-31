@@ -37,6 +37,7 @@
 
     height: 60%;
     font-size: 35px;
+
 }
 
 .mainHeaderbottom {
@@ -59,13 +60,14 @@
     /* 가로 중앙 정렬 */
     text-align: center;
     border: none;
+
 }
 
 .mainBody {
     width: 100%;
     height: 80%;
     border: 1px solid lightgrey;
-   border-radius: 5px;
+    border-radius: 5px;
 }
 
 
@@ -73,9 +75,8 @@
     width: 100%;
     height: 5%;
     border: "1px solid lightgrey";
-    border-Radius: 10px;
     background-color: #fafafa;
-
+    border-bottom: 1px solid lightgrey;
 }
 
 .mainBodylist {
