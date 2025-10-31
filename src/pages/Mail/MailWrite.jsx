@@ -63,15 +63,22 @@ const MailWrite = () => {
 
       const mailSeq = res.data; // MailController에서 seq 반환
 
-
       if (files && files.length > 0) {
-        const form = new FormData();
-        form.append('mailSeq', mailSeq); // mailSeq 포함
-        Array.from(files).forEach(file => form.append('files', file));
 
-        await caxios.post(`/file/mailSeq`, form, {
+        const formData = new FormData();
+        // form.append('mailSeq', mailSeq); // 기존 파일 보내는 mail seq (mailSeq 포함)
+        formData.append("module_type", "mail"); // 10.31 파일 전역
+        formData.append("module_seq", mailSeq); // 10.31 파일 전역
+
+        Array.from(files).forEach(file => formData.append('files', file));
+
+        // await caxios.post(`/file/mailSeq`, formData, {
+        //   headers: { "Content-Type": "multipart/form-data" }
+        // });  // 기존 파일 업로드
+
+        await caxios.post(`/files/upload`, formData, {
           headers: { "Content-Type": "multipart/form-data" }
-        });
+        }); // 파일 전역 업로드
 
         fileRef.current.value = "";
         setFiles([]);
@@ -153,7 +160,7 @@ const MailWrite = () => {
 
       </div>
       <button className={styles.backBtn} onClick={() => Navigate(-1)} style={{ marginTop: "10px" }}>뒤로가기</button>
-      <button style={{ float: "right", marginRight: "40px", marginTop: "10px" }} onClick={handleMailWrite}>전송</button>
+      <button style={{ float: "right", marginRight: "30px", marginTop: "10px" }} onClick={handleMailWrite}>전송</button>
       <Modal
 
         centered={false}
