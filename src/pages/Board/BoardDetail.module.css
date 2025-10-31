@@ -24,14 +24,13 @@
 }
 
 .option button {
-  display: flex;
-  justify-content: center;
-  margin-top: -10px;
-  margin-bottom: 10px;
-  width: 60px;
-  border: none;
-  background-color: white;
-  cursor: pointer;
+    background: linear-gradient(45deg, #8e44ad, #2196f3);
+    border: none;
+    color: white !important;
+    font-weight: 500;
+    width: 60px;
+    height: 30px;
+    border-radius: 5px;
 }
 
 /* 상단 헤더 영역 */
@@ -54,6 +53,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 9px;
+  margin-left: -10px;
 }
 
 .headerInfo {
@@ -182,9 +183,15 @@
 
 .writeReply {
   display: flex;
-  align-items: flex-start;
+  /* align-items: flex-start; */
   flex-wrap: wrap; /* ✅ 반응형 */
   margin-bottom: 20px;
+}
+
+.replyProfile{
+  display: flex;
+  align-items: center;
+  margin-left: -10px;
 }
 
 .replyContent {
@@ -194,11 +201,14 @@
 }
 
 .replyBtn {
-  margin-top: 15px;
-  width: 60px;
-  height: 40px;
-  cursor: pointer;
-  flex-shrink: 0;
+    background: linear-gradient(45deg, #8e44ad, #2196f3);
+    border: none;
+    margin-top: 21px;
+    color: white !important;
+    font-weight: 500;
+    width: 60px;
+    height: 30px;
+    border-radius: 5px;
 }
 
 .commentList {
@@ -210,8 +220,9 @@
 .commentItem {
   display: flex;
   align-items: flex-start;
-  gap: 15px;
+  gap: 30px;
   padding: 15px 0;
+  margin-left: -16px;
   border-bottom: 1px solid #f2f2f2;
   flex-wrap: wrap; /* ✅ 댓글 영역 반응형 */
 }
@@ -251,7 +262,14 @@
 }
 
 .commentDelete {
-  width: 50px;
+      background: linear-gradient(45deg, #8e44ad, #2196f3);
+    border: none;
+    margin-top: 21px;
+    color: white !important;
+    font-weight: 500;
+    width: 60px;
+    height: 30px;
+    border-radius: 5px;
 }
 
 .commentDelete:hover {
