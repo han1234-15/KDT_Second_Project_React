@@ -1,140 +1,131 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate,useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./styles/ApprovalWrite.css";
 import approveImg from "./images/승인.jpg";
 import rejectImg from "./images/반려.png";
 import { caxios } from "../../config/config";
 import { jwtDecode } from "jwt-decode";
-
+import ApprovalLineModal from "../WorkExpense/ApprovalLineModal";
 
 function EApprovalWrite() {
-  const [showModal,setShowModal]=useState(false);
-  const [approvalResult,setApprovalResult]=useState(null);
-  const{name}=useParams();
-
+  const { name } = useParams();
   const navigate = useNavigate();
 
-useEffect(() => {
-  if (name) {
-    caxios.get(`/Eapproval/temp/${name}`)
-      .then((res) => {
-        if (res.data) {
-          setFormData(res.data);
-        }
-      })
-      .catch(() => console.log("임시저장 데이터 없음"));
-  }
-}, [name]);
+  const [showModal, setShowModal] = useState(false); // 승인/반려 모달
+  const [approvalModalOpen, setApprovalModalOpen] = useState(false); // ✅ 결재선 설정 모달
 
-  // 문서 종류별 양식 옵션
-  const templateOptions = {
-    공통: ["업무연락", "품의서", "회의록"],
-  };
+  const [approvalResult, setApprovalResult] = useState(null);
 
-
-useEffect(() => {
-  const token = sessionStorage.getItem("token");
-  if (token) {
-    const decoded = jwtDecode(token);
-    setFormData(prev => ({
-      ...prev,
-      writer: decoded.name   
-    }));
-  }
-}, []);
-
-  // 입력 상태
   const [formData, setFormData] = useState({
     docType: "",
     template: "",
     writer: "",
+    writer_id: "",
+    dept_code: "",
+    rank_code: "",
     retention: "5년",
     security: "C등급",
     title: "",
     comments: "",
   });
 
-  // 결재 관련
-  const [approvers, setApprovers] = useState(["대표이사"]);
+  // ✅ 결재선 / 참조 리스트 상태
+  const [approvers, setApprovers] = useState([]);
+  const [referenceList, setReferenceList] = useState([]);
 
-  // 핸들러
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "docType") {
-      setFormData({ ...formData, [name]: value, template: "" });
-    } else {
-      setFormData({ ...formData, [name]: value });
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      const decoded = jwtDecode(token);
+
+      // ✅ loginId 선언을 여기서 먼저
+      const loginId = decoded.sub;
+
+      setFormData((prev) => ({
+        ...prev,
+        writer: decoded.name,
+        writer_id: loginId
+      }));
+
+      // ✅ 사용자 정보 DB 조회
+      caxios.get(`/Eapproval/member/${loginId}`)
+        .then((res) => {
+          setFormData((prev) => ({
+            ...prev,
+            dept_code: res.data.dept_code,
+            rank_code: res.data.rank_code
+          }));
+        })
+        .catch(() => {
+          alert("⚠️ 사용자 정보를 불러오지 못했습니다.");
+        });
     }
+  }, []);
+
+
+
+  useEffect(() => {
+    if (name) {
+      caxios.get(`/Eapproval/temp/${name}`)
+        .then((res) => res.data && setFormData(res.data))
+        .catch(() => { });
+    }
+  }, [name]);
+
+  const templateOptions = {
+    공통: ["업무연락", "품의서", "회의록"],
   };
 
-  const addApprover = () => {
-    const name = prompt("결재자 이름을 입력하세요:");
-    if (name) setApprovers([...approvers, name]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // ✅ 결재선 결과 반영
+  const handleApprovalLineApply = ({ approverList, referenceNames }) => {
+    setApprovers(approverList);
+    setReferenceList(referenceNames);
+    setApprovalModalOpen(false);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    caxios
-      .post(`/Eapproval/write`, formData)
+    caxios.post(`/Eapproval/write`, {
+      ...formData,
+      approvers,
+      referenceList,
+    })
       .then(() => {
-        alert("결재 문서가 성공적으로 등록되었습니다 ");
+        alert("결재 문서가 성공적으로 등록되었습니다.");
         navigate("/Eapproval/A");
       })
-      .catch(() => alert("등록 중 오류 발생 "));
+      .catch(() => alert("등록 중 오류 발생"));
   };
 
-  const handleTempSave =()=>{
-    const data={...formData,status:"temp"}
-     caxios.post("/Eapproval/tempSave", data)
-     .then(()=>{
-        alert("임시 저장 완료")
-        navigate("/Eapproval/A")
-     })
-     .catch(()=>alert("임시 저장 실패"));
+  const handleTempSave = () => {
+    caxios.post("/Eapproval/tempSave", { ...formData, approvers, referenceList })
+      .then(() => {
+        alert("임시 저장 완료");
+        navigate("/Eapproval/A");
+      })
+      .catch(() => alert("임시 저장 실패"));
   };
 
-  const handleApprovlClick=()=>setShowModal(true);
-
-  
-  const handleApprovalDecision=(result)=>{
-
-    const newStatus=result==="approve" ?"in_progress":" rejected";
-
-    caxios.put(`/Eapproval/updateStatus/${formData.seq}?status=${newStatus}`)
-    .then(()=>{
-      alert(
-        result === "approve" ?"결재 승인":"결재 반려"
-      );
-      setApprovalResult(result);
-      setShowModal(false);
-    })
-    .catch(()=>{
-      alert("망했어")
-      setShowModal(false);
-    })
-   
-    
-  }
-
-  // 문서 선택 여부
   const isDocSelected = formData.docType && formData.template;
 
   return (
     <div className="approval-write-container">
-   
 
-      {/* 기본 설정 */}
       <h3 className="section-title">기본 설정</h3>
       <table className="base-table">
         <tbody>
           <tr>
             <th>문서 종류</th>
             <td>
-              <select
-                name="docType"
-                value={formData.docType}
-                onChange={handleChange}
-              >
+              <select name="docType" value={formData.docType} onChange={handleChange}>
                 <option value="">선택</option>
                 <option value="공통">공통</option>
               </select>
@@ -155,172 +146,85 @@ useEffect(() => {
             <th>작성자</th>
             <td>{formData.writer}</td>
           </tr>
-          <tr>
-            <th>보존 연한</th>
-            <td>
-              <select
-                name="retention"
-                value={formData.retention}
-                onChange={handleChange}
-              >
-                <option value="1년">1년</option>
-                <option value="3년">3년</option>
-                <option value="5년">5년</option>
-              </select>
-            </td>
-            <th>보안 등급</th>
-            <td>
-              <select
-                name="security"
-                value={formData.security}
-                onChange={handleChange}
-              >
-                <option value="A등급">A등급</option>
-                <option value="B등급">B등급</option>
-                <option value="C등급">C등급</option>
-              </select>
-            </td>
-          </tr>
         </tbody>
       </table>
 
-      {/* 문서 선택 전 안내 */}
       {!isDocSelected && (
-        <div className="notice-box">
-          ✏️ 문서 종류와 양식을 선택하면 결재선 및 작성 영역이 표시됩니다.
-        </div>
+        <div className="notice-box">✏️ 문서 종류와 양식을 선택하면 결재선이 표시됩니다.</div>
       )}
 
-      {/* 문서 종류 선택 후 표시되는 영역 */}
       {isDocSelected && (
         <>
-          {/* 결재선 설정 */}
           <h3 className="section-title">결재선 설정</h3>
           <div className="approval-line-table">
             <table>
               <thead>
                 <tr>
                   <th className="head-cell">
-                    <button onClick={addApprover}>＋</button>
+                    <button
+                      onClick={() => {
+                        if (!formData.rank_code || !formData.dept_code) {
+                          alert("사용자 정보가 아직 로딩 중입니다. 잠시 후 다시 시도하세요.");
+                          return;
+                        }
+                        setApprovalModalOpen(true);
+                      }}
+                    >
+                      ＋
+                    </button>
                   </th>
-                  {approvers.map((a, i) => (
-                    <th key={i}>{a}</th>
-                  ))}
+
+                  {approvers.length === 0 ? (
+                    <th>결재자를 선택하세요</th>
+                  ) : (
+                    approvers.map((a, i) => (
+                      <th key={i}>{a.name} ({a.rank_code})</th>
+                    ))
+                  )}
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td className="label">결재</td>
                   {approvers.map((a, i) => (
-                    <td key={i} className="empty">
-                      {a ==="대표이사" &&(
-                        <>
-                        {!approvalResult &&(
-                        <button className="approve-btn" onClick={handleApprovlClick}>
-                          결재
-                        </button>
-                        )}
-
-                        {approvalResult ==="approve" &&(
-                          <img src={approveImg} alt="승인" className="stamp"></img>
-                        )}
-                        {approvalResult ==="reject" &&(
-                          <img src={rejectImg} alt="반려" className="stamp"></img>
-                        )}
-                        </>
-                      )}
-                    </td>
+                    <td key={i} className="empty">-</td>
                   ))}
                 </tr>
                 <tr>
                   <td className="label">참조</td>
                   <td colSpan={approvers.length}>
-                    <input placeholder="클릭 후 입력" />
-                  </td>
-                </tr>
-                <tr>
-                  <td className="label">수신</td>
-                  <td colSpan={approvers.length}>
-                    <input placeholder="클릭 후 입력" />
-                  </td>
-                </tr>
-                <tr>
-                  <td className="label">(수신)참조</td>
-                  <td colSpan={approvers.length}>
-                    <input placeholder="클릭 후 입력" />
+                    {referenceList.length > 0
+                      ? referenceList.map((r) => `${r.name}(${r.rank_code}) `)
+                      : "없음"}
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-        {/* === 모달 === */}
-          {showModal && (
-            <div className="modal-overlay">
-              <div className="modal">
-                <h4>결재 처리</h4>
-                <p>결재를 승인하시겠습니까, 반려하시겠습니까?</p>
-                <div className="modal-buttons">
-                  <button
-                    className="approve"
-                    onClick={() => handleApprovalDecision("approve")}
-                  >
-                    승인
-                  </button>
-                  <button
-                    className="reject"
-                    onClick={() => handleApprovalDecision("reject")}
-                  >
-                    반려
-                  </button>
-                  <button
-                    className="cancel"
-                    onClick={() => setShowModal(false)}
-                  >
-                    취소
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
-          {/* 제목 */}
+
+          <ApprovalLineModal
+            open={approvalModalOpen}
+            onClose={() => setApprovalModalOpen(false)}
+            onApply={handleApprovalLineApply}
+            initialApprovers={approvers}
+            initialReferences={referenceList}
+            applicant={formData}
+          />
+
           <div className="input-block">
             <label>제목</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="제목을 입력해 주세요."
-            />
+            <input name="title" value={formData.title} onChange={handleChange} />
           </div>
 
-          {/* 본문 */}
           <div className="input-block">
             <label>본문</label>
-            <textarea
-              name="comments"
-              value={formData.comments}
-              onChange={handleChange}
-              rows="10"
-              placeholder="내용을 입력해 주세요."
-            ></textarea>
+            <textarea name="comments" value={formData.comments} onChange={handleChange} rows="10"></textarea>
           </div>
 
-          {/* 하단 버튼 */}
           <div className="bottom-buttons">
-            <button
-              className="cancel"
-              onClick={() => navigate("/Eapproval/A")}
-            >
-              취소
-            </button>
-            <button className="temp" onClick={handleTempSave}>
-                임시저장
-            </button>
-            <button className="submit" onClick={handleSubmit}>
-              결재 상신
-            </button>
+            <button className="temp" onClick={handleTempSave}>임시저장</button>
+            <button className="submit" onClick={handleSubmit}>결재 상신</button>
           </div>
         </>
       )}

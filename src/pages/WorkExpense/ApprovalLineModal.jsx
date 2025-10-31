@@ -21,46 +21,59 @@ const ApprovalLineModal = ({
 
   const [approvers, setApprovers] = useState(initialApprovers);
   const [referenceList, setReferenceList] = useState(initialReferences);
+  const [referenceCandidates, setReferenceCandidates] = useState([]);
 
- useEffect(() => {
-  if (open) {
+  useEffect(() => {
+    caxios.get("/Eapproval/reference-list")
+      .then((res) => setReferenceCandidates(res.data || []))
+      .catch(console.error);
+  }, []);
 
-    let initial = [...initialApprovers];
+  const rankOrder = {
+    "사원": 1,
+    "주임": 2,
+    "대리": 3,
+    "과장": 4,
+    "차장": 5,
+    "부장": 6,
+    "임원": 7,
+    "사장": 8
+  };
 
-   
-    const ceo = candidates.find(c => c.rank_code === "사장");
-    if (ceo && !initial.some(a => a.id === ceo.id)) {
-      initial.push({ id: ceo.id, name: ceo.name, rank_code: ceo.rank_code });
+  // ✅ 모달 열릴 때 기본 결재선 + 사장 자동 포함
+  useEffect(() => {
+    if (open) {
+      const ceo = candidates.find((c) => c.rank_code === "사장");
+      let next = [...initialApprovers];
+
+      if (ceo && !next.some((a) => a.id === ceo.id)) {
+        next.push({
+          id: ceo.id,
+          name: ceo.name,
+          rank_code: ceo.rank_code
+        });
+      }
+
+      setApprovers(next);
+      setReferenceList(initialReferences);
     }
+  }, [open, initialApprovers, initialReferences, candidates]);
 
-    setApprovers(initial);
-    setReferenceList(initialReferences);
-  }
-}, [open, initialApprovers, initialReferences, candidates]);
-
-
-  // ✅ 결재자 후보: 과장 이상, 본인 제외, 이미 선택된 사람 제외
   const approverCandidates = useMemo(
     () =>
-      candidates.filter(
-        (c) =>
-          c.id !== applicant?.id &&
-          !approvers.some((a) => a.id === c.id) &&
-          !referenceList.some((r) => r.id === c.id) &&
-          ["과장", "차장", "부장", "임원", "사장"].includes(c.rank_code)
+      candidates.filter((c) =>
+        c.id !== applicant?.id &&
+        !approvers.some((a) => a.id === c.id) &&
+        !referenceList.some((r) => r.id === c.id) &&
+        (
+          c.rank_code === "사장" || // ✅ 사장 예외처리
+          (
+            c.dept_code === applicant?.dept_code &&
+            rankOrder[c.rank_code] > rankOrder[applicant?.rank_code]
+          )
+        )
       ),
     [candidates, applicant, approvers, referenceList]
-  );
-
-  // ✅ 참조 후보: 본인 제외, 이미 참조나 결재자에 없는 사람
-  const referenceCandidates = useMemo(
-    () =>
-      candidates.filter(
-        (c) =>
-          c.id !== applicant?.id &&
-          !approvers.some((a) => a.id === c.id)
-      ),
-    [candidates, applicant, approvers]
   );
 
   const onDragEnd = (result) => {
@@ -74,7 +87,7 @@ const ApprovalLineModal = ({
   const addApprover = (id) => {
     const found = approverCandidates.find((u) => u.id === id);
     if (found) {
-      setApprovers(prev => [
+      setApprovers((prev) => [
         ...prev,
         { id: found.id, name: found.name, rank_code: found.rank_code }
       ]);
@@ -86,43 +99,21 @@ const ApprovalLineModal = ({
   };
 
   const toggleReference = (user) => {
-    setReferenceList(prev =>
-      prev.some(ref => ref.id === user.id)
-        ? prev.filter(ref => ref.id !== user.id)
+    setReferenceList((prev) =>
+      prev.some((ref) => ref.id === user.id)
+        ? prev.filter((ref) => ref.id !== user.id)
         : [...prev, { id: user.id, name: user.name, rank_code: user.rank_code }]
     );
   };
 
   const applyAndClose = () => {
-     console.log("✅ applyAndClose 실행됨 / approvers:", approvers);
     onApply?.({ approverList: approvers, referenceNames: referenceList });
     onClose?.();
   };
 
   return (
-    <Modal open={open} onCancel={onClose} onOk={applyAndClose} okText="저장" cancelText="취소" width={600}  destroyOnClose>
+    <Modal open={open} onCancel={onClose} onOk={applyAndClose} okText="저장" cancelText="취소" width={600} destroyOnClose>
       <h3 style={{ marginBottom: 12 }}>결재선 설정</h3>
-
-      <table style={{ width: "100%", marginBottom: 12 }}>
-        <tbody>
-          <tr>
-            <th style={{ width: 80, textAlign: "left" }}>결재</th>
-            <td>
-              {approvers.length > 0
-                ? approvers.map(a => `${a.name} (${a.rank_code})`).join(", ")
-                : "-"}
-            </td>
-          </tr>
-          <tr>
-            <th style={{ textAlign: "left" }}>참조</th>
-            <td>
-              {referenceList.length > 0
-                ? referenceList.map(r => `${r.name} (${r.rank_code})`).join(", ")
-                : "-"}
-            </td>
-          </tr>
-        </tbody>
-      </table>
 
       <select
         defaultValue=""
