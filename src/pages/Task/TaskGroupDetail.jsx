@@ -41,6 +41,11 @@ const TaskGroupDetail = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editTask, setEditTask] = useState(null);
 
+
+  // 업무 그룹 수정
+  const [isGroupSettingOpen, setIsGroupSettingOpen] = useState(false);
+  const [editGroup, setEditGroup] = useState({ group_name: "", description: "", manager_id: "" });
+
   //  서버 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
@@ -466,10 +471,18 @@ const TaskGroupDetail = () => {
           <span
             onClick={() => setIsMemberModalOpen(true)}
             style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "5px" }}
-          ><FaUser style={{ marginBottom: "3px" }} /> {membersCount}명 </span>
+          ><FaUser style={{ fontSize: "16px", marginBottom: "0px" }} /> {membersCount}명 </span>
 
           {(loginId == group.manager_id) ?
-            <button className={styles.groupDelBtn} onClick={() => groupDelete()}><FaCog style={{ marginBottom: "3px", marginLeft: "10px" }} /> 그룹 제거</button>
+            <button
+              className={styles.groupDelBtn}
+              onClick={() => {
+                setEditGroup({ group_name: group.group_name, description: group.description, manager_id: group.manager_id });
+                setIsGroupSettingOpen(true);
+              }}
+            >
+              <FaCog style={{ fontSize: "17px", marginBottom: "3px", marginLeft: "10px", marginRight: "3px" }} /> 그룹 설정
+            </button>
             :
             <button className={styles.groupDelBtn} onClick={() => groupDelete()}><FaCog style={{ marginBottom: "3px", marginLeft: "10px" }} /> 그룹 나가기</button>
           }
@@ -480,8 +493,10 @@ const TaskGroupDetail = () => {
       </div>
       <div className={styles.dataInfo}>{tasks.length}개의 업무 데이터</div>
 
+
+      {/*  왼쪽 칸반 */}
       <div className={styles.mainLayout}>
-        {/*  왼쪽 칸반 */}
+
         <DragDropContext onDragEnd={handleDragEnd}>
           <div className={styles.kanbanWrapper}>
             {statuses.map((status) => (
@@ -514,7 +529,17 @@ const TaskGroupDetail = () => {
                               <div className={styles.taskAssignee}>
                                 담당자: {
                                   task.assignee_id
-                                    ? (members.find(m => m.id === task.assignee_id)?.name || task.assignee_id)
+                                    ? (() => {
+                                      // allMembers 전체에서 해당 사용자 찾기
+                                      const foundMember = allMembers.find(m => m.id === task.assignee_id);
+                                      // 그룹 멤버 목록에 포함되는지 여부 확인
+                                      const isStillMember = members.some(m => m.id === task.assignee_id);
+
+                                      // 이름 표시 + 그룹 탈퇴 여부 표시
+                                      return foundMember
+                                        ? `${foundMember.name}${!isStillMember ? " (그룹 탈퇴 멤버)" : ""}`
+                                        : `${task.assignee_id} (탈퇴 유저)`;
+                                    })()
                                     : "미지정"
                                 }
                               </div>
@@ -547,9 +572,22 @@ const TaskGroupDetail = () => {
             <div className={styles.detailPanel}>
               <p><strong>상태:</strong> {selectedTask.status}</p>
               <p>
-                <strong>담당자:</strong> {selectedTask.assignee_id
-                  ? (members.find(m => m.id === selectedTask.assignee_id)?.name || selectedTask.assignee_id)
-                  : "미지정"}
+                <strong>담당자:</strong>{" "}
+                {(() => {
+                  if (!selectedTask.assignee_id) return "미지정";
+
+                  // 전체 회원 중 해당 아이디 찾기
+                  const assignee = allMembers.find(m => m.id === selectedTask.assignee_id);
+                  // 현재 그룹 멤버에 포함되어 있는지 확인
+                  const isStillMember = members.some(m => m.id === selectedTask.assignee_id);
+
+                  // 조건 분기
+                  if (assignee) {
+                    return `${assignee.name} (${assignee.id})${!isStillMember ? " (그룹 탈퇴 유저)" : ""}`;
+                  } else {
+                    return `${selectedTask.assignee_id} (탈퇴 유저)`;
+                  }
+                })()}
               </p>
               <p><strong>생성일:</strong> {selectedTask.created_at}</p>
               <p><strong>수정일:</strong> {selectedTask.updated_at}</p>
@@ -829,6 +867,102 @@ const TaskGroupDetail = () => {
             }
             placeholder="업무 내용을 입력하세요."
           />
+        </div>
+      </Modal>
+
+      {/* 업무 그룹 설정 모달 */}
+      <Modal
+        open={isGroupSettingOpen}
+        title="그룹 설정"
+        onCancel={() => setIsGroupSettingOpen(false)}
+        onOk={async () => {
+          try {
+            const resp = await caxios.put("/task/updateGroup", {
+              seq,
+              group_name: editGroup.group_name,
+              description: editGroup.description,
+              manager_id: editGroup.manager_id, // ✅ 매니저 변경 추가
+            });
+
+            if (resp.status === 200) {
+              alert("그룹 정보가 수정되었습니다.");
+              setGroup(prev => ({
+                ...prev,
+                group_name: editGroup.group_name,
+                description: editGroup.description,
+                manager_id: editGroup.manager_id,
+              }));
+              setIsGroupSettingOpen(false);
+            }
+          } catch (err) {
+            console.error("그룹 수정 실패:", err);
+            alert("그룹 수정 중 오류가 발생했습니다.");
+          }
+        }}
+        okText="저장"
+        cancelText="취소"
+        width={450}
+      >
+        <div className={styles.modalContent}>
+          <label>그룹명</label>
+          <Input
+            value={editGroup.group_name}
+            onChange={(e) => setEditGroup(prev => ({ ...prev, group_name: e.target.value }))}
+          />
+
+          <label style={{ marginTop: "10px" }}>그룹 설명</label>
+          <TextArea
+            rows={3}
+            style={{ resize: "none" }}   // ✅ 사이즈 조절 비활성화
+            value={editGroup.description}
+            onChange={(e) => setEditGroup(prev => ({ ...prev, description: e.target.value }))}
+            placeholder="그룹 설명을 입력하세요."
+            resi
+          />
+
+          <label style={{ marginTop: "10px",display:"block" }}>매니저 위임</label>
+          <Select
+            style={{ width: "75%" }}
+            value={editGroup.manager_id || group.manager_id}
+            onChange={(val) => setEditGroup(prev => ({ ...prev, manager_id: val }))}
+            options={members.map(m => ({
+              value: m.id,
+              label: `${m.name} (${m.id})`,
+            }))}
+          />
+          <button
+            onClick={() => {
+              if (window.confirm("정말 그룹을 삭제하시겠습니까?\n모든 업무와 멤버 데이터가 삭제됩니다.")) {
+                groupDelete();
+                setIsGroupSettingOpen(false);
+              }
+            }}
+            style={{
+              backgroundColor: "#ff4d4f",
+              color: "#fff",
+              border: "none",
+              borderRadius: "6px",
+              padding: "6px 12px",
+              cursor: "pointer",
+              fontWeight: "500",
+              fontSize:"13px",
+              marginLeft:"6%",
+              height:"31.2px"
+            }}
+          >
+            그룹 제거
+          </button>
+          <div
+            style={{
+              borderTop: "1px solid #eee",
+              marginTop: "20px",
+              paddingTop: "15px",
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+
+          </div>
         </div>
       </Modal>
     </div>

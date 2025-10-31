@@ -52,14 +52,14 @@
   display: flex;
   align-items: center;
   /* ✅ 제목 + 체크박스 수평 정렬 */
-  gap: 2px;
+  gap: 12px;
   font-weight: 500;
   font-size: 15px;
 }
 
 .titleInput label {
   display: inline-block;
-  min-width: 80px;
+  min-width: 40px;
   /* ✅ 게시판 라벨과 폭 통일 */
   text-align: left;
 }
