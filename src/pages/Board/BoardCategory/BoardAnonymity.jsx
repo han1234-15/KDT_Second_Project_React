@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, Input } from "antd";
-import styles from "./BoardAnonymity.module.css";
+import styles from "./BoardAnnouncement.module.css";
 import { caxios } from "../../../config/config";
 import { useNavigate } from "react-router-dom";
 const { Search } = Input;

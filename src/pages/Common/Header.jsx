@@ -7,6 +7,7 @@ import { BellOutlined, DownOutlined, LockOutlined, LogoutOutlined, SettingOutlin
 import { useEffect, useState } from "react";
 import { caxios } from "../../config/config";
 import { Send } from "react-bootstrap-icons";   // ✅ 부트스트랩 아이콘 추가
+import defaultProfile from "../../assets/images/defaultProfile.png";
 
 const Header = () => {
     const navigate = useNavigate();
@@ -77,7 +78,7 @@ const Header = () => {
                             />
                         )}
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                            <div style={{ fontSize: 22, fontWeight: 600, marginTop: '25px' }}>{memberInfo.name}</div>
+                            <div className={styles.userName} style={{ fontSize: 22, fontWeight: 600, marginTop: '25px' }}>{memberInfo.name}</div>
                             <div style={{ fontSize: 15, color: '#666', marginTop: '2px' }}>
                                 {memberInfo.rank_code} / {memberInfo.dept_code}
                             </div>
@@ -203,9 +204,7 @@ const Header = () => {
                                 {userProfile ? (
                                     <img src={userProfile} alt="프로필 미리보기" className={styles.profileImage} />
                                 ) : (
-                                    <div className={styles.placeholder}>
-                                        <UserOutlined style={{ fontSize: '27px', color: '#6d6d6dff', border: '2px solid #aaa', borderRadius: '50%', overflow: "hidden" }} />
-                                    </div>
+                                    <img src={defaultProfile} alt="프로필 미리보기" style={{width:"35px",borderRadius:"50%"}} />
                                 )}
                             </Space>
                         </a>

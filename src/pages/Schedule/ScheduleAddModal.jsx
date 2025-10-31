@@ -1,7 +1,6 @@
-
-// src/pages/Schedule/ScheduleAddModal.jsx
-import React, { useState } from "react";
-import { Modal, Input, Button, Select, DatePicker, TimePicker, message } from "antd";
+import useAuthStore from "../../store/authStore";
+import React, { useEffect, useState } from "react";
+import {  Modal, Input,Button,Select,DatePicker,TimePicker, Alert,} from "antd";
 import dayjs from "dayjs";
 import { caxios } from "../../config/config";
 import StarIcon from "@mui/icons-material/Star";
@@ -11,90 +10,136 @@ import styles from "./Schedule.module.css";
 const { Option } = Select;
 
 const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
-  const isEdit = !!initialData;
-  const [important, setImportant] = useState(initialData?.importantYn === "Y" || false);
-  const [newEvent, setNewEvent] = useState(
-    initialData || {
-      title: "",
-      startDate: dayjs(),
-      endDate: dayjs(),
-      startTime: dayjs("09:00", "HH:mm"),
-      endTime: dayjs("09:00", "HH:mm"),
-      content: "",
-      calendarType: "1",
-      location: "",
-      color: "#6bb5ff",
+const { loginId } = useAuthStore();
+const [form, setForm] = useState({
+    category: "1",
+    title: "",
+    content: "",
+    startAt: dayjs(),
+    endAt: dayjs().add(1, "hour"),
+    place: "",
+    color: "#6BB5FF",
+    importantYn: "N",
+    created_id: loginId,
+  });
+  const [errorMsg, setErrorMsg] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  // 모달 열릴 때 초기값 세팅 및 에러 초기화
+  useEffect(() => {
+    if (isOpen) {
+      setForm({
+        category: "1",
+        title: "",
+        content: "",
+        startAt: initialData?.startAt ? dayjs(initialData.startAt) : dayjs(),
+        endAt: initialData?.endAt ? dayjs(initialData.endAt) : dayjs().add(1, "hour"),
+        place: "",
+        color: "#6BB5FF",
+        importantYn: "N",
+        created_id: "testUser",
+      });
+      setErrorMsg("");
+      setSaving(false);
     }
-  );
+  }, [isOpen, initialData]);
 
-  const colorOptions = [
-    "#ff6b6b", "#ffb56b", "#fff06b", "#6bff8d",
-    "#6bb5ff", "#8a8a9f", "#b06bff",
-  ];
+  const toggleImportant = () =>
+    setForm((p) => ({ ...p, importantYn: p.importantYn === "Y" ? "N" : "Y" }));
 
-  /** 저장 or 수정 */
-  const handleSave = () => {
-    if (!newEvent.title) return message.warning("제목을 입력하세요.");
+  // 유효성 검사 (실패 시 서버 호출 차단)
+  const validate = () => {
+    const missing = [];
+    if (!form.title?.trim()) missing.push("제목");
+    if (!form.startAt || !dayjs(form.startAt).isValid()) missing.push("시작일");
+    if (!form.endAt || !dayjs(form.endAt).isValid()) missing.push("종료일");
 
-    const payload = {
-      category: newEvent.calendarType,
-      title: newEvent.title,
-      content: newEvent.content,
-      startAt: newEvent.startDate
-        .hour(newEvent.startTime.hour())
-        .minute(newEvent.startTime.minute())
-        .toISOString(),
-      endAt: newEvent.endDate
-        .hour(newEvent.endTime.hour())
-        .minute(newEvent.endTime.minute())
-        .toISOString(),
-      place: newEvent.location,
-      color: newEvent.color,
-      importantYn: important ? "Y" : "N",
-      created_id: "testUser",
-    };
+    if (missing.length > 0) {
+      setErrorMsg(`${missing.join(", ")}을 입력해주세요`);
+      return false;
+    }
 
-    const apiCall = isEdit
-      ? caxios.put(`/schedule/${initialData.seq}`, payload)
-      : caxios.post("/schedule", payload);
+    const start = dayjs(form.startAt);
+    const end = dayjs(form.endAt);
+    if (end.isBefore(start)) {
+      setErrorMsg("종료일시는 시작일시보다 이후여야 합니다.");
+      return false;
+    }
 
-    apiCall
-      .then((resp) => {
-        const id = isEdit ? initialData.seq : resp.data;
-        const newSchedule = {
-          id,
-          title: payload.title,
-          start: payload.startAt,
-          end: payload.endAt,
-          backgroundColor: payload.color,
-          extendedProps: payload,
-        };
-        message.success(isEdit ? "수정되었습니다." : "등록되었습니다.");
-        onSuccess(newSchedule);
-        onClose();
-      })
-      .catch(() => message.error(isEdit ? "수정 실패" : "등록 실패"));
+    setErrorMsg("");
+    return true;
   };
+
+  // 일정 추가
+  const handleAdd = async () => {
+  if (saving) return;
+  if (!validate()) return;
+
+  const payload = {
+    category: form.category,
+    title: form.title,
+    content: form.content || "",
+    startAt: dayjs(form.startAt).toISOString(),
+    endAt: dayjs(form.endAt).toISOString(),
+    place: form.place || "",
+    color: form.color || "#6BB5FF",
+    importantYn: form.importantYn || "N",
+    created_id: form.created_id || "testUser",
+  };
+
+  try {
+    setSaving(true);
+    const resp = await caxios.post("/schedule", payload);
+    const newEvent = {
+      ...payload,
+      id: resp.data,
+      start: payload.startAt,
+      end: payload.endAt,
+    };
+    onSuccess(newEvent);
+    onClose();
+  } catch (e) {
+    setErrorMsg("일정 추가 실패. 입력값을 다시 확인해주세요.");
+    setSaving(false);
+  }
+};
 
   return (
     <Modal
-      width={630}
-      title={isEdit ? "일정 수정" : "일정 추가"}
+    centered
       open={isOpen}
+      width={630}
+      title="일정 추가"
       onCancel={onClose}
-      footer={[
-        <Button key="cancel" onClick={onClose}>취소</Button>,
-        <Button key="save" type="primary" onClick={handleSave}>
-          {isEdit ? "수정" : "저장"}
-        </Button>,
-      ]}
+      footer={
+        <div className={styles.modalFooter}>
+          <div className={styles.footerLeft}>
+            {errorMsg && (
+              <Alert
+                type="warning"
+                message={errorMsg}
+                showIcon
+                 className={styles.alertBox}
+              />
+            )}
+          </div>
+          <div className={styles.footerRight}>
+            <Button onClick={onClose}>취소</Button>
+            <Button type="primary" onClick={handleAdd} loading={saving}>
+              저장
+            </Button>
+          </div>
+        </div>
+      }
     >
+      <hr />
       <div className={styles.form}>
+        {/* 캘린더 */}
         <div className={styles.row}>
           <label>캘린더</label>
           <Select
-            value={newEvent.calendarType}
-            onChange={(val) => setNewEvent({ ...newEvent, calendarType: val })}
+            value={form.category}
+            onChange={(v) => setForm({ ...form, category: v })}
             style={{ width: 510 }}
           >
             <Option value="1">개인 일정</Option>
@@ -103,21 +148,31 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
           </Select>
         </div>
 
+        {/* 색상 & 중요 */}
         <div className={styles.colorRow}>
           <label>색상</label>
           <div className={styles.colorWrapper}>
             <div className={styles.colorPalette}>
-              {colorOptions.map((color) => (
+              {[
+                "#ff6b6b",
+                "#ffb56b",
+                "#fff06b",
+                "#6bff8d",
+                "#6bb5ff",
+                "#8a8a9f",
+                "#b06bff",
+              ].map((c) => (
                 <div
-                  key={color}
-                  className={`${styles.colorBox} ${newEvent.color === color ? styles.selected : ""}`}
-                  style={{ backgroundColor: color }}
-                  onClick={() => setNewEvent({ ...newEvent, color })}
+                  key={c}
+                  className={`${styles.colorBox} ${form.color === c ? styles.selected : ""
+                    }`}
+                  style={{ backgroundColor: c }}
+                  onClick={() => setForm({ ...form, color: c })}
                 />
               ))}
             </div>
-            <div className={styles.starBox} onClick={() => setImportant(!important)}>
-              {important ? (
+            <div className={styles.starBox} onClick={toggleImportant}>
+              {form.importantYn === "Y" ? (
                 <StarIcon className={styles.starActive} />
               ) : (
                 <StarBorderIcon className={styles.starInactive} />
@@ -127,44 +182,75 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
           </div>
         </div>
 
+        {/* 제목 */}
         <div className={styles.row}>
           <label>제목</label>
           <Input
+            value={form.title}
             placeholder="제목을 입력하세요"
-            value={newEvent.title}
-            onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
             style={{ width: 510 }}
           />
         </div>
 
+        {/* 일시 */}
         <div className={styles.row}>
           <label>일시</label>
           <div className={styles.datetimeRow}>
-            <DatePicker value={newEvent.startDate} onChange={(d) => setNewEvent({ ...newEvent, startDate: d })} />
-            <TimePicker value={newEvent.startTime} onChange={(t) => setNewEvent({ ...newEvent, startTime: t })} format="HH:mm" />
+            <DatePicker
+              value={form.startAt}
+              onChange={(d) => setForm({ ...form, startAt: d })}
+            />
+            <TimePicker
+              value={form.startAt}
+              format="HH:mm"
+              onChange={(t) =>
+                setForm({
+                  ...form,
+                  startAt: t
+                    ? dayjs(form.startAt).hour(t.hour()).minute(t.minute())
+                    : form.startAt,
+                })
+              }
+            />
             <span className={styles.tilde}>~</span>
-            <DatePicker value={newEvent.endDate} onChange={(d) => setNewEvent({ ...newEvent, endDate: d })} />
-            <TimePicker value={newEvent.endTime} onChange={(t) => setNewEvent({ ...newEvent, endTime: t })} format="HH:mm" />
+            <DatePicker
+              value={form.endAt}
+              onChange={(d) => setForm({ ...form, endAt: d })}
+            />
+            <TimePicker
+              value={form.endAt}
+              format="HH:mm"
+              onChange={(t) =>
+                setForm({
+                  ...form,
+                  endAt: dayjs(form.endAt).hour(t.hour()).minute(t.minute()),
+                })
+              }
+            />
           </div>
         </div>
 
+        {/* 내용 */}
         <div className={styles.rowTopAlign}>
           <label>내용</label>
           <Input.TextArea
+            value={form.content}
             placeholder="내용을 입력하세요"
-            value={newEvent.content}
-            onChange={(e) => setNewEvent({ ...newEvent, content: e.target.value })}
+            onChange={(e) => setForm({ ...form, content: e.target.value })}
             style={{ width: 510, height: 80 }}
           />
         </div>
 
+        {/* 장소 */}
         <div className={styles.row}>
           <label>장소</label>
           <Input
+            value={form.place}
             placeholder="장소를 입력하세요"
-            value={newEvent.location}
-            onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+            onChange={(e) => setForm({ ...form, place: e.target.value })}
             style={{ width: 510 }}
+            className={styles.hr}
           />
         </div>
       </div>

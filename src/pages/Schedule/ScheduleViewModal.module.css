@@ -12,7 +12,7 @@
 }
 
 /* 라벨 영역 */
-label {
+.row label {
   display: block;
   font-weight: 600;
   color: #444;
@@ -39,6 +39,7 @@ label {
   background: #f9f9f9;
   border-radius: 6px;
   padding: 8px 10px;
+  margin-left: -5px;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -53,6 +54,46 @@ label {
   margin-top: 3px; /* 라벨 첫줄 기준으로 맞춤 */
 }
 
-.selected {
-  border-color: #000;
+/* ✅ 모달 헤더 타이틀 영역 */
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* ✅ 중요 일정 표시 (헤더 오른쪽) */
+.headerImportant {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #fbc02d;
+  border-radius: 8px;
+  padding: 2px 8px;
+}
+
+.starActive {
+  color: #fbc02d;
+  font-size: 20px !important;
+}
+
+.starText {
+  font-weight: 600;
+  color: #444;
+  font-size: 14px;
+  
+}
+
+/* 일반 일정 */
+.headerNotImportant {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 2px 8px;
+}
+
+.starInactive {
+  color: #cfcfcf;
+  font-size: 20px !important;
 }

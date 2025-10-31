@@ -53,7 +53,16 @@ const ContactsMulti = () => {
         handleContactsList();
     }
 
+    // // 공유 주소록에서 내 개인 주소록으로 복사
+    // const handleCopyToSolo = async () => {
+    //     await caxios.put("/contacts/toSoloCopy",
+    //         { seqList: checkedList },
+    //         { withCredentials: true }
+    //     );
 
+    //     setCheckedList([]);
+    //     handleContactsList(); // 리스트 새로고침
+    // };
 
     // 개인 주소록으로 이동
     const handleContactsUpdateTypeSingle = async () => {
@@ -232,7 +241,7 @@ const ContactsMulti = () => {
 
                             <button onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
                             <button onClick={showUpdateModal} style={{ margin: "10px" }}> 수정 </button>
-                            <button onClick={handleContactsUpdateTypeSingle} style={{ margin: "10px" }}> 개인 주소록으로 </button>
+                            <button onClick={handleContactsUpdateTypeSingle} style={{ margin: "10px" }}> 개인 주소록에 </button>
                             <button onClick={handleMail} style={{ margin: "10px" }}> 메일쓰기 </button>
 
                         </>
