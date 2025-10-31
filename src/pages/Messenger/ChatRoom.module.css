@@ -21,8 +21,9 @@
   font-weight: 600;
   font-size: 15px;
   color: #333;
-  display: flex;
-  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ===== 햄버거 메뉴 ===== */
@@ -92,7 +93,7 @@
   color: #333;
   border: 1px solid #ddd;
   align-self: flex-start;
-  border-radius: 0px 12px 12px 12px; 
+  border-radius: 0 12px 12px 12px; 
 }
 
 /* 내 메시지 (오른쪽) */
@@ -335,3 +336,30 @@
   margin: 4px;
 }
 
+
+ .msgMeta {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.readCount {
+  font-size: 11px;
+  color: #4a90e2;
+  font-weight: 600;
+}
+
+.leaveBtn {
+  color: #e03131 !important;
+  font-weight: bold;
+  border-top: 1px solid #eee;
+  margin-top: 4px;
+}
+
+.leaveBtn:hover {
+  background-color: #ffe3e3;
+}
+
+ 
