@@ -197,19 +197,17 @@ const handleLeaveRoom = async () => {
 
 
   // ✅ 파일 목록 조회
-  const fetchFileList = useCallback(async () => {
-    if (!room_id) return;
-    try {
-      const token = sessionStorage.getItem("token");
-      const resp = await fetch(`/api/chat/files?roomId=${room_id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await resp.json();
-      setFileList(data);
-    } catch (err) {
-      console.error("파일 목록 조회 실패:", err);
-    }
-  }, [room_id]);
+const fetchFileList = useCallback(async () => {
+  if (!room_id) return;
+  try {
+    const resp = await caxios.get("/api/chat/files", {
+      params: { roomId: room_id },
+    });
+    setFileList(resp.data);
+  } catch (err) {
+    console.error("파일 목록 조회 실패:", err);
+  }
+}, [room_id]);
 
   useEffect(() => {
     if (panelMode === "files") {
