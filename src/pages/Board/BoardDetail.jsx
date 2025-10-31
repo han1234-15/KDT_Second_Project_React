@@ -240,7 +240,7 @@ const BoardDetail = () => {
                 height: "50px",
                 borderRadius: "50%",
                 objectFit: "cover",
-                marginLeft: "28px",
+                marginLeft: "24px",
                 marginTop: "10px",
                 border: writerProfile ? "none" : "2px solid #ddd",
               }}
