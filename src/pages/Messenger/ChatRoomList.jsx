@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styles from "./ChatRoomList.module.css";
 import { caxios } from "../../config/config";
+import { useSocket } from "../../config/SocketContext";
 
-//  DB에서 가져온 직급 코드를 → 사람이 읽을 수 있는 직급명으로 변환하는 맵
 const rankMap = {
   J000: "사장",
   J001: "사원",
@@ -16,54 +16,77 @@ const rankMap = {
 };
 
 export default function ChatRoomList() {
-  const [rooms, setRooms] = useState([]); //  채팅방 목록 상태
-  const [showSearch, setShowSearch] = useState(false); //  검색창 ON/OFF
+  const [rooms, setRooms] = useState([]);
+  const [showSearch, setShowSearch] = useState(false);
+  const userId = sessionStorage.getItem("LoginID");
+  const { subscribeRoom } = useSocket();
 
-  /**
-   *  채팅방 목록 API 요청
-   *    응답 데이터: [{ roomId, targetName, targetRank, lastMessage, lastUpdatedAt, unread }]
-   *    → 화면에 표시
-   */
-  const loadRooms = async () => {
+  // ✅ 내 모든 채팅방 구독
+  useEffect(() => {
+    if (!rooms.length) return;
+
+    rooms.forEach((r) => {
+      subscribeRoom(r.roomId);
+    });
+  }, [rooms, subscribeRoom]);
+
+  //  useCallback으로 fetchRooms 고정
+  const fetchRooms = useCallback(async () => {
     try {
       const resp = await caxios.get("/api/chat/rooms");
-      setRooms(resp.data || []); //  데이터가 null이면 빈 배열 처리
+      const roomList = resp.data || [];
+
+      const roomsWithMembers = await Promise.all(
+        roomList.map(async (room) => {
+          try {
+            const res = await caxios.get(`/api/chat/members/${room.roomId}`);
+            const members = res.data || [];
+            const names = members
+              .filter((m) => m.memberId !== userId)
+              .map((m) => `${m.name}${m.rankName ? " " + m.rankName : ""}`)
+              .join(", ");
+            return {
+              ...room,
+              displayName:
+                members.length > 2
+                  ? names
+                  : names ||
+                  `${room.targetName || "대화상대"} ${rankMap[room.targetRank] || ""
+                  }`,
+            };
+          } catch {
+            return room;
+          }
+        })
+      );
+
+      setRooms(roomsWithMembers);
     } catch (err) {
       console.error("채팅방 조회 실패:", err);
     }
-  };
+  }, [userId]);
 
-  /**
-   *  컴포넌트 최초 로딩 시 채팅방 목록 가져오기
-   */
   useEffect(() => {
-    loadRooms();
-  }, []);
+    fetchRooms();
+  }, [fetchRooms]);
 
-  /**
-   *  채팅방 더블클릭 시
-   *  - 팝업창 띄움
-   *  - QueryString 으로 room_id / 직급 / 이름 전달
-   *  - chatroom 페이지에서 읽어서 채팅 진행
-   */
-  const openChat = (room) => {
-    console.log("OPEN:", room);
+  useEffect(() => {
+    const handleUpdate = (e) => {
+      const updatedRoomId = e.detail?.roomId;
+      if (updatedRoomId) {
+        setRooms((prev) =>
+          prev.map((r) =>
+            r.roomId === updatedRoomId ? { ...r, unread: 0 } : r
+          )
+        );
+      }
+      setTimeout(fetchRooms, 1000);
+    };
 
-    const targetName = encodeURIComponent(room.targetName || "대화상대");
-    const targetRank = encodeURIComponent(rankMap[room.targetRank] || "");
+    window.addEventListener("chatRoomUpdated", handleUpdate);
+    return () => window.removeEventListener("chatRoomUpdated", handleUpdate);
+  }, [fetchRooms]);
 
-    const url = `${window.location.origin}/chatroom?room_id=${room.roomId}&target=${targetName}&rank=${targetRank}`;
-
-    window.open(
-      url,
-      `Chat_${room.roomId}`, //  같은 방이면 기존 팝업 재사용
-      "width=400,height=550,resizable=no,scrollbars=no,status=no"
-    );
-  };
-
-  /**
-   *  시간 포맷을 보기 좋게 "오후 06:03" 변환
-   */
   const formatTime = (value) => {
     if (!value) return "";
     const t = new Date(value);
@@ -73,58 +96,66 @@ export default function ChatRoomList() {
     });
   };
 
+  const openChat = (room) => {
+    const targetName = encodeURIComponent(room.displayName || "대화상대");
+    const targetRank = encodeURIComponent(rankMap[room.targetRank] || "");
+    const url = `${window.location.origin}/chatroom?room_id=${room.roomId}&target=${targetName}&rank=${targetRank}`;
+
+    setRooms((prev) =>
+      prev.map((r) => (r.roomId === room.roomId ? { ...r, unread: 0 } : r))
+    );
+
+    window.dispatchEvent(
+      new CustomEvent("chatRoomUpdated", { detail: { roomId: room.roomId } })
+    );
+
+    window.open(
+      url,
+      `Chat_${room.roomId}`,
+      "width=400,height=550,resizable=no,scrollbars=no,status=no"
+    );
+  };
+
   return (
     <div className={styles.container}>
-
-      {/*  상단바 */}
       <div className={styles.header}>
         <span className={styles.title}>채팅</span>
         <i className="bi bi-search" onClick={() => setShowSearch(!showSearch)}></i>
       </div>
 
-      {/*  검색창 (토글 활성화 시 표시) */}
       {showSearch && (
         <div className={styles.searchBox}>
           <input type="text" placeholder="검색..." />
         </div>
       )}
 
-      {/*  채팅방 목록을 나열 */}
       <div className={styles.chatList}>
         {rooms.map((chat) => (
           <div
             key={chat.roomId}
             className={styles.chatItem}
-            onDoubleClick={() => openChat(chat)} //  더블클릭 시 채팅방 열기
+            onDoubleClick={() => openChat(chat)}
           >
-            {/*  프로필 이미지 */}
             <img
               src={chat.avatar || "/defaultprofile.png"}
               className={styles.avatar}
               alt="프로필"
             />
-
             <div className={styles.chatInfo}>
-              {/*  채팅방 상단: 상대 이름 + 직급 + 시간 */}
               <div className={styles.chatHeader}>
                 <span className={styles.chatName}>
-                  {chat.targetName || "대화 상대"} {/*  이름 표시 */}
-                  {" "}
-                  {rankMap[chat.targetRank] || ""} {/*  코드 → 직급명 */}
+                  {chat.displayName ||
+                    `${chat.targetName || "대화상대"} ${rankMap[chat.targetRank] || ""
+                    }`}
                 </span>
-
                 <span className={styles.chatTime}>
-                  {formatTime(chat.lastUpdatedAt)} {/*  시간 표시 */}
+                  {formatTime(chat.lastUpdatedAt)}
                 </span>
               </div>
-
-              {/*  최근 메시지가 없으면 안내문 표시 */}
               <div className={styles.chatMessage}>
                 {chat.lastMessage || "메시지가 없습니다"}
               </div>
             </div>
-
-            {/*  안 읽은 메시지 배지 */}
             {chat.unread > 0 && (
               <span className={styles.unreadBadge}>{chat.unread}</span>
             )}
