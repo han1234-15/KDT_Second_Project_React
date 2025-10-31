@@ -18,12 +18,12 @@
   margin-bottom: 25px;
 }
 
+/* ✅ 문서 내용 테이블 */
 .detail-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 25px;
 }
-
 .detail-table th {
   width: 160px;
   background-color: #f5f6fa;
@@ -34,7 +34,6 @@
   font-weight: 600;
   vertical-align: top;
 }
-
 .detail-table td {
   padding: 10px 14px;
   border-bottom: 1px solid #e1e1e1;
@@ -42,18 +41,17 @@
   line-height: 1.6;
   background-color: #fff;
 }
-
 .detail-table td.content {
   white-space: pre-wrap;
   min-height: 150px;
 }
 
+/* ✅ 버튼 영역 */
 .button-area {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
-
 .button-area button {
   background-color: #4a90e2;
   color: white;
@@ -64,18 +62,125 @@
   cursor: pointer;
   transition: 0.2s;
 }
-
 .button-area button:hover {
   background-color: #357bd8;
 }
 
-/* 반응형 */
+/* ✅ 결재선 테이블 */
+.line-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+.line-table th,
+.line-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+/* ✅ 결재 차례일 때 뜨는 + 버튼 */
+.approve-btn {
+  background-color: #4a90e2 !important;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 13px;
+}
+.approve-btn:hover {
+  background-color: #357bd8 !important;
+}
+
+/* ✅ 모달 */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-box {
+  background: #fff;
+  width: 340px;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* ✅ 승인 / 반려 버튼 영역 */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.action-buttons button {
+  width: 100px;
+  height: 40px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.action-buttons .approve-btn {
+  background: #4a90e2;
+  color: #fff;
+}
+.action-buttons .approve-btn:hover {
+  background: #357bd8;
+}
+
+.action-buttons .reject-btn {
+  background: #d9534f;
+  color: #fff;
+}
+.action-buttons .reject-btn:hover {
+  background: #c64541;
+}
+
+/* ✅ 반려 사유 입력 */
+.modal-box textarea {
+  width: 100%;
+  height: 80px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  font-size: 14px;
+  resize: none;
+  margin-top: 12px;
+}
+
+.close-btn {
+  margin-top: 12px;
+  background: #777;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ✅ 등장 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ✅ 반응형 */
 @media (max-width: 768px) {
   .approval-detail-container {
     width: 95%;
     padding: 20px;
   }
-
   .detail-table th {
     width: 120px;
   }
