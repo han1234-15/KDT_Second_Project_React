@@ -130,12 +130,23 @@ function Home() {
         </div>
 
         {/* 잔여 휴가 */}
-        <div key="vacation">
-          <Card title={<span className={`${styles.cardHeader} drag-area`}><CalendarIcon /> 잔여 휴가</span>} className={styles.card}>
-            <p>남은 휴가 : <b>{leaveCount}일</b></p>
-            <Button type="primary" onMouseDown={(e)=>e.stopPropagation()} onClick={() => setIsLeaveModalOpen(true)}>휴가 신청</Button>
-          </Card>
-        </div>
+     <div key="vacation">
+  <Card title={<span className={`${styles.cardHeader} drag-area`}><CalendarIcon /> 잔여 휴가</span>} className={styles.card}>
+    <p>남은 휴가 : <b>{leaveCount}일</b></p>
+
+    <Button
+      type="primary"
+      disabled={leaveCount <= 0}           
+      onMouseDown={(e)=>e.stopPropagation()}
+      onClick={() => {
+        setIsLeaveModalOpen(true);
+      }}
+    >
+      휴가 신청
+    </Button>
+
+  </Card>
+</div>
 
         {/* 달력 */}
         <div key="calendar">
