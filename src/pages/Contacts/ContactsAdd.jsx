@@ -50,7 +50,7 @@ const ContactsAdd = ({ onClose, handleContactsList }) => {
                 개인 주소록 추가
             </div>
             <br></br>
-          <div className={styles.mainBody}>
+          <div className={styles.mainBody} style={{border:"none"}}>
 
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                     <div className={styles.NewSharedMailbox1} style={{marginLeft:"30px"}}>성함 : </div>

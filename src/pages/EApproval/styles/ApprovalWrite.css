@@ -177,3 +177,16 @@
 .bottom-buttons .submit:hover {
   background: #005fcc;
 }
+.approval-btn {
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.25s ease;
+  color: white;
+}
+
+
+

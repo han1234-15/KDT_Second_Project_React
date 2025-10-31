@@ -159,7 +159,7 @@ const MailResponse = () => {
       </div>
 
       <button className={styles.backBtn} onClick={() => Navigate(-1)} style={{ marginTop: "10px" }}>뒤로가기</button>
-      <button style={{ float: "right", marginRight: "40px", marginTop: "10px" }} onClick={handleMailWrite}>전송</button>
+      <button style={{ float: "right", marginRight: "30px", marginTop: "10px" }} onClick={handleMailWrite}>전송</button>
 
 
       <Modal

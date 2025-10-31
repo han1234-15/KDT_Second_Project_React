@@ -139,3 +139,137 @@
   color: #6b7280;
    text-align: center;
 }
+
+.profileCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 10px;
+}
+
+.profileName {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+/* 출퇴근 버튼 스타일 */
+.workButton {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: 0.25s;
+}
+
+.workButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.workButton.checkin {
+  background: #3a7afe;
+  color: white;
+}
+
+.workButton.checkin:hover:not(:disabled) {
+  background: #1d63f2;
+  transform: translateY(-1px);
+}
+
+.workButton.checkout {
+  background: #ff5f5f;
+  color: white;
+}
+
+.workButton.checkout:hover:not(:disabled) {
+  background: #e34242;
+  transform: translateY(-1px);
+}
+
+.workInfo {
+  margin-top: 18px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.clockCard {
+  text-align: center;
+  padding: 20px 0 !important;
+}
+
+.clockHeader {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  color: #6b7280;
+}
+
+.clockDate {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.statusBadge {
+  margin-top: 10px;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #111827;
+  color: white;
+}
+
+.liveClock {
+  margin-top: 12px;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.workActions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.clockBtn {
+  width: 120px;
+  padding: 10px 0;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  color: white;
+  transition: 0.25s;
+}
+
+.clockBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.start {
+  background: #7d5fff;
+}
+.start:hover:not(:disabled) {
+  background: #6b4efc;
+}
+
+.end {
+  background: #ff6b6b;
+}
+.end:hover:not(:disabled) {
+  background: #e55050;
+}
+
+.timeLog {
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+

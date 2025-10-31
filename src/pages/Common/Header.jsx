@@ -12,8 +12,7 @@ import defaultProfile from "../../assets/images/defaultProfile.png";
 const Header = () => {
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
-    const userProfile = useAuthStore(state => state.userProfile);
-    const setUserProfile = useAuthStore(state => state.setUserProfile);
+    const [userProfile,setUserProfile] = useState(null); //프로필용 useState
     const token = useAuthStore(state => state.token);   // ✅ 메신저 팝업용 토큰
 
     const [memberInfo, setMemberInfo] = useState({

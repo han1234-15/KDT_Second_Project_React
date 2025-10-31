@@ -121,7 +121,8 @@ const ContactList = () => {
 
       // 서버가 반환하는 채팅방 PK(UUID)
       const roomId = resp.data.roomId;
-
+      console.log(resp.data);
+      
       // 팝업 파라미터: room_id, 상대 표시용 이름/직급
       const url = `${window.location.origin}/chatroom?room_id=${roomId}&target=${encodeURIComponent(
         targetName

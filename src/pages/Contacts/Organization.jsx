@@ -111,7 +111,7 @@ const Organization = () => {
         <div className={styles.container} style={{ height: "700px", display: "flex", flexDirection: "column", gap: "20px" }}>
 
             {/* Header */}
-            <div className={styles.mainHeader} style={{fontSize:"35px"}}>
+            <div className={styles.mainHeader} style={{ fontSize: "35px" }}>
                 {selectedTeam
                     ? `조직도 총 ${organization.filter(e => e.dept_code === selectedTeam).length}명`
                     : `조직도 총 ${organization.length}명`}
@@ -119,31 +119,20 @@ const Organization = () => {
                     {checkedList.length === 0 ? (
                         <>
                             <div style={{ display: "flex", gap: "10px", width: "50%" }}>
-                                <input
-                                    type="text"
-                                    placeholder="검색할 이름"
-                                    style={{
-                                        flex: 1,
-                                        borderRadius: "10px",
-                                        border: "none",
-                                        fontSize: "20px"
-                                    }}
+                                <input type="text" placeholder="검색할 이름"
+                                    style={{flex: 1, borderRadius: "10px", border: "none",fontSize: "20px"}}
                                     onChange={(e) => setSearchName(e.target.value)}
                                     onKeyDown={(e) => { if (e.key === "Enter") handleOrganizationList(); }}
                                 />
-                                <button
-                                    onClick={handleOrganizationList}
-                                    style={{ padding: "5px 15px", fontSize: "16px" }}
-                                >
+                                <button onClick={handleOrganizationList} style={{ padding: "5px 15px", fontSize: "16px" }}>
                                     검색
                                 </button>
                             </div>
-                        </>
-                    ) : (
+                        </>) : (
                         <>
                             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                                 <span style={{ fontSize: "25px" }}>선택된 {checkedList.length}명</span>
-                                <Button type="primary" size="small" onClick={handleContactsUpdateTypeMulti} style={{marginLeft:"50px" ,fontSize: "20px" }}>
+                                <Button type="primary" size="small" onClick={handleContactsUpdateTypeMulti} style={{ marginLeft: "50px", fontSize: "20px" }}>
                                     공용 주소록으로
                                 </Button>
                             </div>
@@ -156,7 +145,7 @@ const Organization = () => {
             {/* Body */}
             <div style={{ flex: 1, display: "flex", overflow: "hidden", gap: "10px", fontSize: "20px" }}>
 
-                {/* Team Sidebar */}
+                {/* Team 사이드바 */}
                 <div style={{
                     width: "15%",
                     backgroundColor: "#f0f2f5",
