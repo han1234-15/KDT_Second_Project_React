@@ -4,6 +4,11 @@
   gap: 15px;
   padding: 30px;
   position: relative;
+  width: 100%;
+  min-height: 100vh;  /* ✅ 최소 화면 높이는 유지 */
+  height: auto;       /* ✅ 콘텐츠에 맞게 높이 늘어남 */
+  overflow-y: auto;   /* ✅ 화면 작을 때 스크롤 가능 */
+  box-sizing: border-box;
 }
 
 /* 상단 버튼 영역 */
@@ -46,10 +51,34 @@
 .titleInput {
   display: flex;
   align-items: center;
-  gap: 25px;
+  /* ✅ 제목 + 체크박스 수평 정렬 */
+  gap: 12px;
   font-weight: 500;
   font-size: 15px;
-} 
+}
+
+.titleInput label {
+  display: inline-block;
+  min-width: 40px;
+  /* ✅ 게시판 라벨과 폭 통일 */
+  text-align: left;
+}
+
+/* ✅ 공지로 등록 (체크박스 + 텍스트) 한 줄 정렬 */
+.noticeCheck {
+  display: flex !important;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+  transform: translateY(-2px);
+  /* ✅ 높이 살짝 보정 (input과 baseline 맞춤) */
+  font-weight: 500;
+}
+
+/* ✅ antd 체크박스 내부 span 높이 보정 */
+.noticeCheck .ant-checkbox {
+  transform: translateY(-1px);
+}
 
 /* 파일 첨부 영역 */
 .fileBox {
@@ -81,6 +110,11 @@
 }
 
 .fileBtnBox {
+  display: flex;
+  justify-content: flex-end;
+  /* ✅ 오른쪽 끝 정렬 */
+  align-items: center;
+  /* ✅ 수직 중앙 정렬 (필요 시) */
   width: 20%;
 }
 
@@ -88,7 +122,7 @@
   display: none;
 }
 
-.fileBtn button{
+.fileBtn button {
   margin-left: 20px;
 }
 
@@ -103,6 +137,12 @@
   font-weight: 600;
   font-size: 15px;
   transition: background 0.2s;
+  
+  /* ✅ 화면 줄어들어도 깨지지 않게 */
+  flex-shrink: 0;        /* 버튼이 flex 줄임 대상에서 제외됨 */
+  white-space: nowrap;   /* 버튼 내부 텍스트 줄바꿈 금지 */
+  min-width: 100px;      /* 최소 폭 보장 */
+  text-align: center;
 }
 
 .customFileLabel:hover {

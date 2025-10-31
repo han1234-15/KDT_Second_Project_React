@@ -10,7 +10,8 @@ const ContactsTabs = () => {
    const mainTabs = [
     { label: "전체 주소록", path: "/contacts/all" },
     { label: "개인 주소록", path: "/contacts/solo" },
-    { label: "공용 주소록", path: "/contacts/multi" }
+    { label: "공용 주소록", path: "/contacts/multi" },
+    { label: "조직도", path: "/contacts/organization" }
   ];
 
 const subTabs = [

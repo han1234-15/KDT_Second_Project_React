@@ -20,18 +20,21 @@
   color:#000;
 }
 
-.write-button {
-  background-color: #7A70F0; /* ✅ 홈페이지 포인트 퍼플 */
-  color: #fff;
+.writeBtn {
+  background: linear-gradient(45deg, #8e44ad, #2196f3);
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.2s;
+  color: white !important;
   font-weight: 500;
+  width: 120px;
+  height: 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
-.write-button:hover {
-  background-color: #6356E5; /* hover 시 약간 진한 퍼플 */
+
+.writeBtn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
 }
 
 /* 탭 */
@@ -172,3 +175,5 @@
   align-items: center;
   width: 100%;
 }
+
+

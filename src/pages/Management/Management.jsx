@@ -438,7 +438,7 @@ const Management = () => {
                             </div>
                         </Flex>
 
-                        <Table className={style.table} rowSelection={rowSelection} columns={columns} dataSource={filteredUsers} pagination={{ position: ['bottomCenter'], hideOnSinglePage: true, onChange: handlePageChange }} />
+                        <Table tableLayout="fixed" rowSelection={rowSelection} columns={columns} dataSource={filteredUsers} pagination={{ position: ['bottomCenter'], hideOnSinglePage: true, onChange: handlePageChange }} />
                     </Flex>
                     {/* 테이블 아래쪽에 추가 */}
                     <Modal
@@ -496,7 +496,7 @@ const Management = () => {
                     >
                         <hr></hr>
                         <Select
-                            style={{ width: '100%' }}
+                            style={{ width: '100%',marginBottom:'10px' }}
                             options={[
                                 { value: '일반직', label: '일반직' },
                                 { value: '임원,촉탁', label: '임원,촉탁' },
@@ -532,7 +532,7 @@ const Management = () => {
                     >
                         <hr></hr>
                         <Select
-                            style={{ width: '100%' }}
+                            style={{ width: '100%',marginBottom:'10px' }}
                             options={departmentOptions}
                             placeholder="부서 선택"
                             value={deptValue}          // 상태 연결
@@ -565,7 +565,7 @@ const Management = () => {
                     >
                         <hr></hr>
                         <Select
-                            style={{ width: '100%' }}
+                            style={{ width: '100%',marginBottom:'10px' }}
                             options={positionOptions}
                             placeholder="직위 선택"
                             value={rankValue}          // 상태 연결
@@ -599,7 +599,7 @@ const Management = () => {
                     >
                         <hr></hr>
                         <Select
-                            style={{ width: '100%' }}
+                            style={{ width: '100%' ,marginBottom:'10px'}}
                             options={jobOptions}
                             placeholder="직무 선택"
                             value={jobValue}          // 상태 연결
@@ -632,7 +632,7 @@ const Management = () => {
                     >
                         <hr></hr>
                         <Select
-                            style={{ width: '100%' }}
+                            style={{ width: '100%',marginBottom:'10px' }}
                             options={[
                                 { value: '재직자', label: '재직자' },
                                 { value: '퇴사자', label: '퇴사자' },

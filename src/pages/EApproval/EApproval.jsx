@@ -8,40 +8,50 @@ function EApproval() {
   const { status = "show" } = useParams();
   const [docs, setDocs] = useState([]);
 
-  // 상태 코드 → 한글 이름 매핑
+const userId = sessionStorage.getItem("LoginID");
+console.log("🔥 최종 userId:", userId);
+ const upperStatus = status.toUpperCase();
   const statusMap = {
-    show: "전체",
-    pending: "승인 대기",
-    in_progress: "진행 중",
-    rejected: "반려",
-    scheduled: "확인",
-    approved: "예정",
+    WAIT: "승인 대기",
+    CHECKING: "진행 중",
+    PROCESSING: "예정",
+    APPROVED: "기안",
+    REJECTED: "반려",
     TEMP: "임시 저장",
   };
 
-  // 데이터 로드
-  useEffect(() => {
-    const url = `/Eapproval/${status === "show" ? "A" : status}`;
+useEffect(() => {
+  let url = "";
+ 
 
-    caxios
-      .get(url)
-      .then((res) => {
-        let data = res.data;
+  switch (upperStatus) {
+    case "WAIT": // 승인 대기
+      url = `/Eapproval/my/wait?userId=${userId}`;
+      break;
 
-        if (status === "A" || status === "show") {
-          data = data.filter((doc) => doc.status !== "TEMP");
-        }
-        if (status === "TEMP") {
-          data = data.filter((doc) => doc.status === "TEMP");
-        }
-        setDocs(data);
-      })
-      .catch((err) => console.error(err));
-  }, [status]);
+    case "PROCESSING": // 예정 (앞으로 결재할 문서)
+      url = `/Eapproval/my/scheduled?userId=${userId}`;
+      break;
+
+    case "CHECKING": // 진행 중 (결재가 일부 완료됨)
+      url = `/Eapproval/CHECKING`;
+      break;
+
+    case "APPROVED":
+    case "REJECTED":
+    case "TEMP":
+      url = `/Eapproval/${upperStatus}`;
+      break;
+
+    default:
+      url = `/Eapproval/A`;
+  }
+
+  caxios.get(url).then((res) => setDocs(res.data));
+}, [status, userId]);
 
   return (
     <div className="approval-container">
-      {/* ✅ 테이블만 남긴 화면 */}
       <table className="approval-table">
         <thead>
           <tr>
@@ -61,25 +71,21 @@ function EApproval() {
                   className="title-cell"
                   style={{ cursor: "pointer", color: "#0077cc", textDecoration: "underline" }}
                   onClick={() => {
-                    if (doc.status === "TEMP") {
-                      navigate(`/Eapproval/edit/${doc.seq}`);
-                    } else {
-                      navigate(`/Eapproval/detail/${doc.seq}`);
-                    }
+                    if (doc.status === "TEMP") navigate(`/Eapproval/edit/${doc.seq}`);
+                    else navigate(`/Eapproval/detail/${doc.seq}`);
                   }}
                 >
                   {doc.title}
                 </td>
                 <td>{doc.writer}</td>
                 <td>{new Date(doc.writeDate).toLocaleString("ko-KR")}</td>
-                <td>{statusMap[doc.status]}</td>
+                <td>{statusMap[ upperStatus === "PROCESSING" ? "PROCESSING" : doc.status]}
+                  </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="5" className="empty-msg">
-                표시할 문서가 없습니다.
-              </td>
+              <td colSpan="5" className="empty-msg">표시할 문서가 없습니다.</td>
             </tr>
           )}
         </tbody>

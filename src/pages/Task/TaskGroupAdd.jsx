@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { caxios } from '../../config/config.js';
 import { AutoComplete, Input, Pagination } from 'antd';
 import styles from "./TaskGroupAdd.module.css";
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../../store/authStore.js';
 
 // 업무 그룹 추가페이지
 const TaskGroupAdd = ({ onClose }) => {
@@ -10,61 +12,29 @@ const TaskGroupAdd = ({ onClose }) => {
     const [manager, setManager] = useState(null); // 객체 형태로 변경
     const [members, setMembers] = useState([]);
     const [searchOptions, setSearchOptions] = useState([]);
-    const [managerOptions, setManagerOptions] = useState([]);
     const [selectedMembers, setSelectedMembers] = useState([]);
     const [searchValue, setSearchValue] = useState("");
-    const [managerSearchValue, setManagerSearchValue] = useState("");
-
 
     // 페이지네이션
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 5;
 
+    const navigate = useNavigate();
+    const logout = useAuthStore(state => state.logout);
     // 전체 사원 목록 불러오기
     useEffect(() => {
         caxios.get("/member/list")
             .then(resp => setMembers(resp.data))
             .catch(err => console.error(err));
+
+        caxios.get("/auth")
+            .then(resp => setManager(resp.data))
+            .catch(err => {
+                logout();
+                navigate("/");
+                return;
+            })
     }, []);
-
-    // 관리자 자동완성
-    const handleManagerSearch = (value) => {
-        if (!value) {
-            setManagerOptions([]);
-            return;
-        }
-
-        const filtered = members
-            .filter(m => m.name.toLowerCase().includes(value.toLowerCase()))
-            .slice(0, 10)
-            .map(m => ({
-                value: `${m.name}(${m.id}) (${m.dept_code} / ${m.rank_code})`, // ✅ 표시값을 "이름(아이디)"로
-                label: (
-                    <div>
-                        <strong>{m.name}({m.id})</strong> ({m.dept_code} / {m.rank_code})
-                    </div>
-                ),
-            }));
-
-        setManagerOptions(filtered);
-    };
-
-    // 관리자 선택
-    const handleManagerSelect = (value) => {
-        // "이름(아이디)" 형태의 value에서 이름만 추출
-        const idMatch = value.match(/\((.*?)\)/);
-        const selected = idMatch ? members.find(m => m.id === idMatch[1]) : null;
-
-        if (selected) {
-            setManager(selected); // 관리자 객체 저장
-            setManagerSearchValue(`${selected.name}(${selected.id})`); // 인풋에 표시
-
-            // 선택된 관리자도 공유대상 테이블에 추가
-            if (!selectedMembers.some(sm => sm.id === selected.id)) {
-                setSelectedMembers(prev => [...prev, selected]);
-            }
-        }
-    };
 
     // 공유대상 자동완성
     const handleSearch = (value) => {
@@ -74,7 +44,10 @@ const TaskGroupAdd = ({ onClose }) => {
         }
 
         const filtered = members
-            .filter(m => m.name.toLowerCase().includes(value.toLowerCase()))
+            .filter(m =>
+                m.name.toLowerCase().includes(value.toLowerCase()) &&
+                m.id != manager // ✅ 관리자 자신은 제외
+            )
             .slice(0, 10)
             .map(m => ({
                 value: m.name,
@@ -101,18 +74,12 @@ const TaskGroupAdd = ({ onClose }) => {
     // 공유대상 제거
     const handleRemove = (id) => {
         setSelectedMembers(selectedMembers.filter(m => m.id !== id));
-
-        const managerId = managerSearchValue.slice(managerSearchValue.indexOf("(") + 1, managerSearchValue.indexOf(")")); // id추출
-        if (id == managerId) {
-            setManagerSearchValue("");
-            setManager(null);
-        }
     };
     useEffect(() => {
         const totalPages = Math.ceil(selectedMembers.length / pageSize);
         if (currentPage > totalPages) setCurrentPage(totalPages || 1);
     }, [selectedMembers]);
-    
+
     // 그룹 생성
     const handleAdd = () => {
         if (groupName == null || groupName == "") {
@@ -125,10 +92,6 @@ const TaskGroupAdd = ({ onClose }) => {
             return;
         }
 
-        if (!manager || !manager.id) {
-            alert("관리자는 자동완성 목록에서 반드시 선택해주세요.");
-            return;
-        }
         if (selectedMembers.length === 0) {
             alert("공유 대상을 최소 1명 이상 선택해주세요.");
             return;
@@ -137,7 +100,7 @@ const TaskGroupAdd = ({ onClose }) => {
         const payload = {
             group_name: groupName,
             description: groupDesc,
-            manager_id: manager?.id || null,
+            manager_id: manager,
             members: selectedMembers.map(m => m.id),
         };
         console.log("그룹 생성 요청:", payload);
@@ -192,20 +155,7 @@ const TaskGroupAdd = ({ onClose }) => {
                     <div className={styles.NewSharedMailbox1}>관리자</div>
 
                     <div className={styles.managerWrapper}>
-                        <AutoComplete
-                            value={managerSearchValue}
-                            options={managerOptions}
-                            onSearch={handleManagerSearch}
-                            onChange={(val) => setManagerSearchValue(val)} //  입력값 반영
-                            onSelect={(value) => {
-                                handleManagerSelect(value);
-                            }}
-                            placeholder="관리자 이름 검색"
-                            style={{ width: "100%" }}
-                        >
-                            <Input disabled={!!manager} />
-                        </AutoComplete>
-
+                        <Input disabled={true} value={manager} />
                     </div>
                 </div>
 

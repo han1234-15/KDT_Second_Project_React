@@ -1,71 +1,101 @@
-import { useEffect, useState } from 'react';
-import { caxios } from '../../config/config.js';
-import { useNavigate } from "react-router-dom";
-import { Button, Modal } from 'antd';
-import styles from "./TaskTabs.module.css";
-import TaskResponsibleAdd from './TaskResponsibleAdd.jsx';
+import React, { useEffect, useState } from "react";
+import { Table, Tag, Select } from "antd";
+import { caxios } from "../../config/config";
+import dayjs from "dayjs";
+import styles from "./TaskResponsible.module.css";
 
+const { Option } = Select;
 
-// 담당 업무 페이지
 const TaskResponsible = () => {
-    // modal
-    // 업무 그룹 추가
-    const [TaskResponsibleAddOpen, setTaskResponsibleAddOpen] = useState(false);
+  const [tasks, setTasks] = useState([]);
 
-    const showTaskResponsibleAddOpen = () => { 
-        setTaskResponsibleAddOpen(true);
-    };
+  useEffect(() => {
+    caxios
+      .get("/task/assigned") // 담당자로 지정된 업무 목록 API
+      .then((resp) => {
+        setTasks(resp.data);
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
+  // 상태 컬럼 색상
+  const renderStatusTag = (status) => {
+    const color =
+      status === "진행중"
+        ? "blue"
+        : status === "대기"
+        ? "gray"
+        : status === "완료"
+        ? "green"
+        : "default";
+    return <Tag color={color}>{status}</Tag>;
+  };
 
-    return (
+  const columns = [
+    {
+      title: "업무 그룹",
+      dataIndex: "groupName",
+      key: "groupName",
+      align: "center",
+    },
+    {
+      title: "업무명",
+      dataIndex: "taskName",
+      key: "taskName",
+      align: "center",
+    },
+    {
+      title: "상태",
+      dataIndex: "status",
+      key: "status",
+      align: "center",
+      render: (text, record) => (
+        <Select
+          defaultValue={record.status}
+          style={{ width: 100 }}
+          onChange={(value) => handleStatusChange(record.seq, value)}
+        >
+          <Option value="대기">대기</Option>
+          <Option value="진행중">진행중</Option>
+          <Option value="완료">완료</Option>
+        </Select>
+      ),
+    },
+    {
+      title: "생성일시",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      align: "center",
+      render: (text) => dayjs(text).format("YYYY년 MM월 DD일 HH:mm"),
+    },
+  ];
 
-        <div className={styles.container}>
+  // 상태 변경 핸들러
+  const handleStatusChange = async (seq, value) => {
+    try {
+      await caxios.put(`/task/updateStatus/${seq}`, { status: value });
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.seq === seq ? { ...task, status: value } : task
+        )
+      );
+    } catch (err) {
+      console.error("상태 변경 실패:", err);
+    }
+  };
 
-            <div className={styles.mainHeader} style={{ fontSize: "25px" }}>
-
-            </div>
-
-            <div className={styles.mainBody}>
-
-                <div className={styles.mainBodyHeader}>
-
-                    <div>데이터 / 상태 / 등록일 </div>
-                    <hr></hr>
-
-                    <div>
-                        <a onClick={showTaskResponsibleAddOpen} style={{ cursor: "pointer" }}>프로젝트 / </a>
-
-                        <select style={{ width: "5%", marginLeft: "10px" }}>
-                            <option value="대기">대기</option>
-                            <option value="진행">진행</option>
-                            <option value="완료">완료</option>
-                        </select>
-                        /
-                        2025.??.??
-                    </div>
-
-
-                </div>
-
-                <Modal
-
-                    centered={false}
-                    open={TaskResponsibleAddOpen}
-                    onCancel={() => setTaskResponsibleAddOpen(false)}
-                    footer={null}
-                    destroyOnHidden
-                    width="60%"
-                    style={{ top: 100, height: '100px', marginTop: '3%' }}
-                    bodyStyle={{ height: '700px' }}
-                >
-                    <TaskResponsibleAdd onClose={() => setTaskResponsibleAddOpen(false)} />
-                </Modal>
-            </div>
-
-
-        </div >
-
-    );
-}
+  return (
+    <div className={styles.container}>
+      <h2 className={styles.title}>담당 업무 목록</h2>
+      <Table
+        columns={columns}
+        dataSource={tasks}
+        rowKey="seq"
+        bordered
+        pagination={false}
+      />
+    </div>
+  );
+};
 
 export default TaskResponsible;

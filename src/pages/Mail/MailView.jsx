@@ -19,30 +19,29 @@ const MailView = () => {
     const [List, setList] = useState([]);
 
     // 파일 다운    
-    const handleDownload = async (mailSeq, sysname, orgname) => {
+    const handleDownload = async (sysname, orgname) => {
         try {
-            const res = await caxios.get(`/file/download?mailSeq=${mailSeq}&sysname=${sysname}`, {
-                responseType: 'blob'  // 중요!
-            });
-
-            // 브라우저에서 파일 다운로드
-            const url = window.URL.createObjectURL(new Blob([res.data]));
-            const link = document.createElement('a');
+            const response = await caxios.get(
+                `/files/download?sysname=${encodeURIComponent(sysname)}`,
+                { responseType: "blob" }
+            );
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
             link.href = url;
-            link.setAttribute('download', orgname); // 실제 파일명 사용
+            link.setAttribute("download", orgname);
             document.body.appendChild(link);
             link.click();
             link.remove();
-            window.URL.revokeObjectURL(url);
         } catch (err) {
-            console.error(err);
+            console.error("파일 다운로드 실패:", err);
+            alert("파일 다운로드 중 오류가 발생했습니다.");
         }
     };
 
 
     useEffect(() => {
         if (!mail || !mail.seq) return;
-        caxios.get(`/file/mail?mailSeq=${mail.seq}`)
+        caxios.get(`/files/fileList?module_type=mail&module_seq=${mail.seq}`)
             .then((res) => setList(res.data))
             .catch(err => console.error(err));
     }, [mail]);
@@ -62,8 +61,12 @@ const MailView = () => {
     }
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} style={{ width: "80%", margin: "auto", marginTop: "20px" }}>
+            <button className={styles.backBtn} onClick={handleMailReturn} style={{ marginRight: "30px" }}>뒤로가기</button>
+            {/* 보낸 메일 답장  */}
+            {!Mailres && (<button style={{ float: "right", marginRight: "30px" }} onClick={handleMailResponse}>답장</button>)}
             <div className={styles.mainHeader}>
+
                 <div className={styles.mainHeadertop}>
                     {mail.title}
                 </div>
@@ -74,31 +77,29 @@ const MailView = () => {
                 <div className={styles.mainBodyViewContent} dangerouslySetInnerHTML={{ __html: safeContent }}
                     style={{ fontSize: "25px" }} />
 
-                <button className={styles.downloadBtn} style={{ marginRight: "20px" }}>파일 목록</button>
-                <br></br>
-                <br></br>
 
-                <ul>
-                    {List.map((e, i) => (
-
-                        <li key={i} style={{ width: "20%" }}>
-
-                            <div>
-                                {e.orgname || e.sysname}
-                                <button onClick={() => handleDownload(mail.seq, e.sysname, e.orgname)}
-                                    style={{ float: "right", marginRight: "20px" }}>다운받기</button>
-                            </div>
-
-                            <br></br>
-                        </li>
-                    ))}
-                </ul>
 
             </div>
-            <button className={styles.backBtn} onClick={handleMailReturn} style={{ marginRight: "50px" }}>뒤로가기</button>
-            {/* 보낸 메일은 답장 기능 */}
-            {!Mailres && (<button style={{ float: "right", marginRight: "40px" }} onClick={handleMailResponse}>답장</button>)}
-        </div >
+            <button className={styles.downloadBtn} style={{ marginRight: "20px" }}>파일 목록</button>
+            <br></br>
+            <br></br>
+
+            <ul>
+                {List.map((e, i) => (
+
+                    <li key={i}>
+
+                        <div>
+                            {e.orgname || e.sysname}
+                            <button onClick={() => handleDownload(e.sysname, e.orgname)}
+                                style={{ marginLeft:"15px" }}>다운받기</button>
+                        </div>
+
+                        <br></br>
+                    </li>
+                ))}
+            </ul>
+        </div>
 
     );
 };

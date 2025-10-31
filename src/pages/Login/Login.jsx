@@ -30,7 +30,7 @@ export default function Login() {
                 sessionStorage.setItem("token", token);
                 sessionStorage.setItem("LoginID", member.id); //  중요
 
-                login(token); // 상태 저장
+                login(token , member.id); // 상태 저장
             })
             .catch(() => {
                 sessionStorage.removeItem("token");

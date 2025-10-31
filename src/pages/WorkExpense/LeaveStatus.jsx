@@ -12,22 +12,18 @@ function LeaveStatus() {
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectInput, setShowRejectInput] = useState(false);
 
- const getCurrentApprover = () => {
-  if (!selectedRow?.approvalLine) return null;
 
-  const waiting = selectedRow.approvalLine.find(
-    (a) => a.STATUS === "WAITING"
-  );
-
-  return waiting ? waiting.ID : null;
-};
+  const getCurrentApprover = () => {
+    if (!selectedRow?.approvalLine) return null;
+    const waiting = selectedRow.approvalLine.find(a => a.STATUS === "WAITING");
+    return waiting ? waiting.ID : null;
+  };
 
   const leaveCodeMap = {
     half_pm: "반차(오후)",
     half_am: "반차(오전)",
     annual: "연차",
     sick: "병가",
-   
   };
 
   const statusMap = {
@@ -79,8 +75,7 @@ function LeaveStatus() {
       return;
     }
 
-    caxios
-      .post(`/leave/reject`, { seq: selectedRow.seq, reason: rejectReason })
+    caxios.post(`/leave/reject`, { seq: selectedRow.seq, reason: rejectReason })
       .then(() => {
         alert("반려 처리되었습니다.");
         closeModal();
@@ -89,25 +84,22 @@ function LeaveStatus() {
   };
 
   const openModal = async (row) => {
-    console.log(" 클릭된 행 데이터:", row);
     setSelectedRow(row);
     setIsModalOpen(true);
 
     if (row.approvalId) {
       try {
         const res = await caxios.get(`/Eapproval/line/${row.approvalId}`);
-        console.log(" 결재선 API 응답:", res.data);
-
         let lineData = res.data;
         if (lineData.approvers) lineData = lineData.approvers;
 
-        setSelectedRow((prev) => ({
+        setSelectedRow(prev => ({
           ...prev,
           approvalLine: lineData,
         }));
 
       } catch (err) {
-        console.error(" 결재선 불러오기 실패:", err);
+        console.error("결재선 불러오기 실패:", err);
       }
     }
   };
@@ -119,9 +111,15 @@ function LeaveStatus() {
     setShowRejectInput(false);
   };
 
+  const isReferenceUser = () =>
+    selectedRow?.approvalLine?.some(
+      a => a.ID === loginUser?.id && a.STATUS === "REFERENCE"
+    );
+
   return (
     <div style={{ padding: "20px" }}>
       <h2>휴가 현황</h2>
+
       <table border="1" width="100%" cellPadding="10">
         <thead>
           <tr>
@@ -137,15 +135,27 @@ function LeaveStatus() {
           {list.map((row, index) => (
             <tr key={`${row.seq}-${index}`}>
               <td>{row.memberName} ({row.rankCode})</td>
-              <td>
-                {leaveCodeMap[row.leaveCode?.toLowerCase()] || row.leaveCode || "-"}
-              </td>
+              <td>{leaveCodeMap[row.leaveCode?.toLowerCase()] || row.leaveCode}</td>
               <td>{formatLeaveRange(row)}</td>
               <td>{row.reason}</td>
               <td>{statusMap[row.status]}</td>
-              <td>
-                <button onClick={() => openModal(row)}>보기</button>
-              </td>
+       <td>
+  <button
+    style={{
+      background: "linear-gradient(45deg, #00b4db, #0083b0)",
+      border: "none",
+      padding: "6px 14px",
+      borderRadius: "6px",
+      color: "white",
+      fontSize: "14px",
+      fontWeight: "500",
+      cursor: "pointer"
+    }}
+    onClick={() => openModal(row)}
+  >
+    보기
+  </button>
+  </td>
             </tr>
           ))}
         </tbody>
@@ -156,42 +166,44 @@ function LeaveStatus() {
           <div style={modalBox}>
             <h3>휴가 상세</h3>
 
-           <p><strong>신청자:</strong> {selectedRow.memberName} ({selectedRow.rankCode})</p>
+            <p><strong>신청자:</strong> {selectedRow.memberName} ({selectedRow.rankCode})</p>
             <p><strong>휴가종류:</strong> {leaveCodeMap[selectedRow.leaveCode]}</p>
             <p><strong>기간:</strong> {formatLeaveRange(selectedRow)}</p>
             <p><strong>사유:</strong> {selectedRow.reason}</p>
             <p><strong>상태:</strong> {statusMap[selectedRow.status]}</p>
 
-            {selectedRow.status === "REJECTED" && (
-              <div style={{ marginTop: "12px", padding: "10px", background: "#ffeaea", borderRadius: "6px" }}>
-                <p style={{ color: "red", margin: 0 }}><strong>반려 사유:</strong> {selectedRow.rejectReason}</p>
-                <p style={{ fontSize: "12px", marginTop: "4px", color: "#555" }}>
-                  반려일시: {selectedRow.rejectTime?.replace("T", " ").substring(0, 19)}
-                </p>
-              </div>
-            )}
-
-            {isAdmin && selectedRow?.approvalLine?.length > 0 && (
-              <div style={{ margin: "10px 0" }}>
-                <strong>결재선:</strong>
-                <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "8px", textAlign: "center" }}>
-                  <thead>
-                    <tr>
-                      <th style={thStyle}>구분</th>
-                      {selectedRow.approvalLine.map((a, idx) => (
-                        <th key={idx} style={thStyle}>
-                          {a.NAME} ({a.RANK_CODE})
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
+            {/* ✅ 결재자 테이블 */}
+            {selectedRow.approvalLine && (
+              <div style={{ marginTop: "10px" }}>
+                <strong>결재자</strong>
+                <table style={{ width: "100%", marginTop: "5px", textAlign: "center", borderCollapse: "collapse" }}>
                   <tbody>
                     <tr>
-                      <td style={tdStyle}>결재</td>
-                      {selectedRow.approvalLine.map((a, idx) => (
-                        <td key={idx} style={tdStyle}>
-                          {statusMap[a.STATUS] || "대기중"}
-                        </td>
+                      {selectedRow.approvalLine.filter(a => a.STATUS !== "REFERENCE").map((a, idx) => (
+                        <td key={idx} style={tdStyle}>{a.NAME} ({a.RANK_CODE})</td>
+                      ))}
+                    </tr>
+                  <tr>
+          {selectedRow.approvalLine.filter(a => a.STATUS !== "REFERENCE").map((a, idx) => (
+            <td key={idx} style={tdStyle}>
+              {statusMap[a.STATUS] || "-"}
+            </td>
+          ))}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+)}
+
+            {/* ✅ 참조자 테이블 */}
+            {selectedRow.approvalLine?.some(a => a.STATUS === "REFERENCE") && (
+              <div style={{ marginTop: "10px" }}>
+                <strong>참조자</strong>
+                <table style={{ width: "100%", marginTop: "5px", textAlign: "center", borderCollapse: "collapse" }}>
+                  <tbody>
+                    <tr>
+                      {selectedRow.approvalLine.filter(a => a.STATUS === "REFERENCE").map((a, idx) => (
+                        <td key={idx} style={tdStyle}>{a.NAME} ({a.RANK_CODE})</td>
                       ))}
                     </tr>
                   </tbody>
@@ -199,8 +211,10 @@ function LeaveStatus() {
               </div>
             )}
 
+            {/* ✅ 참조자는 버튼 숨김 */}
             {isAdmin &&
-            (selectedRow.status === "WAITING" || selectedRow.status === "CHECKING")  &&
+              !isReferenceUser() &&
+              (selectedRow.status === "WAITING" || selectedRow.status === "CHECKING") &&
               getCurrentApprover() === loginUser.id && (
                 <>
                   <button onClick={approveHandler}>승인</button>
@@ -213,10 +227,8 @@ function LeaveStatus() {
                         value={rejectReason}
                         onChange={(e) => setRejectReason(e.target.value)}
                         style={{ width: "100%", height: "60px" }}
-                      ></textarea>
-                      <button onClick={rejectHandler} style={{ marginTop: "5px" }}>
-                        반려 확정
-                      </button>
+                      />
+                      <button onClick={rejectHandler} style={{ marginTop: "5px" }}>반려 확정</button>
                     </div>
                   )}
                 </>
@@ -231,34 +243,17 @@ function LeaveStatus() {
 }
 
 const modalBackdrop = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
+  position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
   backgroundColor: "rgba(0,0,0,0.5)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
+  display: "flex", justifyContent: "center", alignItems: "center",
 };
 
 const modalBox = {
-  backgroundColor: "white",
-  padding: "20px",
-  borderRadius: "8px",
-  width: "420px",
-};
-
-const thStyle = {
-  border: "1px solid #ccc",
-  padding: "6px",
-  background: "#f7f7f7",
-  fontWeight: "bold",
+  backgroundColor: "white", padding: "20px", borderRadius: "8px", width: "420px",
 };
 
 const tdStyle = {
-  border: "1px solid #ccc",
-  padding: "6px",
+  border: "1px solid #ccc", padding: "6px",
 };
 
 export default LeaveStatus;

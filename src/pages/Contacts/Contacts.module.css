@@ -15,9 +15,9 @@
 
 /* 메인 */
 .main {
-  width: 100%;
-  height: 100%;
-  float: left;
+    width: 100%;
+    height: 100%;
+    float: left;
 
 }
 
@@ -37,6 +37,7 @@
 
     height: 60%;
     font-size: 35px;
+
 }
 
 .mainHeaderbottom {
@@ -59,36 +60,39 @@
     /* 가로 중앙 정렬 */
     text-align: center;
     border: none;
+
 }
 
 .mainBody {
     width: 100%;
     height: 80%;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
 }
 
 
 .mainBodyHeader {
     width: 100%;
     height: 5%;
-    border-top: 2px solid #ccc;
-     border-bottom: 2px solid #ccc;
-  
+    border: "1px solid lightgrey";
+    background-color: #fafafa;
+    border-bottom: 1px solid lightgrey;
 }
 
 .mainBodylist {
     width: 100%;
     height: 95%;
-  
+
 }
 
 .mainBodylistbox {
-  width: 100%;
-  height: 60px; 
-  line-height: 60px; 
-  border-bottom: 1px solid #ccc;
-  display: flex;
-  align-items: center; 
-  
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+
 }
 
 /* 
@@ -98,9 +102,9 @@
 } */
 
 .mainBodylistbox:hover {
-   
-   background-color: rgb(252, 252, 252);
-    
+
+    background-color: rgb(252, 252, 252);
+
 }
 
 .mainBodycheckbox {
@@ -128,8 +132,8 @@
 .mainBodybox {
     width: 100%;
     height: 10%;
-    background-color: #007bff;
-    color: white;
+
+    color: black;
 
 }
 
@@ -146,7 +150,7 @@
 
 .NewSharedMailbox2 {
 
-    width: 90%;
+    width: 60%;
     display: flex;
     align-items: center;
     justify-content: center;

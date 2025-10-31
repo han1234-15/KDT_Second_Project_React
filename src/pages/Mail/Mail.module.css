@@ -77,8 +77,10 @@
     height: 80%;
     font-size: 15px;
     color: black;
-
+    border: 1px solid lightgrey;
+    border-radius: 5px;
 }
+
 
 .mainBodyViewContent {
 
@@ -90,8 +92,9 @@
 .mainBodyHeader {
     width: 100%;
     height: 5%;
-    border-top: 2px solid #ccc;
-    border-bottom: 2px solid #ccc;
+    border: "1px solid lightgrey";
+    border-Radius: 5px;
+    background-color: #fafafa;
 
 }
 
@@ -99,6 +102,8 @@
     width: 100%;
     height: 95%;
     float: left;
+   border: 1px solid lightgrey;
+   border-radius: 5px;
 }
 
 .mainBodylistbox {

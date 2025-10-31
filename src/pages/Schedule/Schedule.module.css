@@ -2,13 +2,19 @@
   margin-top: 29px;
 }
 
-/* ✅ 전체 캘린더 영역 */
+/* 전체 캘린더 영역 라운드 + 테두리 */
 :global(.fc) {
   font-family: "Pretendard", "Noto Sans KR", sans-serif;
   background-color: #ffffff;
-  border-radius: 12px;
+  border-radius: 16px; /* ✅ 둥글게 */
+  border: 1px solid #e0e0e0; /* ✅ 연한 회색 테두리 */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   padding: 20px;
+}
+
+/* 월별 보기 셀 영역도 둥글게 잘리도록 */
+:global(.fc-view-harness) {
+  border-radius: 16px;
 }
 
 /* ✅ 헤더 툴바 영역 (← → today / month week day 버튼 등) */
@@ -24,17 +30,6 @@
   font-weight: 700;
   color: #1f1f1f;
 }
-
-/* ✅ 버튼 기본 스타일
-:global(.fc-button) {
-  background: #f5f5f5 !important;
-  border: 1px solid #d9d9d9 !important;
-  color: #333 !important;
-  font-weight: 500;
-  border-radius: 6px !important;
-  padding: 4px 10px !important;
-  transition: all 0.2s ease;
-} */
 
 /* ← 이전 버튼 */
 :global(.fc-prev-button) {
@@ -72,14 +67,6 @@
   border-color: #91caff !important;
   color: #1677ff !important;
 }
-
-/* ✅ 활성화된 버튼 (month/week/day 중 선택된 탭) */
-/* :global(.fc-button-active) {
-  background: #1677ff !important;
-  border-color: #1677ff !important;
-  color: white !important;
-  box-shadow: 0 2px 6px rgba(22, 119, 255, 0.25);
-} */
 
 /* ✅ 오늘(today) 버튼 강조 */
 :global(.fc-today-button) {
@@ -281,3 +268,38 @@ hr {
   color: #444;
   font-size: 15px;
 }
+
+.modalFooter {
+  display: flex;
+  align-items: center;        /* ✅ 수직 중앙 정렬 */
+  justify-content: space-between; 
+  padding: 15px 10px 0px 72px; /* ✅ 위아래 여백 조정 */
+  border-top: 1px solid #f0f0f0;
+  width: 100%;
+}
+
+.footerLeft {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* 버튼 우측 정렬 및 균등 간격 */
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 버튼들의 높이와 Alert 수직 맞추기 */
+:global(.ant-btn) {
+  height: 32px !important;
+  display: flex;
+  align-items: center;
+}
+
+.hr {
+  margin-bottom: 8px;
+}
+
+
