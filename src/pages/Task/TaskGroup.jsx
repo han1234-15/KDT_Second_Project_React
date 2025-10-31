@@ -56,7 +56,7 @@ const TaskGroup = () => {
     return (
         <div className={styles.container}>
             {groups.length === 0 ? (
-                "없음"
+                ""
             ) : (
                 groups.map((group) => (
                     <button

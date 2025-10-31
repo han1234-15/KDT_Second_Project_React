@@ -146,7 +146,7 @@
 }
 
 .birthSpan {
-  width: 120px;
+  width: 121px;
   display: flex;
   gap: 4px;
   align-items: center;
@@ -182,4 +182,18 @@
 .idBtn {
   width: 90px;
   font-size: 14px;
+}
+
+.right button{
+    background: linear-gradient(45deg, #8e44ad, #2196f3);
+    border: none;
+    color: white !important;
+    font-weight: 500;
+    width: 120px;
+    height: 30px;
+    border-radius: 5px;
+    }
+
+.bottomButton button{
+   width: 80px;
 }
