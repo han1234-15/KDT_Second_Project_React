@@ -12,7 +12,7 @@
 }
 
 /* 라벨 영역 */
-label {
+.row label {
   display: block;
   font-weight: 600;
   color: #444;
