@@ -169,6 +169,16 @@
   cursor: pointer;
 }
 
+.button{
+    background: linear-gradient(45deg, #8e44ad, #2196f3);
+    border: none;
+    color: white !important;
+    font-weight: 500;
+    width: 120px;
+    height: 30px;
+    border-radius: 5px;
+    }
+
 /* ✅ 등장 애니메이션 */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-6px); }

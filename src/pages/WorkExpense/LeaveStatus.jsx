@@ -139,7 +139,23 @@ function LeaveStatus() {
               <td>{formatLeaveRange(row)}</td>
               <td>{row.reason}</td>
               <td>{statusMap[row.status]}</td>
-              <td><button onClick={() => openModal(row)}>보기</button></td>
+       <td>
+  <button
+    style={{
+      background: "linear-gradient(45deg, #00b4db, #0083b0)",
+      border: "none",
+      padding: "6px 14px",
+      borderRadius: "6px",
+      color: "white",
+      fontSize: "14px",
+      fontWeight: "500",
+      cursor: "pointer"
+    }}
+    onClick={() => openModal(row)}
+  >
+    보기
+  </button>
+  </td>
             </tr>
           ))}
         </tbody>
