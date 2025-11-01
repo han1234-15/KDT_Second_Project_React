@@ -219,6 +219,7 @@ function Home() {
             <p>남은 휴가: <b>{leaveCount}일</b></p>
             <Button
               type="primary"
+              disabled={leaveCount <= 0}
               onMouseDown={(e) => e.stopPropagation()}
               onClick={() => setIsLeaveModalOpen(true)}
             >
