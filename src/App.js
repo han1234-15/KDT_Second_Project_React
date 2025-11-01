@@ -46,9 +46,7 @@ function App() {
       if (token) {
         try {
           // ✅ 헤더에 토큰 추가 (caxios가 interceptor에 자동 설정되어 있지 않다면 명시적으로)
-          const resp = await caxios.get("/member/userInfo", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const resp = await caxios.get("/member/userInfo");
 
           if (resp.status === 200 && resp.data) {
             login(token, resp.data.id); // ✅ Zustand store 갱신
@@ -57,8 +55,9 @@ function App() {
         } catch (err) {
           console.error("토큰 검증 실패:", err);
           logout(); // 잘못된 토큰이면 세션 초기화
-          window.location("/");
-          sessionStorage.removeItem("token");
+          sessionStorage.clear();
+          window.location.href = "/";
+
         }
       }
       setLoading(false); // ✅ 토큰 확인 후 렌더링 허용
