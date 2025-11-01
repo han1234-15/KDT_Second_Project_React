@@ -5,6 +5,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { caxios } from "../../config/config.js";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import TiptapEditor from "../Common/TipTapEditor.jsx";
 
 const { Option } = Select;
 
@@ -101,24 +102,24 @@ const BoardWrite = () => {
         </Select>
       </div>
 
-<div className={styles.titleInput}>
-  <label>제목</label>
-  <Input
-    name="title"
-    onChange={handleChange}
-    value={board.title}
-    style={{ width: "500px" }}
-    placeholder="제목을 입력하세요"
-  />
+      <div className={styles.titleInput}>
+        <label>제목</label>
+        <Input
+          name="title"
+          onChange={handleChange}
+          value={board.title}
+          style={{ width: "500px" }}
+          placeholder="제목을 입력하세요"
+        />
 
-  <Checkbox
-    className={styles.noticeCheck}
-    checked={board.noticeYn === "Y"}
-    onChange={handleNoticeChange}
-  >
-    공지 등록
-  </Checkbox>
-</div>
+        <Checkbox
+          className={styles.noticeCheck}
+          checked={board.noticeYn === "Y"}
+          onChange={handleNoticeChange}
+        >
+          공지 등록
+        </Checkbox>
+      </div>
 
 
       <div className={styles.fileBox}>
@@ -145,29 +146,12 @@ const BoardWrite = () => {
           />
         </div>
       </div>
-
       <div style={{ marginTop: 20 }}>
-        <CKEditor
-          editor={ClassicEditor}
-          data={board.content}
-          onChange={handleEditorChange}
-          config={{
-            toolbar: [
-              "heading",
-              "|",
-              "bold",
-              "italic",
-              "underline",
-              "link",
-              "bulletedList",
-              "numberedList",
-              "|",
-              "insertTable",
-              "blockQuote",
-              "undo",
-              "redo",
-            ],
-          }}
+        <TiptapEditor
+          value={board.content}
+          onChange={(html) => setBoard((prev) => ({ ...prev, content: html }))}
+          moduleType="board"
+          moduleSeq={board.seq || 0}  // 새 글이면 0, 등록 후 seq 갱신됨
         />
       </div>
     </div>

@@ -28,6 +28,7 @@ import useAuthStore from "./store/authStore";
 import ContentTap from "./pages/Common/ContentTap";
 import ContentMain from "./pages/Common/ContentMain";
 import { SocketProvider } from "./config/SocketContext"; // 우리가 만든 Provider
+import { caxios } from "./config/config";
 
 
 
@@ -35,21 +36,36 @@ function App() {
 
   const isLogin = useAuthStore(state => state.isLogin)
   const login = useAuthStore(state => state.login);
+  const logout = useAuthStore(state => state.logout);
   const [loading, setLoading] = useState(true); //로딩 확인용 상태변수
 
-
-
-
   useEffect(() => {
-    // 세션에서 로그인 상태 확인
-    const token = sessionStorage.getItem("token");
+    const checkToken = async () => {
+      const token = sessionStorage.getItem("token");
 
-    if (token) {
-      login(token); // token 자체를 store에 넣는게 일반적
-    }
-    setLoading(false); // 토큰 확인 후 렌더링 하도록 함.
-  }, []);
+      if (token) {
+        try {
+          // ✅ 헤더에 토큰 추가 (caxios가 interceptor에 자동 설정되어 있지 않다면 명시적으로)
+          const resp = await caxios.get("/member/userInfo", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
 
+          if (resp.status === 200 && resp.data) {
+            login(token, resp.data.id); // ✅ Zustand store 갱신
+            console.log("자동 로그인 유지 완료:", resp.data.name);
+          }
+        } catch (err) {
+          console.error("토큰 검증 실패:", err);
+          logout(); // 잘못된 토큰이면 세션 초기화
+          window.location("/");
+          sessionStorage.removeItem("token");
+        }
+      }
+      setLoading(false); // ✅ 토큰 확인 후 렌더링 허용
+    };
+
+    checkToken();
+  }, [login, logout]);
 
 
   //토큰을 확인하는데 시간이 걸려서 loading으로 토큰 확인이 끝나기 전까지 다른 컴포넌트가 렌더링 되지 않도록 함.
@@ -74,7 +90,7 @@ function App() {
 
         {/* ✅ 공통 그룹웨어 레이아웃 */}
         <Route
-         path="/*" element={<ContentMain />} />  
+          path="/*" element={<ContentMain />} />
       </Routes>
     </BrowserRouter>
   );

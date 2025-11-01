@@ -16,18 +16,52 @@ const BoardDetail = () => {
   const [board, setBoard] = useState(null);
   const [files, setFiles] = useState([]);
   const [writerProfile, setWriterProfile] = useState(null);
+  const [isWriter, setIsWriter] = useState("");
 
-  // ✅ Zustand 로그인 ID
-  const loginId = useAuthStore((state) => state.loginId);
+
+  const [loading, setLoading] = useState(true); //로딩 확인용 상태변수
+
+  const logout = useAuthStore(state => state.logout);
+  const loginId = useAuthStore(state => state.loginId);
+  const [loginProfile, setLoginProfile] = useState("");
 
   // ✅ 게시글 및 파일 불러오기
   useEffect(() => {
-    caxios.get(`/board/detail/${seq}`).then((resp) => setBoard(resp.data));
+    const checkToken = async () => {
+      const token = sessionStorage.getItem("token");
+
+      if (token) {
+        try {
+          const resp = await caxios.get("/member/userInfo"); //서버에 접속해서 로그인되어있는 계정 정보 불러오기.
+
+          if (resp.status === 200 && resp.data) {
+            //setLoginId(resp.data.id);
+            console.log("정보 불러오기 완료:", resp.data);
+
+
+            setLoginProfile(`https://storage.googleapis.com/yj_study/${resp.data.profileImage_servName}`);
+          }
+        } catch (err) {
+          console.error("토큰 검증 실패:", err);
+          logout(); // 잘못된 토큰이면 세션 초기화
+          sessionStorage.removeItem("token");
+        }
+      }
+      setLoading(false); // ✅ 토큰 확인 후 렌더링 허용
+    };
+    checkToken();
+
+    caxios.get(`/board/detail/${seq}`).then((resp) => {
+      setBoard(resp.data);
+      setIsWriter(resp.data.writer_id);
+      console.log(resp.data);
+    });
 
     caxios
       .get(`/files/fileList?module_type=board&module_seq=${seq}`)
       .then((resp) => setFiles(resp.data))
       .catch((err) => console.error("파일 목록 불러오기 실패:", err));
+
   }, [seq]);
 
   // ✅ 프로필 불러오기
@@ -37,9 +71,10 @@ const BoardDetail = () => {
     }
   }, [board?.writer_id]);
 
-  const fetchWriterProfile = async (writerId) => {
+  const fetchWriterProfile = async (writer_id) => {
     try {
-      const resp = await caxios.get(`/member/profile/${writerId}`);
+      const resp = await caxios.get(`/member/info/${writer_id}`);
+      console.log(resp.data);
       const profileName = resp.data?.profileImage_servName;
       setWriterProfile(
         profileName
@@ -94,6 +129,7 @@ const BoardDetail = () => {
     try {
       const resp = await caxios.get(`/comment/${seq}`);
       setComments(resp.data);
+      console.log(resp.data);
     } catch (err) {
       console.error("댓글 불러오기 실패:", err);
     }
@@ -133,16 +169,14 @@ const BoardDetail = () => {
   };
 
   if (!board) return <div>로딩중...</div>;
-
-  const isWriter =
-    String(board.writer_id ?? "").trim().toLowerCase() ===
-    String(loginId ?? "").trim().toLowerCase();
-
+  if (loading) {
+    return null; // 혹은 스켈레톤 화면, 로딩 스피너
+  }
   return (
     <div className={styles.container}>
       {/* 옵션 버튼 */}
       <div className={styles.option}>
-        {isWriter && (
+        {loginId == isWriter && (
           <>
             <button
               onClick={() =>
@@ -187,7 +221,7 @@ const BoardDetail = () => {
             />
           </div>
           <div className={styles.boardInfo}>
-            <div>{board.writer_id}</div>
+            <div>{board.name}{board.writer_id}</div>
             <div>{board.category_name}</div>
             <div>조회수 {board.hit}</div>
           </div>
@@ -206,34 +240,34 @@ const BoardDetail = () => {
         dangerouslySetInnerHTML={{ __html: board.content }}
       />
 
-    {/* 첨부파일 영역 */}
-<div className={styles.file}>첨부파일</div>
+      {/* 첨부파일 영역 */}
+      <div className={styles.file}>첨부파일</div>
 
-{files.length > 0 ? (
-  <div className={styles.fileList}>
-    <ul>
-      {files.map((f) => (
-        <li key={f.sysname || f.orgname}>
-          <button
-            onClick={() => handleDownload?.(f.sysname, f.orgname)}
-            className={styles.fileBtn}
-          >
-            {f.orgname}
-          </button>
-        </li>
-      ))}
-    </ul>
-  </div>
-) : (
-  <p className={styles.noFile}>첨부된 파일이 없습니다.</p>
-)}
+      {files.length > 0 ? (
+        <div className={styles.fileList}>
+          <ul>
+            {files.map((f) => (
+              <li key={f.sysname || f.orgname}>
+                <button
+                  onClick={() => handleDownload?.(f.sysname, f.orgname)}
+                  className={styles.fileBtn}
+                >
+                  {f.orgname}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p className={styles.noFile}>첨부된 파일이 없습니다.</p>
+      )}
 
       {/* 댓글 */}
       <div className={styles.reply}>
         <div className={styles.writeReply}>
           <div className={styles.replyProfile}>
             <img
-              src={writerProfile || defaultProfile}
+              src={loginProfile || defaultProfile}
               alt="작성자 프로필"
               style={{
                 width: "50px",
@@ -242,7 +276,7 @@ const BoardDetail = () => {
                 objectFit: "cover",
                 marginLeft: "24px",
                 marginTop: "10px",
-                border: writerProfile ? "none" : "2px solid #ddd",
+                border: loginProfile ? "none" : "2px solid #ddd",
               }}
             />
           </div>
