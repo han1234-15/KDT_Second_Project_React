@@ -4,12 +4,12 @@ import { UserOutlined } from '@ant-design/icons';
 import { Input, Space, Select } from 'antd';
 import { useNavigate, useParams } from "react-router-dom";
 import { caxios } from "../../config/config";
-import { departmentOptions, jobOptions, positionOptions } from '../../config/options';
+import { departmentOptions, jobOptions, positionOptions, ranks } from '../../config/options';
 import { useDaumPostcodePopup } from 'react-daum-postcode'; // Daum 주소 검색 관련 hook
 import defaultProfile from "../../assets/images/defaultProfile.png";
 
 const Mypage = () => {
-    
+
     //다음 주소 api
     const postcodeScriptUrl = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
     const open = useDaumPostcodePopup(postcodeScriptUrl);
@@ -236,8 +236,7 @@ const Mypage = () => {
                 });
 
                 console.log("프로필이미지:" + profileImage);
-                if(memberResp.data.profileImage_servName != null)
-                {
+                if (memberResp.data.profileImage_servName != null) {
                     setPreviewUrl("https://storage.googleapis.com/yj_study/" + memberResp.data.profileImage_servName); //이미지 넣는거
                 }
                 setLoading(false); // 여기서 false로 변경
@@ -309,17 +308,17 @@ const Mypage = () => {
                     <div>
                         <label>부서*</label>
                         <div style={{ paddingLeft: '2px' }}>{memberInfo.dept_code}</div>
-                       
+
                     </div>
                     <div>
                         <label>직위*</label>
-                        <div style={{ paddingLeft: '2px' }}>{memberInfo.rank_code}</div>
-                           
+                        <div style={{ paddingLeft: '2px' }}>{ranks[memberInfo.rank_code]}</div>
+
                     </div>
                     <div>
                         <label>직무*</label>
-                              <div style={{ paddingLeft: '2px' }}>{memberInfo.job_code}</div>
-                           
+                        <div style={{ paddingLeft: '2px' }}>{memberInfo.job_code}</div>
+
                     </div>
 
                     <div><label>개인 이메일</label><Input placeholder="example@email.com" name='personalEmail' value={memberInfo.personalEmail} onChange={handleMemberInfoChange} /></div>
