@@ -21,8 +21,10 @@ const BoardRoute = () => {
         <Route path="announcement" element={<BoardAnnouncement />} />
         <Route path="freedom" element={<BoardFreedom />} />
         <Route path="anonymity" element={<BoardAnonymity />} />
-        <Route path="importance" element={<BoardImportance />} />
         <Route path="dataroom" element={<BoardDataRoom />} />
+      </Route>
+      <Route path="important" element={<BoardTabs />} >
+        <Route index element={<BoardImportance />} />
       </Route>
 
       {/* ✅ 별도 페이지 */}

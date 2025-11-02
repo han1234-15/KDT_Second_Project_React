@@ -2,49 +2,138 @@ import React, { useEffect, useState } from "react";
 import { Table, Input } from "antd";
 import styles from "./BoardAnnouncement.module.css";
 import { caxios } from "../../../config/config";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { StarFilled, StarOutlined } from "@ant-design/icons";
+import { render } from "@testing-library/react";
+import { Border } from "react-bootstrap-icons";
 const { Search } = Input;
 
 const BoardAnnouncement = () => {
 
   const navigate = useNavigate();
   const handleRowClick = (record) => {
-    navigate(`/board/detail/${record.key}`); // record.key = seq
+    navigate(`/board/detail/${record.key}`, {
+      state: { from: useLocation.pathname } // ✅ 현재 경로 저장
+    });
   };
-
   const [search, setSearch] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   const [data, setData] = useState([]);
   // 공지사항 (category_id = 1) 데이터 불러오기
-  useEffect(() => {
-    caxios
-      .get("/board/category/1") // category_id = 1 (공지사항)
-      .then((resp) => {
-        console.log("게시글 목록:", resp.data);
-        // 백엔드 응답 구조에 맞게 데이터 매핑
-        const mapped = resp.data.map((item) => ({
+useEffect(() => {
+  caxios
+    .get("/board/category/1")
+    .then((resp) => {
+      console.log(resp.data);
+      const mapped = resp.data.map((item) => {
+        const dateToShow = item.updatedAt || item.createdAt;
+        const createdAt = new Date(dateToShow);
+
+        const formattedDate = `${createdAt.getFullYear()}-${String(
+          createdAt.getMonth() + 1
+        ).padStart(2, "0")}-${String(createdAt.getDate()).padStart(
+          2,
+          "0"
+        )} ${String(createdAt.getHours()).padStart(2, "0")}:${String(
+          createdAt.getMinutes()
+        ).padStart(2, "0")}`;
+
+        return {
           key: item.seq,
-          tag: "공지", // 필요 시 카테고리명 표시
+          tag: "사내",
           title: item.title,
           author: item.writer_id,
-          date: new Date(item.createdAt).toLocaleDateString(),
-        }));
-        setData(mapped);
-      })
-      .catch((err) => {
-        console.error("게시글 목록 불러오기 실패:", err);
+          date: formattedDate,
+          importantYn: item.importantYn,
+          hit: item.hit,
+          noticeYn: item.noticeYn, // ✅ 추가
+        };
       });
-  }, []);
+
+      setData(mapped);
+    })
+    .catch((err) => {
+      console.error("게시글 목록 불러오기 실패:", err);
+    });
+}, []);
 
 
   // 컬럼 정의
-  const columns = [
-    { title: "태그", dataIndex: "tag", key: "tag" },
-    { title: "제목", dataIndex: "title", key: "title" },
-    { title: "작성자", dataIndex: "author", key: "author" },
-    { title: "작성날짜", dataIndex: "date", key: "date" },
-  ];
+const columns = [
+  {
+    title: <StarFilled style={{ color: "#fadb14", fontSize: "16px" }} />,
+    key: "important", width: "10%",
+    render: (_, record) => (
+      <span
+        onClick={(e) => {
+          e.stopPropagation();
+          handleImportant(record);
+        }}
+        style={{
+          cursor: "pointer",
+          color: record.importantYn === "Y" ? "#fadb14" : "#ccc",
+          fontSize: "18px",
+        }}
+      >
+        {record.importantYn === "Y" ? <StarFilled /> : <StarOutlined />}
+      </span>
+    ),
+  },
+ {
+  title: "",
+  dataIndex: "notice",
+  key: "notice",
+  width: "10%",
+  render: (_, record) => (
+    record.noticeYn === "Y" && (
+      <span
+        style={{
+          backgroundColor: "#ffecb3",
+          color: "#d48806",
+          fontWeight: "bold",
+          borderRadius: "4px",
+          padding: "2px 6px",
+          alignItems: "center",
+          fontSize: "12px",
+        }}
+      >
+        공지
+      </span>
+    )
+  ),
+},
+  {
+  title: "제목",
+  dataIndex: "title",
+  key: "title",
+  width: "40%",
+  align: "left",
+  className: "col-title", // ✅ 추가 가능
+  render: (text) => (
+    <span style={{marginLeft: "15px"}}>{text}</span>
+  ),
+},
+  { title: "작성자", dataIndex: "author", key: "author", width: "20%" },
+  { title: "조회수", dataIndex: "hit", key: "hit", width: "10%" },
+  { title: "작성일", dataIndex: "date", key: "date", width: "20%" },
+];
+  // 중요 체크
+const handleImportant = async (record) => {
+  try {
+    await caxios.put(`/board/toggleImportant/${record.key}`);
+
+    setData((prev) =>
+      prev.map((item) =>
+        item.key === record.key
+          ? { ...item, importantYn: item.importantYn === "Y" ? "N" : "Y" }
+          : item
+      )
+    );
+  } catch (err) {
+    console.error("중요 여부 변경 실패:", err);
+  }
+};
 
   // 페이지 변경 시 실행 함수
   const handlePageChange = (page, pageSize) => {
@@ -77,9 +166,9 @@ const BoardAnnouncement = () => {
       </div>
       <div className={styles.boardHeader}>
         <Table
-          rowSelection={rowSelection}
           columns={columns}
           dataSource={filteredData}
+          tableLayout="fixed" 
           pagination={{
             position: ["bottomCenter"],
             hideOnSinglePage: true,
@@ -87,10 +176,10 @@ const BoardAnnouncement = () => {
             defaultPageSize: 10,
             onChange: handlePageChange,
           }}
-           onRow={(record) => ({
-            onClick: () => handleRowClick(record), // 클릭 시 navigate 작동
+          onRow={(record) => ({
+            onClick: () => handleRowClick(record), 
           })}
-          rowClassName={() => styles.tableRow} // (선택) 클릭 시 hover 스타일 주기용
+          rowClassName={() => styles.tableRow}
         />
       </div>
     </div>

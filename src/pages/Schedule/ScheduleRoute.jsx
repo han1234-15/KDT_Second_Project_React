@@ -6,7 +6,7 @@ const ScheduleRoute = () => {
   return (
     <Routes>
       <Route path="/" element={<ScheduleTabs />}>
-        <Route index element={<Navigate to="all" replace />} />
+        <Route index element={<Navigate to="1" replace />} />
         <Route path=":category" element={<Schedule />} />
       </Route>
     </Routes>
