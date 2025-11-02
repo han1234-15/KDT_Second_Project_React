@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { caxios } from "../../config/config.js";
+import { ranks } from "../../config/options.js";
 import GridLayout, { WidthProvider } from "react-grid-layout";
-
+import defaultProfile from "../../assets/images/defaultProfile.png";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import dayjs from "dayjs";
 
-import { Card, Button, Calendar, List, message } from "antd";
+import { Card, Button, Calendar, List, message, Divider, Table, Tag } from "antd";
 import {
   BellFill,
   EnvelopeFill,
@@ -106,17 +108,22 @@ function Home() {
 
   // ✅ 로그인 사용자 & 홈데이터 불러오기
   useEffect(() => {
-    caxios.get("/member/me").then((res) => setMyInfo(res.data));
+    caxios.get("/member/me").then((res) => {
+      setMyInfo(res.data);
+      console.log(res.data);
+    });
     fetchHomeData();
   }, [fetchHomeData]);
 
   /* ---------------------- Layout (네 코드 유지) ---------------------- */
   const defaultLayout = [
     { i: "notice", x: 0, y: 0, w: 12, h: 4 },
-    { i: "mail", x: 0, y: 4, w: 4, h: 3 },
+    { i: "mail", x: 4, y: 11, w: 4, h: 3 },
     { i: "vacation", x: 4, y: 4, w: 4, h: 3 },
-    { i: "calendar", x: 0, y: 7, w: 8, h: 7 },
-    { i: "profile", x: 8, y: 0, w: 4, h: 6 },
+    { i: "calendar", x: 0, y: 4, w: 4, h: 10 },
+    { i: "profile", x: 8, y: 8, w: 4, h: 6 },
+    { i: "myTask", x: 4, y: 7, w: 4, h: 4 },
+    { i: "myPage", x: 8, y: 4, w: 4, h: 4 },
   ];
 
   const saveLayoutToServer = useCallback(async (newLayout) => {
@@ -137,6 +144,8 @@ function Home() {
     [saveLayoutToServer]
   );
 
+
+  // 레이아웃 저장 로직
   useEffect(() => {
     const fetchLayout = async () => {
       try {
@@ -155,24 +164,96 @@ function Home() {
 
   // 일정
   useEffect(() => {
-  const fetchMySchedules = async () => {
-    try {
-      const res = await caxios.get("/schedule/all"); // ✅ 그대로 /all 사용
-      setMySchedules(res.data || []);
-    } catch (err) {
-      console.error("내 일정 불러오기 실패:", err);
-      message.error("내 일정 데이터를 불러오지 못했습니다.");
-    }
+    const fetchMySchedules = async () => {
+      try {
+        const res = await caxios.get("/schedule/all"); // ✅ 그대로 /all 사용
+        setMySchedules(res.data || []);
+      } catch (err) {
+        console.error("내 일정 불러오기 실패:", err);
+        message.error("내 일정 데이터를 불러오지 못했습니다.");
+      }
+    };
+    fetchMySchedules();
+  }, []);
+
+
+
+  const [tasks, setTasks] = useState([]);
+  // 내정보, 업무
+  useEffect(() => {
+    caxios.get("/member/me").then((res) => {
+      setMyInfo(res.data);
+      console.log(res.data);
+    });
+
+    caxios.get("/task/assigned").then((res) => {
+      setTasks(res.data);
+      console.log(res.data);
+    });
+
+  }, []);
+  const renderStatusTag = (status) => {
+    const color =
+      status === "진행중"
+        ? "blue"
+        : status === "대기"
+          ? "gray"
+          : status === "완료"
+            ? "green"
+            : "default";
+    return <Tag color={color}>{status}</Tag>;
   };
-  fetchMySchedules();
-}, []);
+
+  const taskColumns = [
+    {
+      title: "업무 그룹",
+      dataIndex: "GROUP_NAME",
+      key: "groupName",
+      align: "center",
+    },
+    {
+      title: "업무명",
+      dataIndex: "TITLE",
+      key: "taskName",
+      align: "center",
+    },
+    {
+      title: "생성자",
+      dataIndex: "CREATED_NAME",
+      key: "taskName",
+      align: "center",
+      render: (_, record) => `${record.CREATED_NAME} (${record.CREATED_ID})`,
+    },
+    {
+      title: "상태",
+      dataIndex: "STATUS",
+      key: "status",
+      align: "center",
+      render: (status) => renderStatusTag(status),
+
+      // 🔽 정렬 추가
+      sorter: (a, b) => {
+        const order = { 대기: 1, 진행중: 2, 완료: 3 };
+        return order[a.STATUS] - order[b.STATUS];
+      },
+    },
+    {
+      title: "생성일시",
+      dataIndex: "CREATED_AT",
+      key: "createdAt",
+      align: "center",
+      render: (text) => dayjs(text).format("YYYY년 MM월 DD일 HH:mm"),
+      sorter: (a, b) => dayjs(a.CREATED_AT).unix() - dayjs(b.CREATED_AT).unix(), // 날짜 정렬도 추가 가능
+    },
+  ];
+
 
   return (
     <div className={styles.container}>
       <ResponsiveGridLayout
         layout={layout}
         cols={12}
-        rowHeight={60}
+        rowHeight={35}
         margin={[16, 16]}
         draggableHandle=".drag-area"
         isResizable
@@ -223,35 +304,35 @@ function Home() {
 
         {/* 달력 */}
         <div key="calendar">
-  <Card
-    title={<span className={`${styles.cardHeader} drag-area`}>📅 내 일정</span>}
-    className={styles.card}
-  >
-    <Calendar
-      fullscreen={false}
-      dateCellRender={(value) => {
-        const dateStr = value.format("YYYY-MM-DD");
-        const daySchedules = mySchedules.filter(
-          (item) => item.startAt && item.startAt.startsWith(dateStr)
-        );
+          <Card
+            title={<span className={`${styles.cardHeader} drag-area`}>📅 내 일정</span>}
+            className={styles.card}
+          >
+            <Calendar
+              fullscreen={false}
+              dateCellRender={(value) => {
+                const dateStr = value.format("YYYY-MM-DD");
+                const daySchedules = mySchedules.filter(
+                  (item) => item.startAt && item.startAt.startsWith(dateStr)
+                );
 
-        return (
-          <ul className={styles.scheduleList}>
-            {daySchedules.slice(0, 2).map((item) => (
-              <li key={item.seq} className={styles.scheduleItem}>
-                <span className={styles.dot}></span>
-                {item.title}
-              </li>
-            ))}
-            {daySchedules.length > 2 && (
-              <li className={styles.more}>+{daySchedules.length - 2}개</li>
-            )}
-          </ul>
-        );
-      }}
-    />
-  </Card>
-</div>
+                return (
+                  <ul className={styles.scheduleList}>
+                    {daySchedules.slice(0, 2).map((item) => (
+                      <li key={item.seq} className={styles.scheduleItem}>
+                        <span className={styles.dot}></span>
+                        {item.title}
+                      </li>
+                    ))}
+                    {daySchedules.length > 2 && (
+                      <li className={styles.more}>+{daySchedules.length - 2}개</li>
+                    )}
+                  </ul>
+                );
+              }}
+            />
+          </Card>
+        </div>
 
         {/* 출퇴근 */}
         <div key="profile">
@@ -280,7 +361,93 @@ function Home() {
             </div>
           </Card>
         </div>
+
+
+        {/* 담당 업무*/}
+        <div key="myTask">
+          <Card title={<span className={`${styles.cardHeader} drag-area`}><CalendarIcon /> 담당 업무</span>} className={styles.card} >
+
+            <Table
+              columns={taskColumns}
+              dataSource={tasks}
+              rowKey="seq"
+              bordered={false}              // 테두리 제거
+              pagination={
+                tasks.length > 5
+                  ? {
+                    pageSize: 5,
+                    showSizeChanger: false, // 사용자가 페이지당 항목 수 변경 불가
+                  }
+                  : false // 5개 이하일 땐 페이지네이션 숨김
+              }
+
+              onRow={(record) => ({
+                onClick: () => navigate(`/task/group/${record.GROUP_SEQ}`),
+              })}
+              className={styles.styledTable}
+            />
+
+          </Card>
+        </div>
+
+        {/* 내 정보 */}
+        <div key="myPage">
+          <Card
+            title={
+              <span className={`${styles.cardHeader} drag-area`} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <CalendarIcon /> 내 정보
+              </span>
+            }
+            className={styles.card}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              {/* 프로필 이미지 */}
+              <div style={{ flexShrink: 0 }}>
+                <img
+                  src={myInfo?.profileImage_servName ? `https://storage.googleapis.com/yj_study/${myInfo.profileImage_servName}` : defaultProfile}
+                  alt="프로필 미리보기"
+                  style={{
+                    width: 180,
+                    height: 180,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '2px solid #ebebeb',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                  }}
+                />
+              </div>
+
+              {/* 사용자 정보 */}
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', flexGrow: 1 }}>
+                <div
+                  className={styles.userName}
+                  style={{ fontSize: 22, fontWeight: 600, color: '#222', marginBottom: 4 }}
+                >
+                  {myInfo?.name || "로딩 중..."}
+                </div>
+                <div style={{ fontSize: 15, color: '#555', marginBottom: 2 }}>
+                  {ranks[myInfo?.rank_code] || "--"} / {myInfo?.dept_code || "--"}
+                </div>
+                <div style={{ fontSize: 14, color: '#888', marginBottom: 12 }}>
+                  {myInfo?.officeEmail || "--"}
+                </div>
+                <hr></hr>
+                {/* 정보 수정 버튼 */}
+                <Button
+                  type="primary"
+                  size="small"
+                  style={{ alignSelf: 'flex-start', borderRadius: 4, padding: '4px 12px', marginTop: '10px' }}
+                  onClick={() => navigate("/mypage")} // 여기에 수정 모달 연결 가능
+                >
+                  정보 수정
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
       </ResponsiveGridLayout >
+
+
 
       {/* ✅ 사장 여부 전달 유지 */}
       < LeaveModal

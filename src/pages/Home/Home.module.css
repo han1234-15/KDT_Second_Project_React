@@ -24,7 +24,7 @@
 
 .card:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.164) !important;
 }
 
 .cardHeader {
@@ -35,11 +35,11 @@
   gap: 8px;
   padding: 10px 14px;
   background: linear-gradient(90deg, #6366f1, #8b5cf6);
-  color: #fff;
+  color: #ffffff;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   font-weight: 600 !important;
-  font-size: 16px !important;
+  font-size: 19px !important;
   cursor: move !important;
 }
 
@@ -312,7 +312,8 @@
   margin: 0 auto 10px auto !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: flex-start !important; /* 왼쪽 정렬 */
+  justify-content: flex-start !important;
+  /* 왼쪽 정렬 */
   gap: 8px;
   padding: 0 14px !important;
   box-sizing: border-box;
@@ -335,8 +336,10 @@
 
 /* ✅ Month / Year 버튼 기본 상태 */
 :global(.ant-radio-button-wrapper) {
-  border: 1.5px solid #aa96ff !important; /* 💜 테두리 색 */
-  color: #aa96ff !important; /* 💜 글자 색 */
+  border: 1.5px solid #aa96ff !important;
+  /* 💜 테두리 색 */
+  color: #aa96ff !important;
+  /* 💜 글자 색 */
   background: #fff !important;
   border-radius: 6px !important;
   transition: all 0.25s ease;
@@ -373,6 +376,7 @@
   border-top-left-radius: 6px !important;
   border-bottom-left-radius: 6px !important;
 }
+
 :global(.ant-radio-button-wrapper:last-child) {
   border-top-right-radius: 6px !important;
   border-bottom-right-radius: 6px !important;
@@ -476,6 +480,7 @@
   width: 100%;
   max-width: 100%;
 }
+
 .scheduleItem:hover {
   background: linear-gradient(90deg, #dbeafe, #ede9fe) !important;
   transform: translateY(-1px);
@@ -554,6 +559,7 @@
 
 /* ✅ 반응형: 화면이 900px 이하일 때 */
 @media (max-width: 900px) {
+
   :global(.ant-picker-calendar),
   :global(.ant-picker-calendar-header),
   :global(.ant-picker-calendar-body) {
@@ -572,7 +578,8 @@
   flex-direction: row !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: 0 !important; /* 버튼 간격 밀착 */
+  gap: 0 !important;
+  /* 버튼 간격 밀착 */
 }
 
 /* ✅ 버튼이 세로로 겹치는 문제 방지 */
@@ -584,6 +591,3 @@
   vertical-align: middle !important;
   margin: 0 !important;
 }
-
-
-
