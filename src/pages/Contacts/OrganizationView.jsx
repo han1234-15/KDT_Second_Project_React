@@ -2,7 +2,7 @@ import styles from "./Contacts.module.css";
 import { useEffect, useState } from 'react';
 import { caxios } from '../../config/config.js';
 import { useNavigate } from "react-router-dom";
-
+import { ranks } from "../../config/options.js";
 const OrganizationView = ({ member, onClose }) => {
     return (
 
@@ -10,7 +10,7 @@ const OrganizationView = ({ member, onClose }) => {
         <div className={styles.container} >
 
             <div className={styles.mainHeader} style={{marginTop:"20px"}}>
-                <h2>{member.name} / {member.dept_code} / {member.rank_code}</h2>
+                <h2>{member.name} / {member.dept_code} / {ranks[member.rank_code]}</h2>
             </div>
             <hr></hr>
             <div className={styles.mainBody} style={{ fontSize: "20px" , marginTop:"30px" , border:"none" }}>

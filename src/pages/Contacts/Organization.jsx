@@ -4,6 +4,7 @@ import { caxios } from '../../config/config.js';
 import { useNavigate } from "react-router-dom";
 import OrganizationView from "./OrganizationView.jsx";
 import { Button, Modal } from 'antd';
+import { ranks } from "../../config/options.js";
 const Organization = () => {
 
     const [organization, setOrganization] = useState([]);
@@ -214,7 +215,7 @@ const Organization = () => {
                             </div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.dept_code}</div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.name}</div>
-                            <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.rank_code}</div>
+                            <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{ranks[e.rank_code]}</div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.job_code}</div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.status}</div>
                         </div>

@@ -102,7 +102,7 @@ const MailSent = () => {
                     columns={[
                         { title: "수신자", dataIndex: "recipientName", key: "recipientName" },
                         {
-                            title: "수신자 아이디", dataIndex: "recipientId", key: "recipientId",
+                            title: "수신자 이메일", dataIndex: "recipientId", key: "recipientId",
                             render: (recipientId) => recipientId.includes('@') ? recipientId : `${recipientId}@Infinity.com`
                         },
 
