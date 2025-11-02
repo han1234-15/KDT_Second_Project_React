@@ -105,14 +105,7 @@ function EApprovalWrite() {
       .catch(() => alert("등록 중 오류 발생"));
   };
 
-  const handleTempSave = () => {
-    caxios.post("/Eapproval/tempSave", { ...formData, approvers, referenceList })
-      .then(() => {
-        alert("임시 저장 완료");
-        navigate("/Eapproval/A");
-      })
-      .catch(() => alert("임시 저장 실패"));
-  };
+
 
   const isDocSelected = formData.docType && formData.template;
 
@@ -223,7 +216,7 @@ function EApprovalWrite() {
           </div>
 
           <div className="bottom-buttons">
-            <button className="temp" onClick={handleTempSave}>임시저장</button>
+            <button className="temp"></button>
             <button className="submit" onClick={handleSubmit}>결재 상신</button>
           </div>
         </>

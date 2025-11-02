@@ -188,5 +188,40 @@
   color: white;
 }
 
+/* 임시저장 버튼 기본 상태 */
+.bottom-buttons .temp {
+  position: relative;
+  padding: 8px 16px;
+  border: 1px solid #bbb;
+  background: #f5f5f5;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+  color: #333;
+}
+
+/* 기본 텍스트는 ::after 로 표시 */
+.bottom-buttons .temp::after {
+  content: "임시저장";
+}
+
+/* Hover 시: 글자 숨기고 금지 아이콘(🚫) 노출 */
+.bottom-buttons .temp:hover {
+  background: #ffe5e5;
+  border-color: #d9534f;
+  color: transparent; /* 글자 숨김 */
+}
+
+.bottom-buttons .temp:hover::after {
+  content: "🚫"; /* 금지 아이콘 변경 */
+  color: #d9534f;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+}
+
 
 
