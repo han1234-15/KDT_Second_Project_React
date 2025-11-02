@@ -9,7 +9,7 @@ export const departmentOptions = [
 
 export const jobOptions = [
   { value: '기획', label: '기획' },
-  { value: '전산', label: '전산' }, 
+  { value: '전산', label: '전산' },
   { value: '영업', label: '영업' },
   { value: '생산', label: '생산' },
   { value: '개발', label: '개발' },
@@ -22,16 +22,25 @@ export const jobOptions = [
 ];
 
 export const positionOptions = [
-  { value: '사원', label: '사원' },
-  { value: '주임', label: '주임' },
-  { value: '대리', label: '대리' },
-  { value: '과장', label: '과장' },
-  { value: '차장', label: '차장' },
-  { value: '부장', label: '부장' },
-  { value: '임원급', label: '임원급' },
-  { value: '이사', label: '이사' },
-  { value: '상무', label: '상무' },
-  { value: '전무', label: '전무' },
-  { value: '부사장', label: '부사장' },
-  { value: '사장', label: '사장' },
+  { value: 'J001', label: '사원' },
+  { value: 'J002', label: '주임' },
+  { value: 'J003', label: '대리' },
+  { value: 'J004', label: '과장' },
+  { value: 'J005', label: '차장' },
+  { value: 'J006', label: '부장' },
+  { value: 'J007', label: '이사' },
+  { value: 'J008', label: '부사장' },
+  { value: 'J009', label: '사장' },
 ];
+
+export const ranks = {
+  J001: "사원",
+  J002: "주임",
+  J003: "대리",
+  J004: "과장",
+  J005: "차장",
+  J006: "부장",
+  J007: "이사",
+  J008: "부사장",
+  J009: "사장",
+};
