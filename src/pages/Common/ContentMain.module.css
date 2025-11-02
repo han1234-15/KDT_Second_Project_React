@@ -1,67 +1,45 @@
-/* === 전체 컨테이너 === */
+/* ✅ 전체 컨테이너 */
 .container {
   display: flex;
-  flex-direction: column; /* 세로로 나누기 (헤더 + 메인) */
-  height: 100vh; /* 브라우저 전체 높이 */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #ffffff;
+  flex-direction: column;
+  height: 100vh; /* 브라우저 전체 */
+  background: #ffffff;
+  overflow: hidden; /* 전체 스크롤 금지 */
 }
 
-/* === 헤더 영역 (1/10 높이) === */
+/* ✅ 헤더 (고정) */
 .header {
-  flex: 1.8; /* 비율 1 */
-  background-color: #ffffff;
+  height: 60px;
+  flex-shrink: 0;
   border-bottom: 1px solid #ddd;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 25px;
-  z-index: 1000;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  z-index: 10;
 }
 
-/* === 메인 영역 (9/10 높이) === */
+/* ✅ 메인 (사이드 + 컨텐츠) */
 .main {
-  flex: 8.2; /* 비율 9 */
-  display: flex;
-  align-items: flex-start;
-  flex-direction: row; /* 좌우 분할 */
-  height: 100%;
-  padding-top: 24px; /* 컨텐츠 상단 여백 */
-}
-
-/* === 사이드 영역 (2/10 너비) === */
-.side {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  background-color: #ffffff;
-  padding: 0;
-  /* box-shadow: 2px 0 5px rgba(0, 0, 0, 0.03); 이거 있으면 선 생겨서 일단 주석 처리함 -임종민 */
+  flex-direction: row;
+  overflow: hidden; /* 메인 전체 스크롤 방지 */
+  height: calc(100vh - 60px);
 }
 
-/* === 콘텐츠 영역 (8/10 너비) === */
+/* ✅ 사이드바 */
+.side {
+  width: 200px;
+  min-width: 200px;
+  background: #fff;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto; /* 사이드만 따로 스크롤 */
+}
+
+/* ✅ 컨텐츠 영역 */
 .content {
-  flex: 9;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  background-color: #ffffff;
-  padding: 0 25px; /* 좌우만 여백, 위는 없음 */
-  overflow-y: auto;
+  flex: 1;
+  background: #fff;
+  overflow-y: auto; /* ✅ 컨텐츠만 스크롤 */
+  padding: 24px;
+  box-sizing: border-box;
 }
-
-/* === 스크롤바 꾸미기 === */
-.side::-webkit-scrollbar,
-.content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.side::-webkit-scrollbar-thumb,
-.content::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #8e44ad, #2196f3);
-  border-radius: 3px;
-}
-
-

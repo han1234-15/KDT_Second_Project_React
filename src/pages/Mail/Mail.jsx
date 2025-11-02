@@ -2,7 +2,8 @@ import styles from "./Mail.module.css";
 import { useNavigate } from "react-router-dom";
 import { caxios } from '../../config/config.js';
 import { useEffect, useState } from 'react';
-import { Table } from 'antd';
+import { Table, Input } from 'antd';
+const { Search } = Input;
 
 const Mail = () => {
 
@@ -16,9 +17,6 @@ const Mail = () => {
     const [pageSize, setPageSize] = useState(10);
 
     const navigate = useNavigate();
-
-    // 메일 작성란 이동
-    const handleMailWrite = () => navigate("/mail/mailwrite");
 
     //받은 메일 리스트 출력
     const handleMailList = () => {
@@ -93,36 +91,40 @@ const Mail = () => {
                     {/* 메일 헤더 1 */}
                     <div className={styles.mainHeadertop} >
                         받은 메일 : {mail.length}개의 메일 <br />
-                        <button onClick={handleMailWrite} className={styles.createbtn}>메일쓰기</button>
-                    </div>
 
                     {/* 메일 헤더 2 */}
                     <div className={styles.mainHeaderbottom} >
                         {checkedList.length === 0 ? (
                             <>
-                                <input type="text" placeholder="검색할 발신자 이름"
-                                    style={{ width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", fontSize: "20px" }}
-                                    onChange={(e) => setSearchName(e.target.value)}
-                                    onKeyDown={(e) => { if (e.key === "Enter") handleMailList(); }} />
-                                <button onClick={handleMailList}>검색</button>
+                                <div className={styles.search}>
+                                    <Search
+                                        placeholder="검색할 발신자 이름"
+                                        allowClear
+                                        enterButton="검색"
+                                        style={{ width: 400 }}
+                                        value={searchName}
+                                        onChange={(e) => setSearchName(e.target.value)}
+                                        onSearch={handleMailList} // Enter 또는 버튼 클릭 시
+                                    />
+                                </div>
                             </>
                         ) : (
                             <>
-                                <button onClick={handleMailResponse} style={{ margin: "10px" }}>답장</button>
-                                <button onClick={handleMailDelete} style={{ margin: "10px" }}> 삭제 </button>
+                                <button className={styles.btns} onClick={handleMailResponse} style={{ margin: "10px" }}>답장</button>
+                                <button  className={styles.btns} onClick={handleMailDelete} style={{ margin: "10px" }}> 삭제 </button>
                             </>
                         )}
                     </div>
-
+</div>
                 </div> {/* 메일 헤더  */}
 
                 {/* Ant Design Table */}
                 <Table
                     rowSelection={rowSelection} // 체크박스 기능
                     columns={[
-                        { title: "발신자", dataIndex: "senderName", key: "senderName" },
+                        { title: "발신인", dataIndex: "senderName", key: "senderName" },
                         {
-                            title: "발신자 이메일", dataIndex: "senderId", key: "senderId",
+                            title: "발신인 이메일", dataIndex: "senderId", key: "senderId",
                             render: (senderId) => senderId.includes('@') ? senderId : `${senderId}@Infinity.com`
                         },
                         { title: "제목", dataIndex: "title", key: "title" },

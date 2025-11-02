@@ -1,8 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
-import styles from "./Mail.module.css";
+import styles from "./MailWrite.module.css"; // ✅ MailWrite UI 그대로 사용
 import { caxios } from '../../config/config.js';
 import { useEffect, useState } from 'react';
+import { Button, Input, Space } from "antd";
+import TipTapEditor from "../Common/TipTapEditor"; // ✅ 출력 전용
 
 const MailView = () => {
 
@@ -117,52 +119,76 @@ const MailView = () => {
     }
 
     return (
-        <div className={styles.container} style={{ width: "80%", margin: "auto", marginTop: "20px" }}>
-
-            <div className={styles.mainHeader}>
-
-                <div className={styles.mainHeadertop}>
-                    제목 :  {mail.title}
-                                </div>
-
-                {Mailres && (<div style={{ marginRight: "20px" }}>
-                    발신 날짜 : {mail.sendDateStr}
-                </div>)}
-
-                {!Mailres && (<div style={{ marginRight: "20px" }}>
-                    수신 날짜 : {mail.sendDateStr}
-                </div>)}
-
+        <div className={styles.container} style={{ width: "100%", margin: "auto", marginTop: "20px" }}>
+            {/* 상단 버튼 영역 */}
+            <div className={styles.btnOption}>
+                <Button className={styles.btns} onClick={handleMailReturn}>뒤로가기</Button>
+                {!Mailres && (<Button className={styles.btns} onClick={handleMailResponse}>답장</Button>)}
             </div>
-            <hr />
-            <div className={styles.mainBody} >
 
-                {/* api 받는 문자열  */}
-                <div className={styles.mainBodyViewContent} dangerouslySetInnerHTML={{ __html: safeContent }}
-                    style={{ fontSize: "25px" }} />
-
+            {/* 수신인 영역 */}
+            <div className={styles.inputRow}>
+                <label className={styles.label}>수신인</label>
+                <Space.Compact style={{ width: "80%" }}>
+                    <Input
+                        type="text"
+                        readOnly
+                        className={styles.containerhalf}
+                        style={{ borderRadius: "6px", backgroundColor: "#f8f9fa" }}
+                        value={
+                            mail.recipientName && mail.recipientId
+                                ? `${mail.recipientName} (${mail.recipientId})`
+                                : mail.recipientName || ""
+                        }
+                    />
+                </Space.Compact>
             </div>
-            <button className={styles.downloadBtn} style={{ marginRight: "20px" }}>파일 목록</button>
-            <br></br>
-            <br></br>
 
-            <h4>첨부파일</h4>
-            <ul>
-                {files.map((file, i) => (
-                    <li key={i}>
-                        {file.orgname || file.sysname}
-                        <button onClick={() => handleDownload(file.sysname, file.orgname)}>다운받기</button>
-                    </li>
-                ))}
-            </ul>
+            {/* 제목 영역 */}
+            <div className={styles.inputRow}>
+                <label className={styles.label}>제목</label>
+                <Input
+                    type="text"
+                    className={styles.containerhalf}
+                    readOnly
+                    style={{ borderRadius: "6px", backgroundColor: "#f8f9fa" }}
+                    value={mail.title}
+                />
+            </div>
 
-
-
-            <button className={styles.backBtn} onClick={handleMailReturn} style={{ marginRight: "30px" }}>뒤로가기</button>
-            {/* 보낸 메일 답장  */}
-            {!Mailres && (<button style={{ float: "right", marginRight: "30px" }} onClick={handleMailResponse}>답장</button>)}
+            <hr style={{ width: "96%", marginLeft: "20px" }} />
+            {/* 본문 보기 영역 */}
+            <div className={styles.mainBody}>
+                <div
+                    className={styles.mainBodyViewContent}
+                    dangerouslySetInnerHTML={{ __html: safeContent }}
+                />
+            </div>
+            <hr style={{ width: "96%", marginLeft: "20px", marginBottom: "20px" }} />
+            {/* 파일 업로드 (출력용) */}
+            <div className={styles.fileUploadBox}>
+                <div className={styles.fileTitle} style={{width:"8%"}}>파일 첨부</div>
+                <div className={styles.fileList} style={{width:"90%"}}>
+                    <ul>
+                        {files.map((file, i) => (
+                            <li key={i}>
+                                {file.orgname || file.sysname}
+                                <Button
+                            
+                                    size="small"
+                                    style={{ marginLeft: "10px", background: "linear-gradient(45deg, #8e44ad, #2196f3)", color: "white", border: "none", 
+                                        display: "flex" , justifyContent:"flex-end"
+                                    }}
+                                    onClick={() => handleDownload(file.sysname, file.orgname)} 
+                                >
+                                    다운로드
+                                </Button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
         </div>
-
     );
 };
 

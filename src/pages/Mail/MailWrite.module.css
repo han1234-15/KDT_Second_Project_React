@@ -1,0 +1,157 @@
+.inputRow {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-left: 20px;
+    margin-bottom: 18px;
+}
+
+.label {
+    width: 60px;
+    /* ✅ 라벨 폭 고정 */
+    font-weight: 500;
+    font-size: 16px;
+    text-align: left;
+    /* ✅ 왼쪽 정렬로 변경 — '수', '제' 세로 일렬 */
+    line-height: 1.4;
+    margin: 0;
+    padding-left: 11px;
+    /* ✅ 너무 붙으면 약간 여백 */
+}
+
+.containerhalf {
+    width: 600px;
+}
+
+.btnOption {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 20px;
+    margin-right: 60px;
+}
+
+.btns {
+    display: flex;
+    justify-content: flex-end;
+    background: linear-gradient(45deg, #8e44ad, #2196f3);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+/* ✅ TipTap 에디터 영역 */
+.mainBody {
+    width: 95%;
+    margin-left: 30px;
+    /* 기준 정렬 */
+}
+
+/* ✅ 파일 업로드 박스 전체 */
+.fileUploadBox {
+    width: 95%;
+    height: 130px;
+    background-color: #fff;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* ✅ 버튼 오른쪽 정렬 */
+    margin-left: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+/* ✅ 왼쪽 텍스트 ‘파일 첨부’ */
+.fileTitle {
+    width: 6%;
+    height: 100%;
+    font-weight: 500;
+    font-size: 16px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 10px;
+    border-right: 1px solid #e0e0e0;
+    /* 🔹 세로 구분선 */
+}
+
+.fileList {
+    width: 60%;
+    height: 100%;
+    max-height: 200px;
+    /* 🔹 스크롤이 생기는 최대 높이 */
+    overflow-y: auto;
+    /* 🔹 세로 스크롤 활성화 */
+    overflow-x: hidden;
+    /* 🔹 가로 스크롤 방지 */
+    margin-right: 430px;
+}
+
+/* ✅ 오른쪽 버튼 */
+.fileUploadBox button {
+    display: flex;
+    justify-content: flex-end;
+    background: linear-gradient(45deg, #8e44ad, #2196f3);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.fileUploadBox button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ 파일 목록 전체를 왼쪽 정렬 */
+.fileUploadBox ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+    width: 100%;
+    text-align: left;
+    /* ✅ 왼쪽 정렬 */
+    align-self: flex-start;
+    /* ✅ 버튼과 분리 */
+    padding-left: 10px;
+    /* ✅ 경계선에서 살짝 들여쓰기 */
+}
+
+/* ✅ 각 파일 이름 항목 */
+.fileUploadBox li {
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    color: #555;
+}
+.fileUploadBox li {
+  display: flex;
+  align-items: center;
+  gap: 8px;                         /* 파일명과 아이콘 간격 */
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  border: none;                     /* 🔹 줄 제거 */
+  background-color: #f8f9fa;        /* 🔹 파일 배경 */
+  border-radius: 6px;               /* 🔹 둥근 모서리 */
+  font-size: 14px;
+  color: #333;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);  /* 🔹 살짝 그림자 */
+  transition: all 0.2s ease-in-out;
+  cursor: default;
+}
+
+.fileUploadBox li:hover {
+  background-color: #eef3ff;        /* 🔹 hover 시 은은한 색 변화 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}

@@ -20,13 +20,13 @@ const BoardTabs = () => {
     { label: "익명게시판", path: `/board/${category_id}/anonymity` },
   ];
 
-  // ✅ 중요게시물 / 자료실에서는 서브탭 숨기기
+  // 중요게시물 / 자료실에서는 서브탭 숨기기
   const showSubTabs =
     location.pathname.includes("/announcement") ||
     location.pathname.includes("/freedom") ||
     location.pathname.includes("/anonymity");
 
-  // ✅ 글쓰기 버튼 클릭 시: 현재 탭에 맞게 이동
+  // 글쓰기 버튼 클릭 시: 현재 탭에 맞게 이동
   const handleWriteClick = () => {
     const currentTab = location.pathname.split("/").pop(); // ex) "freedom", "important"
     const categoryMap = {
