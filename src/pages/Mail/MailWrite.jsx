@@ -116,13 +116,13 @@ const MailWrite = () => {
         <div className={styles.mainHeader} style={{ display: "flex", marginTop: "10px" }}>
           <div style={{ width: "5%", fontSize: "20px" }}>수신인 </div>
           <input type="text" className={styles.containerhalf} style={{
-            width: "30%", fontSize: "20px", border: "1px solid lightgrey",
+            width: "40%", fontSize: "20px", border: "1px solid lightgrey",
             borderRadius: "5px", paddingRight: "70px"
           }} placeholder="주소록에서 추가해주세요"
             readOnly onChange={handleChange} name="recipientName"
             value={
               mail.recipientName && mail.recipientId
-                ? `${mail.recipientName} (${mail.recipientId.includes("@Infinity.com") ? mail.recipientId : mail.recipientId + "@Infinity.com"})`
+                ? `${mail.recipientName} (${mail.recipientId.includes("@") ? mail.recipientId : mail.recipientId + "@Infinity.com"})`
                 : mail.recipientName || ""
             }
           />
@@ -132,7 +132,7 @@ const MailWrite = () => {
         <div style={{ display: "flex", marginTop: "10px" }}>
           <div style={{ width: "5%", fontSize: "20px" }}>제목 </div>
           <input type="text" className={styles.containerhalf} placeholder="제목을 입력하세요"
-            onChange={handleChange} name="title" value={mail.title} style={{ width: "30%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }} />
+            onChange={handleChange} name="title" value={mail.title} style={{ width: "40%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }} />
           <div style={{ width: "35%", marginLeft: "30px", float: "left" }}></div>
         </div>
       </div>

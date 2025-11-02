@@ -186,11 +186,11 @@ Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: ma
       <div className={styles.mainHeader} style={{ display: "flex", marginTop: "10px" }}>
 
         <div style={{ width: "5%", fontSize: "20px" }}>수신인 </div>
-        <input type="text" className={styles.containerhalf} style={{ width: "30%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }}
+        <input type="text" className={styles.containerhalf} style={{ width: "40%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }}
           onChange={handleChange} name="recipientName"
           value={
             mail.recipientName && mail.recipientId
-              ? `${mail.recipientName} (${mail.recipientId.includes("@Infinity.com") ? mail.recipientId : mail.recipientId + "@Infinity.com"})`
+              ? `${mail.recipientName} (${mail.recipientId.includes("@") ? mail.recipientId : mail.recipientId + "@Infinity.com"})`
               : mail.recipientName || ""
           }
           readOnly /><br></br>
@@ -198,7 +198,7 @@ Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: ma
 
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div style={{ width: "5%", fontSize: "20px" }}>제목 </div>
-        <input type="text" className={styles.containerhalf} style={{ width: "30%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }}
+        <input type="text" className={styles.containerhalf} style={{ width: "40%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }}
           onChange={handleChange} name="title" value={mail.title} />
       </div>
 
