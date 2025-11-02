@@ -6,15 +6,10 @@
 :global(.fc) {
   font-family: "Pretendard", "Noto Sans KR", sans-serif;
   background-color: #ffffff;
-  border-radius: 16px; /* ✅ 둥글게 */
-  border: 1px solid #e0e0e0; /* ✅ 연한 회색 테두리 */
+  border-radius: 14px;
+  border: 1px solid #e0e0e0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   padding: 20px;
-}
-
-/* 월별 보기 셀 영역도 둥글게 잘리도록 */
-:global(.fc-view-harness) {
-  border-radius: 16px;
 }
 
 /* ✅ 헤더 툴바 영역 (← → today / month week day 버튼 등) */
@@ -24,48 +19,41 @@
   justify-content: center;
   text-align: center;
 }
+
 /* ✅ 상단 제목 (예: 2025년 10월) */
 :global(.fc-toolbar-title) {
   font-size: 20px;
   font-weight: 700;
-  color: #1f1f1f;
+  color: #8b8b8b;
 }
 
 /* ← 이전 버튼 */
 :global(.fc-prev-button) {
- width: 50px;
+  width: 50px;
 }
 
-/* ← 다음  버튼 */
+/* → 다음 버튼 */
 :global(.fc-next-button) {
   width: 50px;
 }
-/* 오늘 버튼 */
-:global(.fc-today-button) {
-  width: 80px;
-}
 
-/* 월 보기 버튼 */
-:global(.fc-dayGridMonth-button) {
-   width: 80px;
-}
-
-/* 주 보기 버튼 */
-:global(.fc-timeGridWeek-button) {
-  width: 80px;
-}
-
-/* 일 보기 버튼 */
+/* 오늘, 월, 주, 일 보기 버튼 */
+:global(.fc-today-button),
+:global(.fc-dayGridMonth-button),
+:global(.fc-timeGridWeek-button),
 :global(.fc-timeGridDay-button) {
   width: 80px;
-}
-
-
-/* ✅ 버튼 hover */
-:global(.fc-button:hover) {
   background: #e6f4ff !important;
   border-color: #91caff !important;
   color: #1677ff !important;
+
+}
+
+/* ✅ 버튼 hover */
+:global(.fc-button:hover) {
+  background: #f3f8ff !important;      /* 훨씬 밝은 하늘색 */
+  border-color: #cbe4ff !important;    /* 테두리도 살짝 연하게 */
+  color: #0958d9 !important;           /* 텍스트는 조금 더 진하게 */
 }
 
 /* ✅ 오늘(today) 버튼 강조 */
@@ -73,17 +61,24 @@
   font-weight: 600;
 }
 
-/* ✅ 네비게이션 화살표 버튼 (←, →) */
+/* ✅ 네비게이션 화살표 버튼 */
 :global(.fc-prev-button),
 :global(.fc-next-button) {
-  background: #fafafa !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
   border: none !important;
+  width: 30px !important;
+  height: 30px !important;
+  background: #e6f4ff !important;
+  border-color: #91caff !important;
   color: #1677ff !important;
-  font-size: 18px !important;
+  font-size: 14px !important;
 }
+
 :global(.fc-prev-button:hover),
 :global(.fc-next-button:hover) {
-  background: #e6f4ff !important;
+  background: #e7f2fc !important;
 }
 
 /* ✅ 버튼 간격 정렬 */
@@ -91,90 +86,185 @@
   gap: 10px;
 }
 
-/* form 전체 레이아웃 */
+/* ========================= 🟦 캘린더 셀 스타일 ========================= */
+
+/* ✅ 셀을 정사각형 비율로 고정 (스크롤형) */
+:global(.fc-daygrid-day-frame) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 120px !important;
+  /* 원하는 높이 조정 가능 */
+  position: relative;
+}
+
+/* ✅ 셀 내부 일정 스크롤 */
+:global(.fc-daygrid-day-events) {
+  flex: 1;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  padding-right: 3px;
+  top: 15px;
+  cursor: pointer !important;
+}
+
+/* ✅ 셀 테두리 균일 */
+:global(.fc-daygrid-day) {
+  border: 1px solid #e0e0e0 !important;
+  box-sizing: border-box;
+}
+
+/* ✅ 날짜 숫자를 셀 오른쪽 상단에 고정 + 링크 제거 */
+:global(.fc-daygrid-day-top) {
+  position: relative !important;
+  display: block !important;
+  height: 22px;
+}
+
+:global(.fc-daygrid-day-number) {
+  position: absolute !important;
+  top: 4px;
+  right: 15px;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 16px;
+  font-weight: 500;
+  color: #8b8b8b !important;
+  text-align: right;
+  text-decoration: none !important;
+  cursor: default !important;
+}
+
+:global(.fc-daygrid-day-number:hover) {
+  text-decoration: none !important;
+  color: #000 !important;
+}
+
+/* ✅ 오늘 날짜 하이라이트 */
+:global(.fc-day-today) {
+  background-color: #f3f9ff !important;
+  border: 1px solid #91caff !important;
+}
+
+:global(.fc-day-today .fc-daygrid-day-number) {
+  color: #1677ff !important;
+  font-weight: 700;
+}
+
+/* ✅ 일정 텍스트 말줄임 */
+:global(.fc-daygrid-event .fc-event-title) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ✅ 요일 헤더 링크 제거 */
+:global(.fc-col-header-cell-cushion) {
+  color: #8b8b8b !important;
+  font-weight: 600;
+  text-decoration: none !important;
+  cursor: default !important;
+}
+
+:global(.fc-col-header-cell-cushion:hover) {
+  text-decoration: none !important;
+  color: #000 !important;
+}
+
+/* ✅ 스크롤바 디자인 */
+:global(.fc-daygrid-day-events::-webkit-scrollbar) {
+  width: 6px;
+}
+
+:global(.fc-daygrid-day-events::-webkit-scrollbar-thumb) {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+
+:global(.fc-daygrid-day-events::-webkit-scrollbar-thumb:hover) {
+  background-color: #999;
+}
+
+/* ✅ 선택된 날짜 영역 */
+:global(.fc-highlight) {
+  background: rgba(22, 119, 255, 0.1) !important;
+}
+
+/* ========================= 모달 스타일 ========================= */
+
 .form {
   display: flex;
   flex-direction: column;
-  gap: 6px; /* 행 간 간격 최소화 */
+  gap: 6px;
   margin-top: 6px;
 }
 
-/* 일반 행 (라벨 + 인풋 한 줄 배치) */
 .row {
   display: flex;
   align-items: center;
-  gap: 3px; /* ✅ 라벨-인풋 사이 간격 거의 붙게 */
+  gap: 3px;
   margin-bottom: 0;
 }
 
-/* 내용(TextArea) 전용 */
 .rowTopAlign {
   display: flex;
   align-items: flex-start;
-  gap: 3px; /* ✅ 라벨-텍스트박스 간격도 최소화 */
+  gap: 3px;
   margin-bottom: 0;
 }
 
-/* 라벨 기본 스타일 */
 .row label,
 .rowTopAlign label {
-  width: 70px; /* 폭 살짝 더 줄임 */
+  width: 70px;
   text-align: left;
   font-weight: 500;
   color: #333;
-  line-height: 24px; /* 세로 여백도 최소화 */
+  line-height: 24px;
   margin-right: 0;
 }
 
-/* 일시 선택 (날짜 + 시간) 한 줄 배치 */
 .datetimeRow {
   display: flex;
   align-items: center;
-  gap: 4px; /* 날짜-시간 간격 최소화 */
+  gap: 4px;
 }
 
-/* ✅ 날짜와 시간 입력창 폭 줄이기 */
 :global(.ant-picker) {
-  width: 120px !important; /* 기본 160~180px → 120px로 축소 */
+  width: 120px !important;
   height: 30px;
 }
 
-/* ~ 표시 스타일 */
 .tilde {
   margin: 0 2px;
   color: #999;
 }
 
-/* ✅ 구분선(hr) 스타일 최소화 */
 hr {
-  margin: 6px 0;       /* 위아래 여백 줄이기 (기존 기본값 16px → 6px) */
-  border: none;         /* 기본 3D 입체감 제거 */
-  border-top: 1px solid #9f9f9f; /* 얇은 회색 선으로 깔끔하게 */
-}
-
-/* ✅ 모달 하단 버튼 그룹 간격 완전 제어 */
-:global(.ant-modal .ant-modal-footer) {
-  margin-top: 4px !important;      /* hr~버튼 간 간격 최소화 */
-  padding-top: 0 !important;     /* 위쪽 여백 제거 */
-  padding-bottom: 2px !important; /* 아래 여백만 약간 유지 */
-  gap: 6px;
-  display: flex;
-  justify-content: flex-end;
-}
-/* ✅ 모달 내부 첫 번째 입력 행만 아래로 살짝 내리기 */
-:global(.ant-modal-body .row:first-child) {
-  margin-top: 50px !important;
-}
-
-/* ✅ hr 아래쪽(캘린더 라벨 위) 여백 늘리기 */
-:global(.ant-modal-body hr) {
-  margin-top: 6px !important;     /* 위쪽 일정추가와 hr 간격 */
-  margin-bottom: 11px !important; /* ✅ hr과 캘린더 라벨 사이 간격 넓히기 */
+  margin: 6px 0;
   border: none;
   border-top: 1px solid #9f9f9f;
 }
 
-/* ✅ 색상 선택 행 */
+:global(.ant-modal .ant-modal-footer) {
+  margin-top: 4px !important;
+  padding-top: 0 !important;
+  padding-bottom: 2px !important;
+  gap: 6px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+:global(.ant-modal-body .row:first-child) {
+  margin-top: 50px !important;
+}
+
+:global(.ant-modal-body hr) {
+  margin-top: 6px !important;
+  margin-bottom: 11px !important;
+  border: none;
+  border-top: 1px solid #9f9f9f;
+}
+
 .colorRow {
   display: flex;
   align-items: center;
@@ -184,7 +274,6 @@ hr {
   color: #333;
 }
 
-/* “일정 색상” 라벨 */
 .colorRow label {
   width: 70px;
   text-align: left;
@@ -193,7 +282,6 @@ hr {
   line-height: 32px;
 }
 
-/* ✅ 팔레트 + 별 한 줄 */
 .colorWrapper {
   display: flex;
   align-items: center;
@@ -201,14 +289,12 @@ hr {
   width: 520px;
 }
 
-/* ✅ 색상 팔레트 */
 .colorPalette {
   display: flex;
   margin-left: 10px;
   gap: 20px;
 }
 
-/* ✅ 색상 원 */
 .colorBox {
   width: 26px;
   height: 26px;
@@ -228,6 +314,7 @@ hr {
   box-shadow: 0 0 4px rgba(22, 119, 255, 0.4);
 }
 
+
 .starBox {
   display: flex;
   align-items: center;
@@ -240,18 +327,15 @@ hr {
 }
 
 .starBox:hover {
-
   transform: translateY(-1px);
 }
 
-/* 활성 별 */
 .starActive {
-  color: #fbc02d; /* MUI 머스터드 노랑 */
+  color: #fbc02d;
   font-size: 26px !important;
   transition: all 0.2s;
 }
 
-/* 비활성 별 */
 .starInactive {
   color: #cfcfcf;
   font-size: 26px !important;
@@ -271,9 +355,9 @@ hr {
 
 .modalFooter {
   display: flex;
-  align-items: center;        /* ✅ 수직 중앙 정렬 */
-  justify-content: space-between; 
-  padding: 15px 10px 0px 72px; /* ✅ 위아래 여백 조정 */
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 10px 0px 72px;
   border-top: 1px solid #f0f0f0;
   width: 100%;
 }
@@ -284,14 +368,12 @@ hr {
   align-items: center;
 }
 
-/* 버튼 우측 정렬 및 균등 간격 */
 .footerRight {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* 버튼들의 높이와 Alert 수직 맞추기 */
 :global(.ant-btn) {
   height: 32px !important;
   display: flex;
@@ -301,5 +383,3 @@ hr {
 .hr {
   margin-bottom: 8px;
 }
-
-
