@@ -7,6 +7,7 @@
   overflow-y: auto !important;
   /* 스크롤 가능 */
   display: block;
+  margin-top: 20px;
 }
 
 /* ✅ 공통 카드 스타일 */
@@ -27,25 +28,54 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.164) !important;
 }
 
+/* ✅ 카드 헤더 여백 제거 */
+:global(.ant-card-head) {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ✅ 카드 헤더 내부 타이틀 부분도 여백 제거 */
+:global(.ant-card-head-title) {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ✅ 카드 헤더 gradient와 완전히 밀착되도록 */
 .cardHeader {
   width: 100% !important;
-  /* ✅ 카드 헤더 전체 너비 채우기 */
+  margin: 0 !important;
+  padding: 12px 16px !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+  background: linear-gradient(
+    45deg,
+    #8e4fd7 0%,
+    #7a5ee0 35%,
+    #655cf0 60%,
+    #507fe0 80%,
+    #3f9fe8 100%
+  );
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 19px !important;
   display: flex !important;
   align-items: center !important;
   gap: 8px;
-  padding: 10px 14px;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
-  color: #ffffff;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  font-weight: 600 !important;
-  font-size: 19px !important;
   cursor: move !important;
 }
 
 .headerIcon {
   font-size: 18px;
 }
+.icon {
+  width: 18px;
+  height: 18px;
+  color: #6b5cf6;
+  margin-right: 6px;
+  vertical-align: middle;
+  transition: color 0.2s ease;
+}
+
 
 /* ✅ 카드 본문 */
 .cardBody {

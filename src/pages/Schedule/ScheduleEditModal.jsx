@@ -99,7 +99,7 @@ const ScheduleEditModal = ({ isOpen, onClose, onSuccess, initialData }) => {
             width={630}
             title="일정 수정"
             onCancel={onClose}
-            destroyOnClose
+            destroyOnHidden 
             footer={
                 <div className={styles.modalFooter}>
                     <div className={styles.footerLeft}>
@@ -193,6 +193,7 @@ const ScheduleEditModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                         <TimePicker
                             value={form.startAt}
                             format="HH:mm"
+                            getPopupContainer={(triggerNode) => triggerNode.parentNode}
                             onChange={(t) =>
                                 setForm({
                                     ...form,
@@ -210,6 +211,7 @@ const ScheduleEditModal = ({ isOpen, onClose, onSuccess, initialData }) => {
                         <TimePicker
                             value={form.endAt}
                             format="HH:mm"
+                            getPopupContainer={(triggerNode) => triggerNode.parentNode}
                             onChange={(t) =>
                                 setForm({
                                     ...form,

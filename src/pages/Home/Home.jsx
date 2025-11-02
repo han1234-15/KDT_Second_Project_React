@@ -13,6 +13,13 @@ import {
   BellFill,
   EnvelopeFill,
   CalendarFill as CalendarIcon,
+  MegaphoneFill,
+  PersonFill,
+  PersonVcardFill,
+  Repeat,
+  SuitcaseLgFill,
+  PersonWorkspace,
+  AirplaneFill,
 } from "react-bootstrap-icons";
 
 import styles from "./Home.module.css";
@@ -266,7 +273,7 @@ function Home() {
 
         {/* 공지 */}
         <div key="notice">
-          <Card title={<span className={`${styles.cardHeader} drag-area`}><BellFill /> 공지사항</span>} className={styles.card}>
+          <Card title={<span className={`${styles.cardHeader} drag-area`}><MegaphoneFill /> 공지사항</span>} className={styles.card}>
             <List dataSource={["공지 1", "공지 2", "공지 3"]} renderItem={(i) => <List.Item>{i}</List.Item>} />
           </Card>
         </div>
@@ -294,7 +301,7 @@ function Home() {
 
         {/* 잔여 휴가 (네 코드 유지) */}
         <div key="vacation">
-          <Card title={<span className={`${styles.cardHeader} drag-area`}><CalendarIcon /> 잔여 휴가</span>} className={styles.card}>
+          <Card title={<span className={`${styles.cardHeader} drag-area`}><AirplaneFill /> 잔여 휴가</span>} className={styles.card}>
             <p>남은 휴가 : <b>{leaveCount}일</b></p>
             <Button type="primary" onClick={() => setIsLeaveModalOpen(true)}>
               휴가 신청
@@ -305,7 +312,7 @@ function Home() {
         {/* 달력 */}
         <div key="calendar">
           <Card
-            title={<span className={`${styles.cardHeader} drag-area`}>📅 내 일정</span>}
+            title={<span className={`${styles.cardHeader} drag-area`}><CalendarIcon className="icon" />내 일정</span>}
             className={styles.card}
           >
             <Calendar
@@ -337,7 +344,7 @@ function Home() {
         {/* 출퇴근 */}
         <div key="profile">
 
-          <Card title={<span className={`${styles.cardHeader} drag-area`} >🚪 출퇴근</span>} className={`${styles.card} `}>
+          <Card title={<span className={`${styles.cardHeader} drag-area`} ><Repeat /> 출퇴근</span>} className={`${styles.card} `}>
 
             <div className={styles.clockHeader}>
               <span>출퇴근</span>
@@ -365,7 +372,7 @@ function Home() {
 
         {/* 담당 업무*/}
         <div key="myTask">
-          <Card title={<span className={`${styles.cardHeader} drag-area`}><CalendarIcon /> 담당 업무</span>} className={styles.card} >
+          <Card title={<span className={`${styles.cardHeader} drag-area`}><PersonWorkspace /> 담당 업무</span>} className={styles.card} >
 
             <Table
               columns={taskColumns}
@@ -395,7 +402,7 @@ function Home() {
           <Card
             title={
               <span className={`${styles.cardHeader} drag-area`} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <CalendarIcon /> 내 정보
+                <PersonVcardFill /> 내 정보
               </span>
             }
             className={styles.card}

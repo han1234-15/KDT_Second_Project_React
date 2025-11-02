@@ -1,12 +1,12 @@
-import styles from "./Mail.module.css";
+import styles from "./MailWrite.module.css";
 import { caxios } from "../../config/config.js";
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { Button, Modal } from 'antd';
+import { Button, Modal, Input, Space } from 'antd'; // ✅ Ant Design Input & Button 추가
 import MailAddContacts from "./MailAddContacts";
 import { useLocation } from "react-router-dom";
+import TipTapEditor from "../Common/TipTapEditor"; // ✅ TipTap 컴포넌트로 교체
+const { TextArea } = Input;
 
 const MailWrite = () => {
 
@@ -43,10 +43,9 @@ const MailWrite = () => {
     setMail(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // CKEditor 내용 변경 처리
-  const handleEditorChange = (event, editor) => {
-    const data = editor.getData();
-    setMail(prev => ({ ...prev, content: data }));
+  // ✅ CKEditor → TipTap 변경 처리
+  const handleEditorChange = (html) => {
+    setMail(prev => ({ ...prev, content: html }));
   };
 
   const handleFileClick = () => {
@@ -108,83 +107,84 @@ const MailWrite = () => {
 
 
   return (
-    <div className={styles.container} style={{ width: "80%", margin: "auto", marginTop: "20px" }}>
-      <div style={{ fontSize: "30px" }}>메일 작성</div>
-      <hr></hr>
+    <div className={styles.container} style={{ width: "100%", margin: "auto", marginTop: "20px" }}>
+      {/* 상단 버튼 영역 */}
+      <div className={styles.btnOption}>
+        <Button className={styles.btns} onClick={() => Navigate(-1)}>뒤로가기</Button>
+        <Button className={styles.btns} type="primary" onClick={handleMailWrite}>전송</Button>
+      </div>
 
-      <div>
-        <div className={styles.mainHeader} style={{ display: "flex", marginTop: "10px" }}>
-          <div style={{ width: "5%", fontSize: "20px" }}>수신인 </div>
-          <input type="text" className={styles.containerhalf} style={{
-            width: "40%", fontSize: "20px", border: "1px solid lightgrey",
-            borderRadius: "5px", paddingRight: "70px"
-          }} placeholder="주소록에서 추가해주세요"
-            readOnly onChange={handleChange} name="recipientName"
+      {/* 수신인 영역 */}
+      <div className={styles.inputRow}>
+        <label className={styles.label}>수신인</label>
+        <Space.Compact style={{ width: "80%" }}>
+          <Input
+            type="text"
+            className={styles.containerhalf}
+            placeholder="주소록에서 추가해주세요"
+            readOnly
+            onChange={handleChange}
+            style={{ borderRadius: "6px" }}
+            name="recipientName"
             value={
               mail.recipientName && mail.recipientId
                 ? `${mail.recipientName} (${mail.recipientId.includes("@") ? mail.recipientId : mail.recipientId + "@Infinity.com"})`
                 : mail.recipientName || ""
             }
           />
-          <div style={{ width: "35%", marginLeft: "30px" }}> <button onClick={handleAddContacts}> 주소록 </button></div>
-        </div>
-
-        <div style={{ display: "flex", marginTop: "10px" }}>
-          <div style={{ width: "5%", fontSize: "20px" }}>제목 </div>
-          <input type="text" className={styles.containerhalf} placeholder="제목을 입력하세요"
-            onChange={handleChange} name="title" value={mail.title} style={{ width: "40%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }} />
-          <div style={{ width: "35%", marginLeft: "30px", float: "left" }}></div>
-        </div>
+          <Button onClick={handleAddContacts} style={{ marginLeft: "20px", borderRadius: "6px" }}>주소록</Button>
+        </Space.Compact>
       </div>
 
+      {/* 제목 입력 */}
+      <div className={styles.inputRow}>
+        <label className={styles.label}>제목</label>
+        <Input
+          type="text"
+          className={styles.containerhalf}
+          placeholder="제목을 입력하세요"
+          onChange={handleChange}
+          name="title"
+          value={mail.title}
+        />
+      </div>
+
+      {/* 파일 업로드 */}
+      <div className={styles.fileUploadBox}>
+        <div className={styles.fileTitle}>파일 첨부</div>
+        <div className={styles.fileList}>
+          <input
+            type="file"
+            multiple
+            ref={fileRef}
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const selectedFiles = Array.from(e.target.files);
+              setFiles(prev => [...prev, ...selectedFiles]);
+            }}
+          />
+          {files.map((file, idx) => (
+            <li key={idx}>{file.name}</li>
+          ))}
+        </div>
+        <Button onClick={handleFileClick}>파일 추가</Button>
+      </div>
+
+      {/* 본문 영역 */}
       <div className={styles.mainBody}>
-
-        <CKEditor
-          editor={ClassicEditor}
-          data={mail.content || ''}
-          className={styles.ckEditor}
+        <TipTapEditor
+          content={mail.content || ""}
           onChange={handleEditorChange}
-          config={{
-            toolbar: [
-              'heading', '|', 'bold', 'italic', 'underline', 'link',
-              'bulletedList', 'numberedList', '|', 'insertTable',
-              'blockQuote', 'undo', 'redo',
-            ]
-          }}
-
         />
       </div>
-      <button onClick={handleFileClick} style={{ marginTop: "10px", float: "left" }}>파일 추가</button>
-      <div style={{ marginTop: "10px", marginLeft: "50px", width: "40%", float: "left" }}>
 
-        <input
-          type="file"
-          multiple
-          ref={fileRef}
-          // onChange={(e) => setFiles(e.target.files)}
-          onChange={(e) => {
-            const selectedFiles = Array.from(e.target.files);
-            setFiles(prev => [...prev, ...selectedFiles]);
-          }}
-          style={{ marginBottom: "10px", display: "none" }}
-        />
-
-        {files.map((file, idx) => (
-          <li key={idx} style={{ marginBottom: "3px" }}>
-            {file.name}
-          </li>))}
-
-      </div>
-      <button className={styles.backBtn} onClick={() => Navigate(-1)} style={{ marginTop: "10px" }}>뒤로가기</button>
-      <button style={{ float: "right", marginRight: "30px", marginTop: "10px" }} onClick={handleMailWrite}>전송</button>
+      {/* 주소록 모달 */}
       <Modal
-
         centered={false}
         open={Modalcontacts}
         onCancel={() => setModalContacts(false)}
         footer={null}
         destroyOnHidden
-
         width={{
           xs: '90%',  // 모바일
           sm: '80%',
@@ -198,7 +198,6 @@ const MailWrite = () => {
             {modal}
           </div>
         )}
-
       >
         <MailAddContacts
           onSelect={selectedContacts => {
@@ -213,14 +212,8 @@ const MailWrite = () => {
           }}
           onCancel={() => setModalContacts(false)}
         />
-
-
-
-
       </Modal>
     </div>
-
-
   );
 };
 

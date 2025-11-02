@@ -5,42 +5,43 @@
   width: 100%;
 }
 
-/* 사이드바 타이틀 */
+/* 상단 타이틀 */
 .sideTitle {
-  height: 56px;                 /* ✅ 고정 높이 */
+  height: 50px;
   display: flex;
-  align-items: flex-end;         /* ✅ 아래쪽 정렬 */
-  padding: 0 16px 0 16px;        /* 좌우 여백만 */
+  align-items: flex-end;
+  padding: 0 16px;
+  margin-top: 20px;
   font-weight: 700;
   font-size: 22px;
   color: #2c58b9;
-  border-bottom: 2px solid #e5e7eb;  /* ✅ 탭과 동일한 선 */
+  border-bottom: 2px solid #e5e7eb;
   background: #fff;
-  line-height: 1;
-}
-/* 기존 .sideTitle는 그대로 두고 */
-.sideTitle > span {
-  position: relative;
-  top: -13px;      /* ↓ 아래로 2px 내림 / 위로 올리고 싶으면 negative: -1px */
   line-height: 1;
 }
 
-/* 기존 메뉴바 */
+.sideTitle > span {
+  position: relative;
+  top: -13px;
+  line-height: 1;
+}
+
+/* 메뉴 컨테이너 */
 .menubar {
   position: relative;
-  width: 60%;
-  margin: 0 auto;
-  top: 30px;
+  width: 55%;
+  top: 25px;
   background: #fff;
   border: 1px solid #ddd;
-  border-radius: 20px;
+  border-radius: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 0;
+  padding: 10px 0;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  height: auto; 
+  height: auto;
 }
+
 @media (max-width: 768px) {
   .menubar {
     width: 90%;
@@ -49,29 +50,131 @@
   }
 }
 
-/* 각 메뉴 버튼 */
+/* 메뉴 */
 .menu {
+  position: relative; /* ✅ glow용 기준 */
+  overflow: visible;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 2px;
   padding: 12px 0;
-  color: #555;
   text-decoration: none;
   font-size: 14px;
   border-radius: 12px;
-  margin: 4px 0;
+  margin: 0;
   transition: all 0.2s ease-in-out;
   width: 100%;
+  cursor: pointer;
+  color: #555;
 }
 
-.menu:hover {
-  background: linear-gradient(90deg, #8e44ad15, #2196f315);
-  color: #2196f3;
-  transform: translateX(3px);
+/* 🩵 홈과 메일 사이 간격만 줄이기 */
+.menu:first-of-type {
+  margin-bottom: 2px !important; /* 기본보다 좁게 */
+  padding-bottom: 2px !important; /* 약간만 여백 */
 }
 
+/* ✅ hover 시 은은한 glow 추가 (보라 중심형) */
+.menu::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+        0 0 15px rgba(155, 89, 182, 0.7),   /* 중심부 더 선명 */
+        0 0 30px rgba(155, 89, 182, 0.5),   /* 퍼지는 중간 영역 */
+        0 0 45px rgba(142, 68, 173, 0.35),  /* 외곽 은은한 보라빛 */
+        0 0 60px rgba(155, 89, 182, 0.25)  /* 아주 넓게 번지는 아우라 */
+    transparent 70%
+  );
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  z-index: 0;
+}
+
+.menu:hover::before {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* 기본 아이콘 */
 .menu :global(svg) {
-  font-size: 18px;
+  position: relative;
+  z-index: 1;
+  font-size: 26px;
+  margin-bottom: 3px;
+  fill: url(#icon-gradient);
+  stroke: white;
+  stroke-width: 0.5px;
+  paint-order: fill stroke;
+  filter: drop-shadow(0 0 0.5px rgba(255, 255, 255, 0.6));
+  transition: transform 0.25s ease-in-out, filter 0.25s ease-in-out;
+}
+
+/* hover 시 아이콘 확대 & 보랏빛 glow */
+.menu:hover :global(svg) {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 6px rgba(155, 89, 182, 0.6))
+          drop-shadow(0 0 12px rgba(155, 89, 182, 0.4))
+          drop-shadow(0 0 20px rgba(155, 89, 182, 0.25));
+}
+
+/* 드롭다운 */
+.dropdown {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.5s ease-in-out;
+  opacity: 0;
+  margin-top: -6px;
+}
+
+.dropdown.show {
+  max-height: 200px;
+  opacity: 1;
+}
+
+/* 드롭다운 항목 */
+.dropdown a {
+  font-size: 13px;
+  color: #555;
+  text-decoration: none;
+  padding: 4px 0;
+  text-align: center;
+  transition: 0.25s ease;
+}
+
+/* ✅ 드롭다운 hover - 보라빛 그라데이션 강조 */
+.dropdown a:hover {
+  color: #8e44ad;
+  font-weight: 600;
+  text-shadow:
+    0 0 6px rgba(155, 89, 182, 0.5),
+    0 0 12px rgba(155, 89, 182, 0.35);
+  transform: scale(1.05);
+}
+
+/* ==============================
+   💼 근무/경비 아이콘 선명도 조정
+   ============================== */
+.menu[data-type="work"] :global(svg) {
+  stroke: white !important;
+  stroke-width: 1.2px !important;
+  paint-order: stroke fill !important;
+  filter: drop-shadow(0 0 1.2px rgba(255, 255, 255, 0.8));
+}
+
+.menu[data-type="work"]:hover :global(svg) {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 5px rgba(187, 134, 252, 0.8))
+          drop-shadow(0 0 10px rgba(155, 89, 182, 0.6));
 }

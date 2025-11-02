@@ -110,6 +110,7 @@ const [form, setForm] = useState({
       open={isOpen}
       width={630}
       title="일정 추가"
+      destroyOnHidden 
       onCancel={onClose}
       footer={
         <div className={styles.modalFooter}>
@@ -204,12 +205,14 @@ const [form, setForm] = useState({
             <TimePicker
               value={form.startAt}
               format="HH:mm"
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
               onChange={(t) =>
                 setForm({
                   ...form,
                   startAt: t
                     ? dayjs(form.startAt).hour(t.hour()).minute(t.minute())
                     : form.startAt,
+                    
                 })
               }
             />
@@ -221,6 +224,7 @@ const [form, setForm] = useState({
             <TimePicker
               value={form.endAt}
               format="HH:mm"
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
               onChange={(t) =>
                 setForm({
                   ...form,

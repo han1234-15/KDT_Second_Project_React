@@ -6,7 +6,7 @@
 
 /* 콘텐츠 헤더 */
 .contentHeader {
-  height: 56px;
+  height: 45px;
   display: flex;
   border-bottom: 2px solid #e5e7eb;
   background: transparent;

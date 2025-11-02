@@ -25,6 +25,7 @@ const ScheduleViewModal = ({ open, onClose, event, onEdit, onDelete }) => {
     centered
       open={open}
       width={630}
+      destroyOnHidden 
       onCancel={onClose}
       title={
         <div className={styles.headerTitle}>
