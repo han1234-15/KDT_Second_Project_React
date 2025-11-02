@@ -9,11 +9,67 @@ const MailView = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { mail, Mailres } = location.state || {}; // Mail 객체 받기
-
+    const [originalFiles, setOriginalFiles] = useState([]); // 답장받을시 기존에 받은파일
+    const [mailState, setMailState] = useState(mail || {});
     const handleMailReturn = () => {
         navigate(-1);
     }
+    // MailView
 
+    const [files, setFiles] = useState([]);
+
+    useEffect(() => {
+        const fetchFiles = async () => {
+            let origFiles = [];
+            let addFiles = [];
+
+            if (mail.originalSeq) {
+                origFiles = (await caxios.get(`/files/fileList?module_type=mail&module_seq=${mail.originalSeq}`)).data;
+            }
+
+            if (mail.seq) {
+                addFiles = (await caxios.get(`/files/fileList?module_type=mail&module_seq=${mail.seq}`)).data;
+            }
+
+            setFiles([...origFiles, ...addFiles]);
+        };
+
+        fetchFiles();
+    }, [mail]);
+
+
+
+
+    // const [addedFiles, setAddedFiles] = useState([]);
+
+    // // 원본 파일 불러오기
+    // useEffect(() => {
+    //   if (mail.originalSeq) { // location.state에 originalSeq 있으면
+    //     caxios.get(`/files/fileList?module_type=mail&module_seq=${mail.originalSeq}`)
+    //       .then(res => setOriginalFiles(res.data))
+    //       .catch(err => console.error(err));
+    //   }
+    // }, [mail]);
+
+
+    //     // 답장 후 원본 파일 출력 (view용)
+    //     useEffect(() => {
+    //         if (location.state) {
+    //             const originalMail = location.state;
+    //             setMailState(prev => ({
+    //                 ...prev,
+    //                 seq: originalMail.seq,
+    //                 recipientId: originalMail.senderId,
+    //                 recipientName: originalMail.senderName,
+    //                 title: `RE: ${originalMail.title}`,
+    //                 content: `[원본 메시지]${originalMail.content}`
+    //             }));
+    //             // 원본 메일 첨부파일 가져오기
+    //             caxios.get(`/files/fileList?module_type=mail&module_seq=${originalMail.seq}`)
+    //                 .then(res => setOriginalFiles(res.data))
+    //                 .catch(err => console.error(err));
+    //         }
+    //     }, [location.state]);
 
     // 파일 리스트 출력
     const [List, setList] = useState([]);
@@ -38,13 +94,13 @@ const MailView = () => {
         }
     };
 
-
-    useEffect(() => {
-        if (!mail || !mail.seq) return;
-        caxios.get(`/files/fileList?module_type=mail&module_seq=${mail.seq}`)
-            .then((res) => setList(res.data))
-            .catch(err => console.error(err));
-    }, [mail]);
+    // 기존
+    // useEffect(() => {
+    //     if (!mail || !mail.seq) return;
+    //     caxios.get(`/files/fileList?module_type=mail&module_seq=${mail.seq}`)
+    //         .then((res) => setList(res.data))
+    //         .catch(err => console.error(err));
+    // }, [mail]);
 
 
 
@@ -62,43 +118,49 @@ const MailView = () => {
 
     return (
         <div className={styles.container} style={{ width: "80%", margin: "auto", marginTop: "20px" }}>
-            <button className={styles.backBtn} onClick={handleMailReturn} style={{ marginRight: "30px" }}>뒤로가기</button>
-            {/* 보낸 메일 답장  */}
-            {!Mailres && (<button style={{ float: "right", marginRight: "30px" }} onClick={handleMailResponse}>답장</button>)}
+
             <div className={styles.mainHeader}>
 
                 <div className={styles.mainHeadertop}>
-                    {mail.title}
-                </div>
+                    제목 :  {mail.title}
+                                </div>
+
+                {Mailres && (<div style={{ marginRight: "20px" }}>
+                    발신 날짜 : {mail.sendDateStr}
+                </div>)}
+
+                {!Mailres && (<div style={{ marginRight: "20px" }}>
+                    수신 날짜 : {mail.sendDateStr}
+                </div>)}
+
             </div>
             <hr />
             <div className={styles.mainBody} >
+
                 {/* api 받는 문자열  */}
                 <div className={styles.mainBodyViewContent} dangerouslySetInnerHTML={{ __html: safeContent }}
                     style={{ fontSize: "25px" }} />
-
-
 
             </div>
             <button className={styles.downloadBtn} style={{ marginRight: "20px" }}>파일 목록</button>
             <br></br>
             <br></br>
 
+            <h4>첨부파일</h4>
             <ul>
-                {List.map((e, i) => (
-
+                {files.map((file, i) => (
                     <li key={i}>
-
-                        <div>
-                            {e.orgname || e.sysname}
-                            <button onClick={() => handleDownload(e.sysname, e.orgname)}
-                                style={{ marginLeft:"15px" }}>다운받기</button>
-                        </div>
-
-                        <br></br>
+                        {file.orgname || file.sysname}
+                        <button onClick={() => handleDownload(file.sysname, file.orgname)}>다운받기</button>
                     </li>
                 ))}
             </ul>
+
+
+
+            <button className={styles.backBtn} onClick={handleMailReturn} style={{ marginRight: "30px" }}>뒤로가기</button>
+            {/* 보낸 메일 답장  */}
+            {!Mailres && (<button style={{ float: "right", marginRight: "30px" }} onClick={handleMailResponse}>답장</button>)}
         </div>
 
     );
