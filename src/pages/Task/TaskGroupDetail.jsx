@@ -61,6 +61,7 @@ const TaskGroupDetail = () => {
         setMembersCount(resp.data.membersCount || 0);
         setMembers(resp.data.members || []);
 
+        console.log(resp.data.members);
         //  로그인id가 전송되지 않은 경우
         if (!resp.data.loginId) {
           navigate("/");
@@ -401,7 +402,7 @@ const TaskGroupDetail = () => {
     if (!text) return;
 
     const newComment = {
-      writer_name: members.find(m => m.id === loginId)?.name || "익명",
+      writer_name: members.find(m => m.id === loginId)?.name || "그룹탈퇴자",
       writer_id: loginId,
       content: text,
       created_at: new Date(),
@@ -634,7 +635,11 @@ const TaskGroupDetail = () => {
                           </span>
 
                           {/* 삭제 버튼 (오른쪽 끝 고정) */}
-                          <button className={styles.commentDeleteBtn} onClick={() => handleDeleteComment(c.seq)}>x</button>
+                          {
+                            c.writer_id == loginId
+                            &&
+                            <button className={styles.commentDeleteBtn} onClick={() => handleDeleteComment(c.seq)}>x</button>
+                          }
                         </div>
 
                         <div className={styles.commentContent}>{c.content}</div>
@@ -708,7 +713,7 @@ const TaskGroupDetail = () => {
 
       {/*  멤버 목록 모달 */}
       <Modal
-        title={`그룹 멤버 (${members.length}명)`}
+        title={`그룹 멤버 (${membersCount}명)`}
         open={isMemberModalOpen}
         onCancel={() => setIsMemberModalOpen(false)}
         footer={null}

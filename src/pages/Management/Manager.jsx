@@ -120,19 +120,7 @@ const Manager = () => {
         setOpenModal(name); // 체크박스 클릭했을 때 나오는 버튼 중 어떤 버튼 눌렀는지 저장
     };
 
-    const handleSearch = (val) => {
-        if (!val) {
-            setFilteredOptions([]);
-            return;
-        }
 
-        const filtered = allMembers.filter(
-            (m) =>
-                m.name.toLowerCase().includes(val.toLowerCase()) ||
-                m.id.toLowerCase().includes(val.toLowerCase())
-        );
-        setFilteredOptions(filtered);
-    };
 
     return (
         <div className={style.container}>
@@ -188,15 +176,44 @@ const Manager = () => {
                             style={{ width: "100%" }}
                             placeholder="이름 또는 ID로 검색"
                             value={adminId}
-
                             onChange={(value) => setAdminId(value)}
-                            onSearch={(val) => handleSearch(val)}
-                            options={filteredOptions
-                                .filter((m) => !users.some((u) => u.id === m.id))
-                                .map((m) => ({
-                                    value: m.id,
-                                    label: `${m.name} (${m.id}) / ${m.dept_code} / ${ranks[m.rank_code]} / ${m.job_code}`,
-                                }))}
+                            onSearch={(val) => {
+                                if (!val) {
+                                    // 검색어 없으면 전체 리스트 보여주기
+                                    const allOptions = allMembers
+                                        .filter((m) => !users.some((u) => u.id === m.id))
+                                        .map((m) => ({
+                                            value: m.id,
+                                            label: `${m.name} (${m.id}) / ${m.dept_code} / ${ranks[m.rank_code]} / ${m.job_code}`,
+                                        }));
+                                    setFilteredOptions(allOptions);
+                                } else {
+                                    // 검색어 있으면 필터링
+                                    const filtered = allMembers
+                                        .filter(
+                                            (m) =>
+                                                (m.name.toLowerCase().includes(val.toLowerCase()) ||
+                                                    m.id.toLowerCase().includes(val.toLowerCase())) &&
+                                                !users.some((u) => u.id === m.id)
+                                        )
+                                        .map((m) => ({
+                                            value: m.id,
+                                            label: `${m.name} (${m.id}) / ${m.dept_code} / ${ranks[m.rank_code]} / ${m.job_code}`,
+                                        }));
+                                    setFilteredOptions(filtered);
+                                }
+                            }}
+                            onFocus={() => {
+                                // 포커스 시 전체 리스트 표시
+                                const allOptions = allMembers
+                                    .filter((m) => !users.some((u) => u.id === m.id))
+                                    .map((m) => ({
+                                        value: m.id,
+                                        label: `${m.name} (${m.id}) / ${m.dept_code} / ${ranks[m.rank_code]} / ${m.job_code}`,
+                                    }));
+                                setFilteredOptions(allOptions);
+                            }}
+                            options={filteredOptions}
                         />
                     </Modal>
                 </div>
