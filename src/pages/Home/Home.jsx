@@ -208,14 +208,16 @@ function Home() {
 
         {/* 달력 */}
         <div key="calendar">
-          <Card className={styles.card}>
+          <Card title={<span className={`${styles.cardHeader} drag-area`} >📅 일정 달력</span>} className={styles.card}>
             <Calendar fullscreen={false} />
           </Card>
         </div>
 
         {/* 출퇴근 */}
         <div key="profile">
-          <Card className={`${styles.card} ${styles.clockCard}`}>
+
+          <Card title={<span className={`${styles.cardHeader} drag-area`} >🚪 출퇴근</span>} className={`${styles.card} `}>
+
             <div className={styles.clockHeader}>
               <span>출퇴근</span>
             </div>
@@ -238,16 +240,17 @@ function Home() {
             </div>
           </Card>
         </div>
-      </ResponsiveGridLayout>
+      </ResponsiveGridLayout >
 
       {/* ✅ 사장 여부 전달 유지 */}
-      <LeaveModal
+      < LeaveModal
         open={isLeaveModalOpen}
-        onClose={() => setIsLeaveModalOpen(false)}
+        onClose={() => setIsLeaveModalOpen(false)
+        }
         refresh={fetchHomeData}
         applicant={myInfo}
       />
-    </div>
+    </div >
   );
 }
 
