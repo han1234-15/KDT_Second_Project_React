@@ -20,10 +20,17 @@ function EApprovalDetail() {
 
   // 문서 상세 조회
   useEffect(() => {
-    caxios.get(`/Eapproval/detail/${seq}`)
-      .then((res) => setDoc(res.data))
-      .catch((err) => console.error("❌ detail error:", err));
-  }, [seq]);
+     caxios.get(`/Eapproval/detail/${seq}`)
+     .then((res) => setDoc(res.data))
+     .catch((err) => {
+       if (err.response?.status === 403) {
+        alert("⚠️ 이 문서를 볼 수 있는 권한이 없습니다.");
+         navigate(-1); // 이전 페이지로 이동
+       } else {
+         alert("문서를 불러오는 중 오류가 발생했습니다.");
+       }
+     });
+    },[seq]);
 
   if (!doc || !loginUser) return <div>📄 불러오는 중...</div>;
 
@@ -70,7 +77,11 @@ const isMyTurn = currentApprover?.id === loginUser.id;
           <tr>
             {approvers.map((a, idx) => (
               <td key={idx}>
-                {(doc.status !== "REJECTED" && doc.status !== "APPROVED" && isMyTurn && a.id === loginUser.id) ? (
+                {(doc.status !== "REJECTED" &&
+ doc.status !== "APPROVED" &&
+ (doc.status === "WAIT" || doc.status === "CHECKING") &&
+ isMyTurn &&
+ a.id === loginUser.id) ? (
   <button
     className="approve-btn"
     onClick={() => { setDecisionTarget(a); setShowDecisionModal(true); }}

@@ -39,7 +39,9 @@ function Home() {
   const [mails, setMails] = useState([]);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
 
-  // ✅ 실시간 시계 렌더를 위한 상태(값은 안쓴다)
+  // ✅ 현재 로그인 사용자 정보
+  const [myInfo, setMyInfo] = useState(null);
+
   const [, setClockTick] = useState(0);
   useEffect(() => {
     const timer = setInterval(() => setClockTick((t) => t + 1), 1000);
@@ -93,6 +95,9 @@ function Home() {
   };
 
   useEffect(() => {
+    // ✅ 로그인 사용자 정보 불러오기
+    caxios.get("/member/me").then(res => setMyInfo(res.data));
+
     caxios.get("/mail/recent").then((resp) => setMails(resp.data));
     fetchRemainLeave();
     fetchWorkDays();
@@ -129,24 +134,20 @@ function Home() {
           </Card>
         </div>
 
-        {/* 잔여 휴가 */}
-     <div key="vacation">
-  <Card title={<span className={`${styles.cardHeader} drag-area`}><CalendarIcon /> 잔여 휴가</span>} className={styles.card}>
-    <p>남은 휴가 : <b>{leaveCount}일</b></p>
+        {/* ✅ 잔여 휴가 → 사장도 보임 */}
+        <div key="vacation">
+          <Card title={<span className={`${styles.cardHeader} drag-area`}><CalendarIcon /> 잔여 휴가</span>} className={styles.card}>
+            <p>남은 휴가 : <b>{leaveCount}일</b></p>
 
-    <Button
-      type="primary"
-      disabled={leaveCount <= 0}           
-      onMouseDown={(e)=>e.stopPropagation()}
-      onClick={() => {
-        setIsLeaveModalOpen(true);
-      }}
-    >
-      휴가 신청
-    </Button>
-
-  </Card>
-</div>
+            <Button
+              type="primary"
+              onMouseDown={(e)=>e.stopPropagation()}
+              onClick={() => setIsLeaveModalOpen(true)}
+            >
+              휴가 신청
+            </Button>
+          </Card>
+        </div>
 
         {/* 달력 */}
         <div key="calendar">
@@ -155,7 +156,7 @@ function Home() {
           </Card>
         </div>
 
-        {/* ✅ 출퇴근 카드 */}
+        {/* 출퇴근 */}
         <div key="profile">
           <Card className={`${styles.card} ${styles.clockCard}`}>
             <div className={styles.clockHeader}>
@@ -191,7 +192,14 @@ function Home() {
 
       </ResponsiveGridLayout>
 
-      <LeaveModal open={isLeaveModalOpen} onClose={() => setIsLeaveModalOpen(false)} refresh={fetchRemainLeave} />
+      {/*  사장 여부 LeaveModal 로 전달 */}
+    <LeaveModal
+    open={isLeaveModalOpen}
+    onClose={() => setIsLeaveModalOpen(false)}
+    refresh={fetchRemainLeave}
+    applicant={myInfo}   
+/>
+
     </div>
   );
 }
