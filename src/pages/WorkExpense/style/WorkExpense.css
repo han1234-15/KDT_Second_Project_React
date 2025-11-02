@@ -285,3 +285,16 @@ button:disabled:hover {
   border-color: inherit !important;
   color: inherit !important;
 }
+
+/* 근무계획 버튼 동작 제한 */
+.work-buttons button {
+  cursor: not-allowed;     /* 마우스 X 표시 */
+  pointer-events: none;    /* 클릭 불가 */
+  opacity: 0.6;            /* 흐리게 */
+  transition: opacity 0.2s;
+}
+
+.work-buttons button:hover {
+  opacity: 0.4;
+}
+
