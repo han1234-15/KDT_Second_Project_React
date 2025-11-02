@@ -336,9 +336,12 @@ const WorkExpense = () => {
               <button className="in" onClick={handleCheckIn} disabled={!checkInbtn}>출근하기</button>
               <button className="out" onClick={handleCheckOut} disabled={!checkOutbtn}>퇴근하기</button>
             </div>
+         <hr></hr>
             <div className="time-logs">
-              <div><strong>상태</strong> {status}</div>
-            </div>
+              <div>
+          <strong>상태 : </strong>{status}
+          </div>
+        </div>
           </div>
         </fieldset>
 
