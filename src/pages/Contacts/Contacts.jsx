@@ -196,7 +196,7 @@ const Contacts = () => {
                         {checkedList.length === 0 ? (
                             <>
                                 <input type="text" placeholder="검색할 주소록 이름"
-                                    style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center", fontSize: "20px" }}
+                                    style={{ width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center", fontSize: "20px" }}
                                     onChange={(e) => setSearchName(e.target.value)}
                                     onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }} />
                                 <button onClick={handleContactsList}>검색</button>
@@ -222,7 +222,9 @@ const Contacts = () => {
                                 columns={[
                                     { title: "성함", dataIndex: "name", key: "name" },
                                     { title: "전화번호", dataIndex: "phone", key: "phone" },
-                                    { title: "아이디", dataIndex: "email", key: "email" },
+                                    { title: "이메일", dataIndex: "email", key: "email" ,
+                                    render: (email) => email.includes('@') ? email : `${email}@Infinity.com`
+                                    },
                                     { title: "부서", dataIndex: "job_code", key: "job_code" },
                                     { title: "직위", dataIndex: "rank_code", key: "rank_code" },
                                 ]}
@@ -300,26 +302,27 @@ const Contacts = () => {
                             <div className={styles.mainHeader} style={{ fontSize: "40px", textAlign: "center" }}>수정</div>
                             <br />
                             <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
-                                <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>성함 : </div>
+                                <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>성함  </div>
                                 <input type="text" className={styles.NewSharedMailbox2} style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px" }} 
                                 onChange={handleUpdateChange} value={updateData.name} name="name" />
                             </div>
                             <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
-                                <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>전화번호 : </div>
+                                <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>전화번호  </div>
                                 <input type="text" className={styles.NewSharedMailbox2} style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px" }} 
                                 onChange={handleUpdateChange} value={updateData.phone} name="phone" />
                             </div>
                             <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
-                                <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>아이디 : </div>
+                                <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>이메일  </div>
                                 <input type="text" className={styles.NewSharedMailbox2} style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px" }} 
-                                onChange={handleUpdateChange} value={updateData.email} name="email" readOnly />
+                                onChange={handleUpdateChange} 
+                                value={updateData.email.includes("@")? updateData.email : `${updateData.email}@Infinity.com`} name="email" readOnly />
                             </div>
                             <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
-                                <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>부서 : </div>
+                                <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>부서  </div>
                                 <input type="text" className={styles.NewSharedMailbox2} style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px" }} onChange={handleUpdateChange} value={updateData.job_code} name="job_code" />
                             </div>
                             <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
-                                <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>직위 : </div>
+                                <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>직위  </div>
                                 <input type="text" className={styles.NewSharedMailbox2} style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px" }} onChange={handleUpdateChange} value={updateData.rank_code} name="rank_code" />
                             </div>
                             <button style={{ float: "right", marginLeft: "30px" }} onClick={handleContactsUpdateOut}>취소</button>

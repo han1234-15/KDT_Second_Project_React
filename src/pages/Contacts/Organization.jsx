@@ -120,7 +120,7 @@ const Organization = () => {
                         <>
                             <div style={{ display: "flex", gap: "10px", width: "50%" }}>
                                 <input type="text" placeholder="검색할 이름"
-                                    style={{flex: 1, borderRadius: "10px", border: "none",fontSize: "20px"}}
+                                    style={{flex: 1, borderRadius: "10px", border: "1px solid lightgrey",fontSize: "20px"}}
                                     onChange={(e) => setSearchName(e.target.value)}
                                     onKeyDown={(e) => { if (e.key === "Enter") handleOrganizationList(); }}
                                 />

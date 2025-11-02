@@ -11,6 +11,7 @@ import {
   BellFill,
   EnvelopeFill,
   CalendarFill as CalendarIcon,
+  Cursor,
 } from "react-bootstrap-icons";
 
 import styles from "./Home.module.css";
@@ -200,19 +201,30 @@ function Home() {
         ))}
 
         {renderCard("mail", <><EnvelopeFill /> 최근 메일 ({mails.length})</>, (
-          <List
-            dataSource={mails}
-            renderItem={(item) => (
-              <List.Item
-                onClick={() =>
-                  navigate("/mail/mailview", { state: { mail: item } })
-                }
-              >
-                {item.senderName} - {item.title}
-              </List.Item>
-            )}
-          />
+          <div
+            style={{
+              maxHeight: "100px",     // 원하는 높이 설정
+              overflowY: "auto",      // 세로 스크롤 활성화
+              paddingRight: "8px",    // 스크롤바 여백 확보
+            }}
+          >
+            <List
+              dataSource={mails}
+              renderItem={(item) => (
+                <List.Item
+                style={{cursor:"pointer"}}
+                  onClick={() =>
+                    navigate("/mail/mailview", { state: { mail: item } } )
+                  
+                  }
+                >
+                  {item.senderName} - {item.title}
+                </List.Item>
+              )}
+            />
+          </div>
         ))}
+
 
         {renderCard("vacation", <><CalendarIcon /> 잔여 휴가</>, (
           <>
