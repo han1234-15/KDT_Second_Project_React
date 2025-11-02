@@ -22,7 +22,11 @@
     align-items: center;
     justify-content: center;
 }
-
 .writeBtn:hover {
     opacity: 0.9;
+}
+
+.subTabPlaceholder {
+  height: 47px; /* 기존 서브탭 높이만큼 */
+  width: 100%;
 }

@@ -6,7 +6,10 @@ import styles from "./TaskGroupDetail.module.css";
 import { FaUser, FaCog } from "react-icons/fa";
 import { caxios } from "../../config/config";
 import { FaUserAlt } from "react-icons/fa";
+import { ranks } from "../../config/options";
+
 const { TextArea } = Input;
+
 
 const TaskGroupDetail = () => {
 
@@ -780,7 +783,9 @@ const TaskGroupDetail = () => {
               dataIndex: "rank_code",
               key: "rank_code",
               align: "center",
-            },
+              render: (code) => ranks[code] || code
+            }
+            ,
             {
               title: "직무",
               dataIndex: "job_code",
@@ -920,7 +925,7 @@ const TaskGroupDetail = () => {
             resi
           />
 
-          <label style={{ marginTop: "10px",display:"block" }}>매니저 위임</label>
+          <label style={{ marginTop: "10px", display: "block" }}>매니저 위임</label>
           <Select
             style={{ width: "75%" }}
             value={editGroup.manager_id || group.manager_id}
@@ -945,9 +950,9 @@ const TaskGroupDetail = () => {
               padding: "6px 12px",
               cursor: "pointer",
               fontWeight: "500",
-              fontSize:"13px",
-              marginLeft:"6%",
-              height:"31.2px"
+              fontSize: "13px",
+              marginLeft: "6%",
+              height: "31.2px"
             }}
           >
             그룹 제거

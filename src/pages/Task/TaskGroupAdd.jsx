@@ -167,6 +167,20 @@ const TaskGroupAdd = ({ onClose }) => {
                             value={searchValue}
                             options={searchOptions}
                             onSearch={handleSearch}
+                            onFocus={() => {                     // 클릭 시 전체 표시
+                                const all = members
+                                    .filter(m => m.id != manager)
+                                    .slice(0, 10)
+                                    .map(m => ({
+                                        value: m.name,
+                                        label: (
+                                            <div>
+                                                <strong>{m.name}({m.id})</strong> ({m.dept_code} / {m.rank_code})
+                                            </div>
+                                        ),
+                                    }));
+                                setSearchOptions(all);
+                            }}
                             onChange={(val) => setSearchValue(val)} //  입력값 반영
                             onSelect={(value) => {
                                 handleSelect(value);

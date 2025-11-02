@@ -101,11 +101,13 @@
 
 } */
 
-.mainBodylistbox:hover {
+/* .mainBodylistbox:hover {
 
     background-color: rgb(252, 252, 252);
 
-}
+} */
+
+
 
 .mainBodycheckbox {
     width: 10%;

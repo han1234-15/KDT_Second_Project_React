@@ -1,11 +1,11 @@
 /* ✅ 전체 컨테이너 */
 .container {
-  background: #f0f2f5;
   height: auto;
   min-height: 100vh;
   padding: 20px;
   overflow-x: hidden !important;
-  overflow-y: auto !important; /* 스크롤 가능 */
+  overflow-y: auto !important;
+  /* 스크롤 가능 */
   display: block;
 }
 
@@ -19,6 +19,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
   position: relative !important;
   overflow: hidden !important;
+  height: 100%;
 }
 
 .card:hover {
@@ -26,11 +27,9 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
 }
 
-/* ✅ 카드 헤더 (드래그 핸들) */
 .cardHeader {
-  font-weight: 600 !important;
-  font-size: 16px !important;
-  cursor: move !important; /* 드래그 핸들 */
+  width: 100% !important;
+  /* ✅ 카드 헤더 전체 너비 채우기 */
   display: flex !important;
   align-items: center !important;
   gap: 8px;
@@ -39,6 +38,9 @@
   color: #fff;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  cursor: move !important;
 }
 
 .headerIcon {
@@ -106,19 +108,22 @@
 /* 메일 css */
 .mailListItem {
   display: flex;
-  align-items: center; /* 수직 중앙 정렬 */
+  align-items: center;
+  /* 수직 중앙 정렬 */
   padding: 6px 0;
-  gap: 8px; /* 항목 간 간격 */
-   text-align: center;
+  gap: 8px;
+  /* 항목 간 간격 */
+  text-align: center;
 }
 
-.mailListItem:hover{
+.mailListItem:hover {
   cursor: pointer;
-   background-color: rgb(252, 252, 252);
+  background-color: rgb(252, 252, 252);
 }
 
 .mailSender {
-  width: 20%; /* 발신자 폭 고정 */
+  width: 20%;
+  /* 발신자 폭 고정 */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -126,18 +131,20 @@
 }
 
 .mailTitle {
-  width: 50%; /* 제목 폭 고정 */
+  width: 50%;
+  /* 제목 폭 고정 */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-   text-align: center;
+  text-align: center;
 }
 
 .mailDate {
-  width: 30%; /* 날짜 폭 고정 */
+  width: 30%;
+  /* 날짜 폭 고정 */
   text-align: right;
   color: #6b7280;
-   text-align: center;
+  text-align: center;
 }
 
 .profileCard {
@@ -256,6 +263,7 @@
 .start {
   background: #7d5fff;
 }
+
 .start:hover:not(:disabled) {
   background: #6b4efc;
 }
@@ -263,6 +271,7 @@
 .end {
   background: #ff6b6b;
 }
+
 .end:hover:not(:disabled) {
   background: #e55050;
 }
@@ -272,4 +281,3 @@
   font-size: 14px;
   line-height: 1.6;
 }
-

@@ -8,7 +8,7 @@ import { Button, Flex, Table, Modal } from 'antd';
 import { caxios } from '../../config/config';
 import { departmentOptions } from '../../config/options';
 import { jobOptions } from '../../config/options';
-import { positionOptions } from '../../config/options';
+import { positionOptions, ranks } from '../../config/options';
 import { AiOutlineSearch } from "react-icons/ai";
 
 
@@ -128,7 +128,7 @@ const Management = () => {
             dataIndex: 'name',
             key: 'name',
             render: (text, record) => (
-                <Link to={`/management/user/detail/${record.id}`} style={{ color: "#1677ff" ,textDecoration: 'none' }}>
+                <Link to={`/management/user/detail/${record.id}`} style={{ color: "#1677ff", textDecoration: 'none' }}>
                     {text}
                 </Link>
             ),
@@ -137,7 +137,7 @@ const Management = () => {
         { title: '사번', dataIndex: 'employee_no', key: 'employee_no' },
         { title: '근로 형태', dataIndex: 'employmentType', key: 'employmentType' },
         { title: '부서', dataIndex: 'dept_code', key: 'dept_code' },
-        { title: '직위', dataIndex: 'rank_code', key: 'rank_code' },
+        { title: '직위', dataIndex: 'rank_code', key: 'rank_code', render: (code) => ranks[code] || code },
         { title: '직무', dataIndex: 'job_code', key: 'job_code' },
         { title: '입사일', dataIndex: 'hire_date', key: 'hire_date', render: (text) => text ? dayjs(text).format("YYYY-MM-DD") : "" },
         { title: '재직 상태', dataIndex: 'status', key: 'status' },
@@ -496,7 +496,7 @@ const Management = () => {
                     >
                         <hr></hr>
                         <Select
-                            style={{ width: '100%',marginBottom:'10px' }}
+                            style={{ width: '100%', marginBottom: '10px' }}
                             options={[
                                 { value: '일반직', label: '일반직' },
                                 { value: '임원,촉탁', label: '임원,촉탁' },
@@ -532,7 +532,7 @@ const Management = () => {
                     >
                         <hr></hr>
                         <Select
-                            style={{ width: '100%',marginBottom:'10px' }}
+                            style={{ width: '100%', marginBottom: '10px' }}
                             options={departmentOptions}
                             placeholder="부서 선택"
                             value={deptValue}          // 상태 연결
@@ -565,7 +565,7 @@ const Management = () => {
                     >
                         <hr></hr>
                         <Select
-                            style={{ width: '100%',marginBottom:'10px' }}
+                            style={{ width: '100%', marginBottom: '10px' }}
                             options={positionOptions}
                             placeholder="직위 선택"
                             value={rankValue}          // 상태 연결
@@ -599,7 +599,7 @@ const Management = () => {
                     >
                         <hr></hr>
                         <Select
-                            style={{ width: '100%' ,marginBottom:'10px'}}
+                            style={{ width: '100%', marginBottom: '10px' }}
                             options={jobOptions}
                             placeholder="직무 선택"
                             value={jobValue}          // 상태 연결
@@ -632,7 +632,7 @@ const Management = () => {
                     >
                         <hr></hr>
                         <Select
-                            style={{ width: '100%',marginBottom:'10px' }}
+                            style={{ width: '100%', marginBottom: '10px' }}
                             options={[
                                 { value: '재직자', label: '재직자' },
                                 { value: '퇴사자', label: '퇴사자' },

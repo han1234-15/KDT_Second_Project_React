@@ -143,7 +143,7 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
                     </div>
                     <div className={styles.mainBodytag}>성함</div>
                     <div className={styles.mainBodytag}>전화번호</div>
-                    <div className={styles.mainBodytag}>아이디</div>
+                    <div className={styles.mainBodytag}>이메일</div>
                     <div className={styles.mainBodytag}>부서</div>
                     <div className={styles.mainBodytag}>직위</div>
                     <br></br>
@@ -160,7 +160,9 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
                             <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
                             <div className={styles.mainBodytag}>{e.name}</div>
                             <div className={styles.mainBodytag}>{e.phone}</div>
-                            <div className={styles.mainBodytag}>{e.email}</div>
+                            <div className={styles.mainBodytag}>
+                                  {e.email.includes("@") ? e.email : `${e.email}@Infinity.com`}
+                            </div>
                             <div className={styles.mainBodytag}>{e.job_code}</div>
                             <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
                             <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
@@ -190,7 +192,9 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
                                 <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
                                 <div className={styles.mainBodytag}>{e.name}</div>
                                 <div className={styles.mainBodytag}>{e.phone}</div>
-                                <div className={styles.mainBodytag}>{e.email}</div>
+                                <div className={styles.mainBodytag}>
+                                  {e.email.includes("@") ? e.email : `${e.email}@Infinity.com`}
+                                    </div>
                                 <div className={styles.mainBodytag}>{e.job_code}</div>
                                 <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
                               <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />

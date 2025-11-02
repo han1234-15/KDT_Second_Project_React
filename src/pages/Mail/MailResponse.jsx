@@ -14,8 +14,8 @@ const MailResponse = () => {
 
   const Navigate = useNavigate();
   const fileRef = useRef();
-  const [files, setFiles] = useState([]);
-
+  const [files, setFiles] = useState([]); // 새로 보내는 파일
+  const [originalFiles, setOriginalFiles] = useState([]); // 기존에 받은파일
   const [mail, setMail] = useState({
     user_id: "",
     senderId: "",
@@ -26,19 +26,29 @@ const MailResponse = () => {
     content: ""
   });
 
-  // 답장 후 원본 값 출력
   useEffect(() => {
     if (location.state) {
       const originalMail = location.state;
+      // mail 초기값 설정
       setMail({
-        ...mail,
+        seq: originalMail.seq,
         recipientId: originalMail.senderId,
         recipientName: originalMail.senderName,
         title: `RE: ${originalMail.title}`,
-        content: `[원본 메시지]${originalMail.content}`
+        content: `[원본 메시지]${originalMail.content}`,
+        user_id: "",
+        senderId: "",
+        senderName: ""
       });
+
+      // 기존 첨부파일 가져오기
+      caxios.get(`/files/fileList?module_type=mail&module_seq=${originalMail.seq}`)
+        .then(res => setOriginalFiles(res.data))
+        .catch(err => console.error(err));
     }
   }, [location.state]);
+
+
 
   // input 변경 처리
   const handleChange = (e) => {
@@ -56,7 +66,7 @@ const MailResponse = () => {
     fileRef.current.click();
   }
 
-  // // 전송 버튼
+  // // 전송 버튼 (답장용)
   const handleMailWrite = async () => {
     try {
       const res = await caxios.post("/mail", mail, {
@@ -65,19 +75,34 @@ const MailResponse = () => {
 
       const mailSeq = res.data; // MailController에서 seq 반환
 
-
       if (files && files.length > 0) {
-        const form = new FormData();
-        form.append('mailSeq', mailSeq); // mailSeq 포함
-        Array.from(files).forEach(file => form.append('files', file));
 
-        await caxios.post(`/file/mailSeq`, form, {
+        const formData = new FormData();
+        // form.append('mailSeq', mailSeq); // 기존 파일 보내는 mail seq (mailSeq 포함)
+        formData.append("module_type", "mail"); // 10.31 파일 전역
+        formData.append("module_seq", mailSeq); // 10.31 파일 전역
+
+        Array.from(files).forEach(file => formData.append('files', file));
+
+        await caxios.post(`/files/upload`, formData, {
           headers: { "Content-Type": "multipart/form-data" }
-        });
+        }); // 파일 전역 업로드
 
         fileRef.current.value = "";
         setFiles([]);
       }
+      // 기존 파일 복사 (새 메일 seq에 연결)
+      if (originalFiles && originalFiles.length > 0) {
+        const params = new URLSearchParams();
+        params.append("module_type", "mail");
+        params.append("module_seq", mailSeq);
+        originalFiles.forEach(f => params.append("existingFiles", f.sysname));
+
+        await caxios.post(`/files/upload/original`, params);
+      }
+
+Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: mail.seq }, Mailres: false } });
+
       Navigate("/mail");
     } catch (err) {
       console.error("메일 발송 중 오류:", err);
@@ -102,21 +127,81 @@ const MailResponse = () => {
   };
 
 
+  // 파일 리스트 출력
+  const [List, setList] = useState([]);
+
+  // 파일 다운    
+  const handleDownload = async (sysname, orgname) => {
+    try {
+      const response = await caxios.get(
+        `/files/download?sysname=${encodeURIComponent(sysname)}`,
+        { responseType: "blob" }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", orgname);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error("파일 다운로드 실패:", err);
+      alert("파일 다운로드 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 
+  useEffect(() => {
+    if (!mail || !mail.seq) return;
+    caxios.get(`/files/fileList?module_type=mail&module_seq=${mail.seq}`)
+      .then((res) => setList(res.data))
+      .catch(err => console.error(err));
+  }, [mail]);
+
+  // 기존파일
+  useEffect(() => {
+    if (location.state) {
+      const originalMail = location.state;
+      setMail(prev => ({
+        ...prev,
+        recipientId: originalMail.senderId,
+        recipientName: originalMail.senderName,
+        title: `RE: ${originalMail.title}`,
+        content: `[원본 메시지]${originalMail.content}`,
+        seq: originalMail.seq
+      }));
+
+      // 원본 메일 파일 가져오기
+      caxios.get(`/files/fileList?module_type=mail&module_seq=${originalMail.seq}`)
+        .then(res => setOriginalFiles(res.data))
+        .catch(err => console.error(err));
+    }
+  }, [location.state]);
+
   return (
     <div className={styles.container} style={{ width: "80%", margin: "auto", marginTop: "20px" }}>
       <div style={{ fontSize: "30px" }} aria-readonly>답장</div>
       <hr></hr>
 
-      <div className={styles.mainHeader} >
+      <div className={styles.mainHeader} style={{ display: "flex", marginTop: "10px" }}>
 
+        <div style={{ width: "5%", fontSize: "20px" }}>수신인 </div>
+        <input type="text" className={styles.containerhalf} style={{ width: "30%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }}
+          onChange={handleChange} name="recipientName"
+          value={
+            mail.recipientName && mail.recipientId
+              ? `${mail.recipientName} (${mail.recipientId.includes("@Infinity.com") ? mail.recipientId : mail.recipientId + "@Infinity.com"})`
+              : mail.recipientName || ""
+          }
+          readOnly /><br></br>
+      </div>
 
-        <input type="text" className={styles.containerhalf} style={{ width: "50%", fontSize: "20px" }}
-          onChange={handleChange} name="recipientName" value={mail.recipientName}  readOnly/><br></br>
-
-
-        <input type="text" className={styles.containerhalf} style={{ fontSize: "20px" }}
+      <div style={{ display: "flex", marginTop: "10px" }}>
+        <div style={{ width: "5%", fontSize: "20px" }}>제목 </div>
+        <input type="text" className={styles.containerhalf} style={{ width: "30%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }}
           onChange={handleChange} name="title" value={mail.title} />
       </div>
+
 
       <div className={styles.mainBody}>
 
@@ -151,10 +236,50 @@ const MailResponse = () => {
           style={{ marginBottom: "10px", display: "none" }}
         />
 
-        {files.map((file, idx) => (
+
+
+        <h4>기존 첨부파일</h4>
+        <ul>
+          {originalFiles.map((file, i) => (
+            <li key={i}>
+              {file.orgname || file.sysname}
+              <button onClick={() => handleDownload(file.sysname, file.orgname)}>다운받기</button>
+            </li>
+          ))}
+        </ul>
+
+        <h4>추가한 파일</h4>
+        <ul>
+          {files.map((file, i) => (
+            <li key={i}>{file.name}</li>
+          ))}
+        </ul>
+
+        {/* {files.map((file, idx) => (
           <li key={idx} style={{ marginBottom: "3px" }}>
             {file.name}
           </li>))}
+
+        <button className={styles.downloadBtn} style={{ marginRight: "20px" }}>파일 목록</button>
+        <br></br>
+        <br></br> */}
+
+        {/* 리스트 5:39분 */}
+        {/* <ul>
+                {List.map((e, i) => (
+
+                    <li key={i}>
+
+                        <div>
+                            {e.orgname || e.sysname}
+                            <button onClick={() => handleDownload(e.sysname, e.orgname)}
+                                style={{ marginLeft: "15px" }}>다운받기</button>
+                        </div>
+
+                        <br></br>
+                    </li>
+                ))}
+            </ul> */}
 
       </div>
 
@@ -203,7 +328,7 @@ const MailResponse = () => {
 
 
       </Modal>
-    </div>
+    </div >
 
 
   );

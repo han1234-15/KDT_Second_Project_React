@@ -2,41 +2,57 @@ import React, { useEffect, useState } from "react";
 import { Table, Input } from "antd";
 import styles from "./BoardAnnouncement.module.css";
 import { caxios } from "../../../config/config";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 const { Search } = Input;
 
 const BoardFreedom = () => {
 
   const navigate = useNavigate();
   const handleRowClick = (record) => {
-    navigate(`/board/detail/${record.key}`); // record.key = seq
+    navigate(`/board/detail/${record.key}`, {
+      state: { from: useLocation.pathname } // ✅ 현재 경로 저장
+    });
   };
 
   const [search, setSearch] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
   const [data, setData] = useState([]);
+
   // 자유게시판(category_id = 2) 데이터 불러오기
   useEffect(() => {
     caxios
       .get("/board/category/2") // category_id = 2 (자유게시판)
       .then((resp) => {
         console.log("게시글 목록:", resp.data);
-        // 백엔드 응답 구조에 맞게 데이터 매핑
-        const mapped = resp.data.map((item) => ({
-          key: item.seq,
-          tag: "자유", // 필요 시 카테고리명 표시
-          title: item.title,
-          author: item.writer_id,
-          date: new Date(item.createdAt).toLocaleDateString(),
-        }));
+
+        const mapped = resp.data.map((item) => {
+          //수정일
+          const dateToShow = item.updatedAt || item.createdAt;
+          const createdAt = new Date(dateToShow);
+          const formattedDate = `${createdAt.getFullYear()}-${String(
+            createdAt.getMonth() + 1
+          ).padStart(2, "0")}-${String(createdAt.getDate()).padStart(
+            2,
+            "0"
+          )} ${String(createdAt.getHours()).padStart(2, "0")}:${String(
+            createdAt.getMinutes()
+          ).padStart(2, "0")}`;
+
+          return {
+            key: item.seq,
+            tag: "자유",
+            title: item.title,
+            author: item.writer_id,
+            date: formattedDate, // 작성일 or 수정일
+          };
+        });
+
         setData(mapped);
       })
       .catch((err) => {
         console.error("게시글 목록 불러오기 실패:", err);
       });
   }, []);
-
 
   // 컬럼 정의
   const columns = [
@@ -88,9 +104,9 @@ const BoardFreedom = () => {
             onChange: handlePageChange,
           }}
           onRow={(record) => ({
-            onClick: () => handleRowClick(record), // 클릭 시 navigate 작동
+            onClick: () => handleRowClick(record),
           })}
-          rowClassName={() => styles.tableRow} // (선택) 클릭 시 hover 스타일 주기용
+          rowClassName={() => styles.tableRow}
         />
       </div>
     </div>
