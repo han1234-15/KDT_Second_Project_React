@@ -41,6 +41,7 @@ function Home() {
   const [checkOut, setCheckOut] = useState(null);
   const [status, setStatus] = useState("대기중");
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
+  const [mySchedules, setMySchedules] = useState([]); // 일정ㄴ
 
   // ✅ 현재 로그인 사용자 정보 (네 코드 유지)
   const [myInfo, setMyInfo] = useState(null);
@@ -152,6 +153,20 @@ function Home() {
     fetchLayout();
   }, []);
 
+  // 일정
+  useEffect(() => {
+  const fetchMySchedules = async () => {
+    try {
+      const res = await caxios.get("/schedule/all"); // ✅ 그대로 /all 사용
+      setMySchedules(res.data || []);
+    } catch (err) {
+      console.error("내 일정 불러오기 실패:", err);
+      message.error("내 일정 데이터를 불러오지 못했습니다.");
+    }
+  };
+  fetchMySchedules();
+}, []);
+
   return (
     <div className={styles.container}>
       <ResponsiveGridLayout
@@ -208,10 +223,35 @@ function Home() {
 
         {/* 달력 */}
         <div key="calendar">
-          <Card title={<span className={`${styles.cardHeader} drag-area`} >📅 일정 달력</span>} className={styles.card}>
-            <Calendar fullscreen={false} />
-          </Card>
-        </div>
+  <Card
+    title={<span className={`${styles.cardHeader} drag-area`}>📅 내 일정</span>}
+    className={styles.card}
+  >
+    <Calendar
+      fullscreen={false}
+      dateCellRender={(value) => {
+        const dateStr = value.format("YYYY-MM-DD");
+        const daySchedules = mySchedules.filter(
+          (item) => item.startAt && item.startAt.startsWith(dateStr)
+        );
+
+        return (
+          <ul className={styles.scheduleList}>
+            {daySchedules.slice(0, 2).map((item) => (
+              <li key={item.seq} className={styles.scheduleItem}>
+                <span className={styles.dot}></span>
+                {item.title}
+              </li>
+            ))}
+            {daySchedules.length > 2 && (
+              <li className={styles.more}>+{daySchedules.length - 2}개</li>
+            )}
+          </ul>
+        );
+      }}
+    />
+  </Card>
+</div>
 
         {/* 출퇴근 */}
         <div key="profile">
