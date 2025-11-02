@@ -212,13 +212,17 @@ function Home() {
               dataSource={mails}
               renderItem={(item) => (
                 <List.Item
-                style={{cursor:"pointer"}}
+                  style={{ cursor: "pointer" }}
                   onClick={() =>
-                    navigate("/mail/mailview", { state: { mail: item } } )
-                  
+                    navigate("/mail/mailview", { state: { mail: item } })
+
                   }
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e6f7ff")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "white")}
                 >
-                  {item.senderName} - {item.title}
+                  발신자 : {item.senderName} <br></br>
+                   제목: {item.title} <br></br> 
+                   날짜: {item.sendDateStr}
                 </List.Item>
               )}
             />

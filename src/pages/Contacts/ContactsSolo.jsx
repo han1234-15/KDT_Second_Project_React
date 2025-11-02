@@ -251,7 +251,7 @@ const ContactsSolo = () => {
                 <div className={styles.mainHeaderbottom} >
                     {checkedList.length === 0 ? (
                         <>
-                            <input type="text" placeholder="검색할 주소록 이름" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center", fontSize: "20px" }}
+                            <input type="text" placeholder="검색할 주소록 성함" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center", fontSize: "20px" }}
                                 onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
                             <button onClick={handleContactsList}>검색</button>
 
