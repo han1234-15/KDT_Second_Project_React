@@ -6,7 +6,7 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { Button, Modal } from 'antd';
 import MailAddContacts from "./MailAddContacts.jsx";
-import TipTapEditor from "../Common/TipTapEditor"; // ✅ TipTap 컴포넌트로 교체
+import TiptapEditor from "../Common/TipTapEditor";
 
 const MailResponse = () => {
 
@@ -56,11 +56,13 @@ const MailResponse = () => {
   };
 
   // CKEditor 내용 변경 처리
-  const handleEditorChange = (event, editor) => {
-    const data = editor.getData();
-    setMail(prev => ({ ...prev, content: data }));
-  };
+  // const handleEditorChange = (event, editor) => {
+  //   const data = editor.getData();
+  //   setMail(prev => ({ ...prev, content: data }));
+  // };
 
+  //tiptap용
+  const handleEditorChange = (html) => setMail(prev => ({ ...prev, content: html }));
 
   // //  CKEditor → TipTap 변경 처리
   // const handleEditorChange = (html) => {
@@ -71,15 +73,15 @@ const MailResponse = () => {
     fileRef.current.click();
   }
   //알람
-   const sendTestNotice = async (receiver_id, type, message) => {
-      await caxios.post("/notification/send", {
-        receiver_id: receiver_id, // 실제 로그인 ID로 전달받을 사람.
-        type: type,
-        message: message,
-        created_at: new Date().toISOString(),
-      });
-      //alert("테스트 알림 전송 완료 ✅");
-    };
+  const sendTestNotice = async (receiver_id, type, message) => {
+    await caxios.post("/notification/send", {
+      receiver_id: receiver_id, // 실제 로그인 ID로 전달받을 사람.
+      type: type,
+      message: message,
+      created_at: new Date().toISOString(),
+    });
+    //alert("테스트 알림 전송 완료 ✅");
+  };
 
   // 전송 버튼 (답장용)
   const handleMailWrite = async () => {
@@ -119,7 +121,7 @@ const MailResponse = () => {
       Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: mail.seq }, Mailres: false } });
 
       Navigate("/mail");
-          sendTestNotice(mail.recipientId, "mail", `${senderName}님으로부터 답장 메일이 도착했습니다.`)
+      sendTestNotice(mail.recipientId, "mail", `${senderName}님으로부터 답장 메일이 도착했습니다.`)
     } catch (err) {
       console.error("메일 발송 중 오류:", err);
 
@@ -226,7 +228,14 @@ const MailResponse = () => {
         onChange={handleEditorChange}
 
       /> */}
-      <CKEditor
+      {/* 팁탭에디터 적용해놓음 혹시나 다른 에러 뜨면 ckeditor 써야할듯 */}
+      <TiptapEditor
+        value={mail.content}
+        onChange={handleEditorChange}
+        moduleType="mail"
+        moduleSeq={mail.seq}
+      />
+      {/* <CKEditor
         editor={ClassicEditor}
         data={mail.content || ''}
         className={styles.ckEditor}
@@ -238,8 +247,7 @@ const MailResponse = () => {
             'blockQuote', 'undo', 'redo',
           ]
         }}
-
-      />
+      /> */}
 
 
       <button className={styles.btns} onClick={handleFileClick} style={{ marginTop: "10px", float: "left" }}>파일 추가</button>

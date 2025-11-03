@@ -354,14 +354,14 @@ const Management = () => {
         <div className={style.container}>
 
             <div className='body'>
-                <h4>
-                    사용자 현황 {userCount}명
+                <h4 className={style.header}>
+                    사용자 현황 {userCount}명<Link to="/management/register" className={style.buttonLink}>사용자 등록</Link>
                 </h4>
-                <div className={style.userManageBtn}>
+                {/* <div className={style.userManageBtn}>
 
                     <Link to="/management/register" className={style.buttonLink}>사용자 등록</Link>
-                    <Link to="/" className={style.buttonLink}>비활성 사용자</Link>
-                </div>
+
+                </div> */}
 
                 <div >
                     <Flex gap="middle" vertical>

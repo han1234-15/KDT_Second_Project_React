@@ -1,7 +1,7 @@
 .container {
   width: 100%;
   padding: 0 10px;
-  
+
   border-radius: 8px;
   box-sizing: border-box;
 }
@@ -15,7 +15,7 @@
   border-radius: 8px;
   margin: 8px -5;
   margin-left: -10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 
 }
 
@@ -37,7 +37,7 @@
 
 .subTab:hover {
   background-color: rgba(60, 102, 222, 0.15);
-  color: #2d4fc2;          
+  color: #2d4fc2;
 }
 
 .subTabActive {
@@ -51,9 +51,10 @@
   font-weight: 500;
   box-shadow: 0 1px 3px rgba(60, 102, 222, 0.25);
 }
+
 .subTabActive:hover {
   background-color: rgba(60, 102, 222, 0.15);
-  color: #2d4fc2;          
+  color: #2d4fc2;
 }
 
 
@@ -62,7 +63,7 @@
 /* ---------------------- 검색 박스 ---------------------- */
 .searchBox {
   border: 1px solid #e0e0e0;
-  background-color: #fafafa;
+  background-color: #ffffff;
   padding: 20px 25px;
   border-radius: 8px;
   margin-bottom: 25px;
@@ -75,7 +76,8 @@
 /* 한 줄 */
 .row {
   display: flex;
-  align-items: center; /* ✅ 세로 중앙 정렬 */
+  align-items: center;
+  /* ✅ 세로 중앙 정렬 */
   gap: 10px;
   width: 100%;
 }
@@ -99,21 +101,24 @@
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  flex: 1; /* ✅ 전체 폭 균등 */
+  flex: 1;
+  /* ✅ 전체 폭 균등 */
 }
 
 /* ✅ Select 통일 */
 .row :global(.ant-select-selector) {
   height: 32px !important;
   display: flex !important;
-  align-items: center !important; /* 텍스트 중앙 */
+  align-items: center !important;
+  /* 텍스트 중앙 */
   border-radius: 6px;
   box-sizing: border-box;
   padding: 0 11px !important;
 }
 
 .row :global(.ant-select-selection-item) {
-  line-height: 30px !important; /* 중앙 정렬 */
+  line-height: 30px !important;
+  /* 중앙 정렬 */
   font-size: 13px;
 }
 

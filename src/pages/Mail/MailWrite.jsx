@@ -58,7 +58,7 @@ const MailWrite = () => {
       type: type,
       message: message,
       created_at: new Date().toISOString(),
-    }); 
+    });
     //alert("테스트 알림 전송 완료 ✅");
   };
 
