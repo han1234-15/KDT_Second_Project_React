@@ -202,18 +202,18 @@ const Contacts = () => {
                             onChange={(e) => setSearchName(e.target.value)}
                             onSearch={handleContactsList}
                             enterButton="검색"
-                            style={{ width: "400px" }}
+                            style={{ width: "400px"  }}
                         />
                          </div>
                     </>
                 ) : (
                     <>
                     <div className={styles.btnBox}>
-                        <button className={styles.btns} onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
-                        <button className={styles.btns} onClick={showUpdateModal} style={{ margin: "10px" }}> 수정 </button>
-                        <button className={styles.btns} onClick={handleCopyToSolo} style={{ margin: "10px" }}> 개인주소록에 복사 </button>
-                        <button className={styles.btns} onClick={handleContactsUpdateTypeMulti} style={{ margin: "10px" }}> 공용 주소록으로 이동 </button>
-                        <button className={styles.btns} onClick={handleMail} style={{ margin: "10px" }}> 메일 쓰기 </button>\
+                        <button className={styles.btns} onClick={handleContactsDelete} > 삭제 </button>
+                        <button className={styles.btns} onClick={showUpdateModal} > 수정 </button>
+                        <button className={styles.btns} onClick={handleCopyToSolo} > 개인주소록에 복사 </button>
+                        <button className={styles.btns} onClick={handleContactsUpdateTypeMulti} > 공용 주소록으로 이동 </button>
+                        <button className={styles.btns} onClick={handleMail} > 메일 쓰기 </button>
                         </div>
                     </>
                 )}
@@ -244,7 +244,6 @@ const Contacts = () => {
                 }}
             />
 
-            {/* ✅ 이하 모달 부분 그대로 유지 */}
             <Modal
                 centered={false}
                 open={isSingleModalOpen}
