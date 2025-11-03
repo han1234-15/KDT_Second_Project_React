@@ -1,18 +1,15 @@
 import { useState } from "react";
-import styles from "./Contacts.module.css";
+import styles from "./ContactsAdd.module.css";
 import { caxios } from '../../config/config.js';
-
+import { Input } from "antd"; // ✅ Ant Design Input 추가
 
 const ContactsAdd = ({ onClose, handleContactsList }) => {
-
 
     const [Contacts, setContacts] = useState(
         { user_id: "", name: "", phone: "", email: "", type: "solo", job_code: "", rank_code: "" }
     );
 
-
     const handlechange = (e) => {
-
         setContacts(prev => ({ ...prev, [e.target.name]: e.target.value }))
     }
 
@@ -34,12 +31,11 @@ const ContactsAdd = ({ onClose, handleContactsList }) => {
             alert("이메일을 입력해주세요.");
             return;
         }
-       // 이름 체크
-        const nameRegex = /^[가-힣a-zA-Z\s]{2,6}$/;
 
+        // 이름 체크
+        const nameRegex = /^[가-힣a-zA-Z\s]{2,6}$/;
         // 번호 체크
         const phoneRegex = /^010-\d{4}-\d{4}$/;
-
         // 이메일 체크
         const emailRegex = /^[a-zA-Z0-9]+$/;
 
@@ -47,7 +43,6 @@ const ContactsAdd = ({ onClose, handleContactsList }) => {
             alert("이름에는 숫자나 특수문자를 포함할 수 없습니다 (최소 2글자 ~ 최대 6글자).");
             return;
         }
-
 
         if (!phoneRegex.test(phone)) {
             alert("전화번호 형식이 올바르지 않습니다. 예: 010-1234-5678");
@@ -59,12 +54,7 @@ const ContactsAdd = ({ onClose, handleContactsList }) => {
             return;
         }
 
-
-
-
-
-
-        const payload = { ...Contacts, phone: String(Contacts.phone) }; // 문자열 강제
+        const payload = { ...Contacts, phone: String(Contacts.phone) };
 
         caxios.post("/contacts", payload, { headers: { "Content-Type": "application/json" } })
             .then((res) => {
@@ -82,68 +72,79 @@ const ContactsAdd = ({ onClose, handleContactsList }) => {
             });
     };
 
-
     const handleOut = () => {
         onClose();
     }
 
-
     return (
-
         <div className={styles.container}>
-
-            <div className={styles.mainHeader} style={{ fontSize: "40px", textAlign: "center" }}>
+            <div className={styles.mainHeader} style={{ fontSize: "20px", textAlign: "center" }}>
                 개인 주소록 추가
             </div>
-            <br></br>
-            <div className={styles.mainBody} style={{ border: "none" }}>
+            <hr />
 
-                <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>성함 </div>
-                    <input type="text" className={styles.NewSharedMailbox2}
-                        style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
-                        onChange={handlechange} name="name" value={Contacts.name} />
+            {/* ✅ 인풋들 모두 hr 아래에 */}
+            <div className={styles.formContainer}>
+                <div className={styles.formRow}>
+                    <label>이름</label>
+                    <Input
+                        className={styles.inputField}
+                        onChange={handlechange}
+                        name="name"
+                        value={Contacts.name}
+                    />
                 </div>
 
-                <br></br>
-                <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>전화번호  </div>
-                    <input type="text" className={styles.NewSharedMailbox2}
-                        style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
-                        onChange={handlechange} name="phone" value={Contacts.phone} />
-                </div>
-                <br></br>
-                <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>이메일  </div>
-                    <input type="text" className={styles.NewSharedMailbox2}
-                        style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
-                        onChange={handlechange} name="email" value={Contacts.email} />@Infinity.com
-                </div>    
-                <br></br>
-                <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>부서  </div>
-                    <input type="text" className={styles.NewSharedMailbox2}
-                        style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
-                        onChange={handlechange} name="job_code" value={Contacts.job_code} />
-                </div>
-                <br></br>
-                <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
-                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}> 직위 </div>
-                    <input type="text" className={styles.NewSharedMailbox2}
-                        style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
-                        onChange={handlechange} name="rank_code" value={Contacts.rank_code} />
+                <div className={styles.formRow}>
+                    <label>전화번호</label>
+                    <Input
+                        className={styles.inputField}
+                        onChange={handlechange}
+                        name="phone"
+                        value={Contacts.phone}
+                    />
                 </div>
 
+                <div className={styles.formRow}>
+                    <label>이메일</label>
+                    <div className={styles.emailBox}>
+                        <Input
+                            className={styles.inputField}
+                            onChange={handlechange}
+                            name="email"
+                            value={Contacts.email}
+                        />
+                        <span>@Infinity.com</span>
+                    </div>
+                </div>
 
+                <div className={styles.formRow}>
+                    <label>부서</label>
+                    <Input
+                        className={styles.inputField}
+                        onChange={handlechange}
+                        name="job_code"
+                        value={Contacts.job_code}
+                    />
+                </div>
 
+                <div className={styles.formRow} style={{marginBottom:"10px"}}>
+                    <label>직급</label>
+                    <Input
+                        className={styles.inputField}
+                        onChange={handlechange}
+                        name="rank_code"
+                        value={Contacts.rank_code}
+                    />
+                </div>
             </div>
-            <button style={{ float: "right", marginTop: "10px", marginLeft: "10px" }} onClick={handleOut}>취소</button>
-            <button style={{ float: "right", marginTop: "10px" }} onClick={handleAdd}>완료</button>
-
-
+            <hr />
+            <div className={styles.buttonBox}>
+                <button className={styles.btns} onClick={handleOut}>취소</button>
+                <button className={styles.btns} onClick={handleAdd}>완료</button>
+            </div>
         </div>
     );
 }
-
 
 export default ContactsAdd;
