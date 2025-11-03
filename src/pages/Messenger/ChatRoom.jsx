@@ -1,4 +1,3 @@
-// src/pages/Messenger/ChatRoom.jsx
 import React, {
   useState,
   useEffect,
@@ -12,7 +11,6 @@ import { useSocket } from "../../config/SocketContext";
 import { caxios } from "../../config/config";
 import ContactListInvite from "./ContactListInvite";
 import MessengerFileUpload from "./MessengerFileUpload";
-import ChatMessageItem from "./ChatMessageItem";
 
 export default function ChatRoom() {
   const [params] = useSearchParams();
@@ -34,19 +32,15 @@ export default function ChatRoom() {
 
   const chatEndRef = useRef(null);
   const lastReadIdRef = useRef(null);
-
   const list = useMemo(() => messages[room_id] || [], [messages, room_id]);
 
-  /** ✅ 채팅방 열릴 때 상태 초기화 */
   useEffect(() => {
-    if (room_id) {
+    if (room_id)
       window.opener?.dispatchEvent(
         new CustomEvent("chatRoomUpdated", { detail: { roomId: room_id } })
       );
-    }
   }, [room_id]);
 
-  /** ✅ 참여자 목록 */
   const fetchParticipants = useCallback(async () => {
     if (!room_id) return;
     try {
@@ -61,7 +55,6 @@ export default function ChatRoom() {
     fetchParticipants();
   }, [room_id]);
 
-  /** ✅ sender 이름 변환 */
   const getSenderInfo = useCallback(
     (senderId) => {
       const found = participants.find((p) => p.memberId === senderId);
@@ -73,7 +66,6 @@ export default function ChatRoom() {
     [participants, targetName, targetRank]
   );
 
-  /** ✅ 읽음 처리 */
   useEffect(() => {
     if (!room_id || !userId || list.length === 0) return;
     const last = list[list.length - 1];
@@ -90,30 +82,23 @@ export default function ChatRoom() {
     }
   }, [list, room_id, userId, sendRead]);
 
-  /** ✅ 최초 메시지 로드 */
   useEffect(() => {
     if (!room_id) return;
     let mounted = true;
     caxios.get(`/api/chat/messages/${room_id}`).then((resp) => {
       if (!mounted) return;
       const oldMsgs = resp.data || [];
-      setMessages((prev) => ({
-        ...prev,
-        [room_id]: oldMsgs,
-      }));
+      setMessages((prev) => ({ ...prev, [room_id]: oldMsgs }));
     });
     return () => {
       mounted = false;
     };
   }, [room_id, setMessages]);
 
-  /** ✅ 소켓 구독 */
   useEffect(() => {
-    if (!room_id) return;
-    subscribeRoom(room_id);
+    if (room_id) subscribeRoom(room_id);
   }, [room_id, subscribeRoom]);
 
-  /** ✅ 시간 포맷 */
   const formatTime = useCallback((t) => {
     if (!t) return "";
     return new Date(t).toLocaleTimeString("ko-KR", {
@@ -123,78 +108,56 @@ export default function ChatRoom() {
     });
   }, []);
 
-  /** ✅ 메시지 전송 */
   const handleSend = useCallback(() => {
     if (!input.trim() || !userId || !room_id) return;
-    sendMessage(room_id, {
-      sender: userId,
-      content: input,
-      type: "TALK",
-    });
+    sendMessage(room_id, { sender: userId, content: input, type: "TALK" });
     setInput("");
   }, [input, room_id, userId, sendMessage]);
 
   useEffect(() => {
-    const offset = window.outerHeight - window.innerHeight;
-    setChromeOffset(offset);
+    setChromeOffset(window.outerHeight - window.innerHeight);
   }, []);
 
-  /** ✅ 자동 스크롤 */
   useEffect(() => {
     if (list.length === 0) return;
     const last = list[list.length - 1];
-    if (last.sender === userId) {
+    if (last.sender === userId)
       chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
   }, [list, userId]);
 
-  /** ✅ 사이드 패널 제어 */
   const openSidePanel = (mode) => {
     setPanelMode(mode);
     setPanelOpen(true);
     setMenuOpen(false);
-    const w = window.screenX;
-    const h = window.screenY;
     window.resizeTo(800, 550 + chromeOffset);
-    window.moveTo(w, h);
   };
 
   const closeSidePanel = () => {
     setPanelOpen(false);
     setPanelMode("");
-    const w = window.screenX;
-    const h = window.screenY;
     window.resizeTo(400, 550 + chromeOffset);
-    window.moveTo(w, h);
   };
 
-  /** ✅ 방 나가기 */
   const handleLeaveRoom = async () => {
     if (!room_id || !userId) return;
-    const confirmLeave = window.confirm("이 채팅방을 나가시겠습니까?");
-    if (!confirmLeave) return;
-
+    if (!window.confirm("이 채팅방을 나가시겠습니까?")) return;
     try {
       const resp = await caxios.post("/api/chat/leave", null, {
         params: { roomId: room_id },
       });
-
       if (resp.status === 200) {
         alert("채팅방을 나갔습니다.");
         window.opener?.dispatchEvent(
           new CustomEvent("chatRoomUpdated", { detail: { roomId: room_id } })
         );
         window.close();
-      } else {
-        alert("채팅방 나가기 실패");
-      }
+      } else alert("채팅방 나가기 실패");
     } catch (err) {
-      console.error("채팅방 나가기 오류:", err);
+      console.error(err);
       alert("오류가 발생했습니다.");
     }
   };
 
-  /** ✅ 파일 목록 조회 */
   const fetchFileList = useCallback(async () => {
     if (!room_id) return;
     try {
@@ -208,12 +171,9 @@ export default function ChatRoom() {
   }, [room_id]);
 
   useEffect(() => {
-    if (panelMode === "files") {
-      fetchFileList();
-    }
+    if (panelMode === "files") fetchFileList();
   }, [panelMode, fetchFileList]);
 
-  /** ✅ 파일 다운로드 */
   const handleDownload = async (file) => {
     try {
       const resp = await caxios.get(`/api/chat/download/${file.sysName}`, {
@@ -231,27 +191,23 @@ export default function ChatRoom() {
     }
   };
 
-  /** ✅ 전역 드래그 앤 드롭 업로드 */
   const handleGlobalDrop = useCallback(
     async (e) => {
       e.preventDefault();
       const files = Array.from(e.dataTransfer.files);
       if (!files.length || !room_id) return;
-
       try {
         const token = sessionStorage.getItem("token");
         for (const file of files) {
           const formData = new FormData();
           formData.append("file", file);
           formData.append("roomId", room_id);
-
           const resp = await caxios.post("/api/chat/upload", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
               Authorization: `Bearer ${token}`,
             },
           });
-
           const uploaded = resp.data;
           sendMessage(room_id, {
             sender: userId,
@@ -260,7 +216,6 @@ export default function ChatRoom() {
             type: "FILE",
           });
         }
-
         fetchFileList();
       } catch (err) {
         console.error("드래그앤드롭 파일 업로드 실패:", err);
@@ -279,21 +234,18 @@ export default function ChatRoom() {
     };
   }, [handleGlobalDrop]);
 
-  /** ✅ 상단 제목 */
   const chatTitle = useMemo(() => {
-    if (participants.length > 0) {
+    if (participants.length > 0)
       return `${participants
         .filter((p) => p.memberId !== userId)
         .map((p) => `${p.name}${p.rankName ? " " + p.rankName : ""}`)
         .join(", ")}와의 대화`;
-    }
     return `${targetName}${targetRank ? " " + targetRank : ""} 님과의 대화`;
   }, [participants, userId, targetName, targetRank]);
 
-  /** ✅ 렌더링 */
   return (
     <div className={styles.popupContainer}>
-      {/* 상단 */}
+      {/* 상단바 */}
       <div className={styles.topbar}>
         <div className={styles.chatTitle}>{chatTitle}</div>
         <div className={styles.menuContainer}>
@@ -330,44 +282,91 @@ export default function ChatRoom() {
             Math.abs(new Date(msg.sendTime) - new Date(prevMsg.sendTime)) <=
               60000;
           const hideProfile = isSameSender && withinOneMin;
-
-          // ✅ 파일 메시지 표시
-          if (msg.type === "FILE") {
-            return (
-              <div
-                key={msg.messageId ?? `${msg.sender}_${idx}`}
-                className={`${styles.fileMessage} ${
-                  isMine ? styles.mine : styles.theirs
-                }`}
-              >
-                <div className={styles.filePreview}>
-                  <i className="bi bi-file-earmark"></i>
-                  <span>{msg.content}</span>
-                </div>
-                <button
-                  className={styles.downloadMiniBtn}
-                  onClick={() =>
-                    handleDownload({
-                      sysName: msg.fileUrl,
-                      originalName: msg.content,
-                    })
-                  }
-                >
-                  <i className="bi bi-download"></i>
-                </button>
-              </div>
-            );
-          }
+          const senderInfo = getSenderInfo(msg.sender);
 
           return (
-            <ChatMessageItem
-              key={msg.messageId ?? `${msg.sender}_${idx}`}
-              msg={msg}
-              isMine={isMine}
-              hideProfile={hideProfile}
-              getSenderInfo={getSenderInfo}
-              formatTime={formatTime}
-            />
+            <div
+              key={idx}
+              className={`${styles.msg} ${isMine ? styles.me : styles.you}`}
+            >
+              {!isMine && (
+                <div className={styles.senderInfo}>
+                  {!hideProfile ? (
+                    <img
+                      src={msg.profileImage || "/defaultprofile.png"}
+                      className={styles.profileThumb}
+                      alt="프로필"
+                    />
+                  ) : (
+                    <div className={styles.emptyProfileSpace}></div>
+                  )}
+                  <div className={styles.senderMeta}>
+                    {!hideProfile && (
+                      <div className={styles.senderName}>{senderInfo}</div>
+                    )}
+                    <div className={styles.msgRowYou}>
+                      {msg.type === "FILE" ? (
+                        <div
+                          className={`${styles.fileMessage} ${
+                            isMine ? styles.mine : styles.youFile
+                          }`}
+                        >
+                          <div className={styles.filePreview}>
+                            <i className="bi bi-file-earmark"></i>
+                            <span>{msg.content}</span>
+                          </div>
+                          <button
+                            className={styles.downloadMiniBtn}
+                            onClick={() =>
+                              handleDownload({
+                                sysName: msg.fileUrl,
+                                originalName: msg.content,
+                              })
+                            }
+                          >
+                            <i className="bi bi-download"></i>
+                          </button>
+                        </div>
+                      ) : (
+                        <div className={styles.msgBubble}>{msg.content}</div>
+                      )}
+                      <div className={styles.msgTime}>
+                        {formatTime(msg.sendTime)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {isMine && (
+                <div className={styles.myWrapper}>
+                  <div className={styles.msgTime}>
+                    {formatTime(msg.sendTime)}
+                  </div>
+                  {msg.type === "FILE" ? (
+                    <div className={`${styles.fileMessage} ${styles.mine}`}>
+                      <div className={styles.filePreview}>
+                        <i className="bi bi-file-earmark"></i>
+                        <span>{msg.content}</span>
+                      </div>
+                      <button
+                        className={styles.downloadMiniBtn}
+                        onClick={() =>
+                          handleDownload({
+                            sysName: msg.fileUrl,
+                            originalName: msg.content,
+                          })
+                        }
+                      >
+                        <i className="bi bi-download"></i>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className={styles.msgBubble}>{msg.content}</div>
+                  )}
+                </div>
+              )}
+            </div>
           );
         })}
         <div ref={chatEndRef} />
@@ -396,13 +395,30 @@ export default function ChatRoom() {
               X
             </button>
           </div>
-
           <div className={styles.panelBody}>
             {panelMode === "files" ? (
               <div className={styles.filePanel}>
                 <MessengerFileUpload
                   roomId={room_id}
-                  onUploadComplete={fetchFileList}
+                  onUploadComplete={(uploaded) => {
+                    if (uploaded && uploaded.sysName) {
+                      // ✅ 1. 업로드된 파일을 채팅창에 즉시 표시
+                      sendMessage(room_id, {
+                        sender: userId,
+                        content: uploaded.originalName,
+                        fileUrl: uploaded.sysName,
+                        type: "FILE",
+                      });
+                      // ✅ 2. 파일 목록 갱신
+                      fetchFileList();
+                      // ✅ 3. 사이드 패널 닫기
+                      setPanelOpen(false);
+                      setPanelMode("");
+                      try {
+                        window.resizeTo(400, 550 + chromeOffset);
+                      } catch {}
+                    }
+                  }}
                 />
                 <div className={styles.fileList}>
                   {fileList.length === 0 ? (

@@ -88,7 +88,7 @@
 .msg {
   display: flex;
   align-items: flex-start;
-  max-width: 80%;
+  width: 100%;
 }
 
 .you {
@@ -100,6 +100,47 @@
   align-self: flex-end;
 }
 
+/* ===== 상대방 메시지 ===== */
+.senderInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 80%;
+}
+
+.profileThumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.emptyProfileSpace {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.senderMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.senderName {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 3px;
+  margin-left: 2px;
+}
+
+.msgRowYou {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+}
+
 /* ===== 말풍선 ===== */
 .msgBubble {
   padding: 10px 14px;
@@ -108,9 +149,9 @@
   word-break: break-word;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  max-width: 260px;
 }
 
-/* 상대방 */
 .you .msgBubble {
   background: #ffffff;
   color: #333;
@@ -118,19 +159,27 @@
   border-radius: 0 12px 12px 12px;
 }
 
-/* 나 */
 .me .msgBubble {
   background: linear-gradient(45deg, #4e73df, #1e88e5);
   color: #fff;
   border-radius: 12px 12px 0 12px;
 }
 
-/* ===== 메시지 시간 ===== */
+/* ===== 시간 표시 ===== */
 .msgTime {
   font-size: 11px;
-  color: #555;
-  margin-top: 4px;
+  color: #777;
+  margin-left: 4px;
+  align-self: flex-end;
   white-space: nowrap;
+}
+
+/* ===== 내 메시지 ===== */
+.myWrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: 80%;
 }
 
 /* ===== 입력창 ===== */
@@ -309,6 +358,8 @@
 .downloadBtn:hover {
   background: #563d7c;
 }
+
+/* ===== 파일 메시지 ===== */
 .fileMessage {
   display: flex;
   align-items: center;
@@ -321,10 +372,17 @@
   max-width: 75%;
 }
 
-.fileMessage.mine {
-  margin-left: auto;
-  background: #e9e1ff;
-  border-color: #a68af5;
+/* ✅ 내가 보낸 파일 */
+.mine {
+  margin-left: auto !important;
+  background: #e9e1ff !important;
+  border-color: #a68af5 !important;
+}
+
+/* ✅ 상대방 파일 */
+.youFile {
+  background: #f8f9fa !important;
+  border-color: #ddd !important;
 }
 
 .filePreview {
