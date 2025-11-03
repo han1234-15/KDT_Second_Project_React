@@ -31,6 +31,16 @@ export default function EApprovalForm({ mode = "write", initialData = null, seq 
     comments: "",
   });
 
+    const sendTestNotice = async (receiver_id, type, message) => {
+    await caxios.post("/notification/send", {
+      receiver_id: receiver_id, // 실제 로그인 ID로 전달받을 사람.
+      type: type,
+      message: message,
+      created_at: new Date().toISOString(),
+    });
+    //alert("테스트 알림 전송 완료 ✅");
+  };
+
   // edit 모드면 detail에서 받은 값으로 초기화
   useEffect(() => {
     if (mode === "edit" && initialData) {
@@ -56,37 +66,45 @@ export default function EApprovalForm({ mode = "write", initialData = null, seq 
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
-  const submitToWriteApi = async (status) => {
-    // status: "TEMP" | "SUBMITTED"
-    try {
-      setSubmitting(true);
+ const submitToWriteApi = async (status) => {
+  try {
+    setSubmitting(true);
 
-      // write API 하나만 사용, seq 있으면 동일 엔티티 업데이트
-      const payload = { ...formData, status };
-      if (seq) payload.seq = seq;
+    const payload = { ...formData, status };
+    if (seq) payload.seq = seq;
 
-      const res = await caxios.post("/Eapproval/write", payload);
-      const savedSeq = res?.data?.seq ?? seq; // API가 seq 리턴하면 사용, 아니면 기존 seq
+    const res = await caxios.post("/Eapproval/write", payload);
+    const savedSeq = res?.data?.seq ?? seq;
 
-      if (status === "TEMP") {
-        // 임시저장 후 → 임시보관함으로 이동
-        navigate("/Eapproval/TEMP");
-      } else {
-        // 상신 후 → 상세보기로 이동
-        if (!savedSeq) {
-          // 안전장치: seq가 없다면 목록으로
-          navigate("/Eapproval/show");
-        } else {
-          navigate(`/Eapproval/detail/${savedSeq}`);
-        }
-      }
-    } catch (e) {
-      console.error("save/submit error:", e);
-      alert("저장 중 오류가 발생했습니다.");
-    } finally {
-      setSubmitting(false);
+    if (status === "TEMP") {
+      navigate("/Eapproval/TEMP");
+    } else {
+
+      
+     // ✅ 변경 후 (컨트롤러와 정확히 매칭)
+const lineRes = await caxios.get(`/Eapproval/line/${savedSeq}`);
+console.log("결재라인 응답:", lineRes.data);
+
+const firstApprover =
+  lineRes.data?.find(a => a.ORDERNO === 1 || a.orderNo === 1 || a.approver_order === 1);
+
+if (firstApprover) {
+  await sendTestNotice(
+    firstApprover.APPROVER_ID || firstApprover.approver_id,
+    "결재 요청",
+    `${formData.writer}님이 결재를 상신했습니다.`
+  );
+}
+
+      navigate(`/Eapproval/detail/${savedSeq}`);
     }
-  };
+  } catch (e) {
+    console.error("save/submit error:", e);
+    alert("저장 중 오류가 발생했습니다.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <div className="approval-edit-container">

@@ -5,6 +5,19 @@ import { caxios } from "../../config/config";
 import { jwtDecode } from "jwt-decode";
 import ApprovalLineModal from "../WorkExpense/ApprovalLineModal";
 
+ const sendTestNotice = async (receiver_id, type, message) => {
+    console.log(`📢 알림 전송 → ${receiver_id}, 유형: ${type}, 내용: ${message}`);
+    await caxios.post("/notification/send", {
+      receiver_id: receiver_id, // 실제 로그인 ID로 전달받을 사람.
+      type: type,
+      message: message,
+      created_at: new Date().toISOString(),
+    });
+    //alert("테스트 알림 전송 완료 ✅");
+  };
+
+
+
 // ✅ 직급 변환 매핑
 const ranks = {
   J001: "사원",
@@ -95,29 +108,67 @@ function EApprovalWrite() {
     setApprovalModalOpen(false);
   };
 
-const handleSubmit = () => {
+const handleSubmit = async (e) => {
+  e.preventDefault(); // ✅ 새로고침 방지
+  console.log("🔥 handleSubmit 실행됨");
+
   if (!approvers || approvers.length === 0) {
     alert("🚨 결재선을 최소 1명 이상 지정하세요.");
     return;
   }
 
   const orderedApprovers = approvers.map((a, i) => ({
-    ...a,
-    approver_order: i + 1   // ✅ DB와 MyBatis가 받는 정확한 필드명
+    id: a.id,
+    approver_order: i + 1,
+    status: "N"
   }));
 
-  console.log("✅ 최종 전송되는 결재선:", orderedApprovers);
-
-  caxios.post(`/Eapproval/write`, {
+  console.log("📌 전송 데이터:", {
     ...formData,
-    approvers: orderedApprovers,  // ✅ 여기 순서 중요
-    referenceList,
-  })
-    .then(() => {
-      alert("✅ 결재 문서가 등록되었습니다.");
-      navigate("/Eapproval/A");
-    })
-    .catch(() => alert("⚠️ 등록 중 오류가 발생했습니다."));
+    approvers: orderedApprovers,
+    referenceList
+  });
+
+  try {
+    const res = await caxios.post(`/Eapproval/write`, {
+      ...formData,
+      approvers: orderedApprovers,
+      referenceList,
+    });
+
+    const savedSeq = res.data.seq;
+    console.log("📝 저장된 문서번호:", savedSeq);
+
+    const lineRes = await caxios.get(`/Eapproval/line/${savedSeq}`);
+console.log("👥 결재선:", lineRes.data);
+
+// ✅ 결재자만 추출
+const approverOnly = lineRes.data.filter(a => a.REFERENCEFLAG === 0);
+
+// ✅ 첫 결재자 = 가장 첫 번째 결재자
+const firstApprover = approverOnly[0];
+
+if (firstApprover) {
+  const receiverId = firstApprover.ID || firstApprover.id || firstApprover.approver_id;
+
+  console.log("📢 첫 결재 알림 대상:", receiverId);
+
+  await sendTestNotice(
+    receiverId,
+    "결재 요청",
+    `${formData.writer}님이 결재를 상신했습니다.`
+  );
+} else {
+  console.warn("⚠️ 결재자가 없습니다 (결재선 설정 확인 필요)");
+}
+
+    alert("✅ 결재 문서가 등록되었습니다.");
+    navigate(`/Eapproval/detail/${savedSeq}`);
+
+  } catch (e) {
+    console.error("❌ 결재 상신 오류:", e);
+    alert("⚠️ 등록 중 오류가 발생했습니다.");
+  }
 };
 
   const isDocSelected = formData.docType && formData.template;
@@ -211,7 +262,7 @@ const handleSubmit = () => {
           </div>
 
           <div className="bottom-buttons">
-            <button className="submit" onClick={handleSubmit}>결재 상신</button>
+           <button className="submit" onClick={(e) => handleSubmit(e)}>결재 상신</button>
           </div>
         </>
       )}
