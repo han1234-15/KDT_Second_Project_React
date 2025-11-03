@@ -129,7 +129,6 @@ const Contacts = () => {
             return;
         }
 
-
         caxios.put("/contacts/update", { dto: updateData, seqList: checkedList }, { withCredentials: true }
         ).then(resp => {
             setUpdateModalOpen(false);
