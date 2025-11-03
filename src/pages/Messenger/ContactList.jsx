@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
+// src/components/chat/ContactList.jsx
+import React, { useEffect, useState, useCallback } from "react";
 import { Accordion, ListGroup, Badge } from "react-bootstrap";
 import { caxios } from "../../config/config";
 import styles from "./ContactList.module.css";
 
 const ContactList = () => {
+  // 상태 정의
   const [member, setMember] = useState([]);
   const [tokenReady, setTokenReady] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // ✅ 부서 목록 (DB에 한글 저장)
+  // 부서 목록
   const departments = [
     "연구개발",
     "사업관리",
@@ -19,7 +21,7 @@ const ContactList = () => {
     "마케팅팀",
   ];
 
-  // ✅ 직급 코드 (유지)
+  // 직급 코드 → 직급명 매핑
   const ranks = {
     J001: "사원",
     J002: "주임",
@@ -32,15 +34,13 @@ const ContactList = () => {
     J009: "사장",
   };
 
-  // ✅ 근무 상태 → 색상
+  // 근무 상태별 표시
   const statusVariant = {
-    working: "success", // 근무중
-    busy: "warning", // 다른용무중
-    away: "secondary", // 자리비움
-    offline: "dark", // 오프라인
+    working: "success",
+    busy: "warning",
+    away: "secondary",
+    offline: "dark",
   };
-
-  // ✅ 근무 상태 → 한글 텍스트
   const statusText = {
     working: "근무중",
     busy: "다른용무중",
@@ -48,13 +48,14 @@ const ContactList = () => {
     offline: "오프라인",
   };
 
-  // ✅ 토큰 감시
+  // 로그인 토큰 대기
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (token) {
       setTokenReady(true);
       return;
     }
+
     const interval = setInterval(() => {
       const newToken = sessionStorage.getItem("token");
       if (newToken) {
@@ -62,37 +63,47 @@ const ContactList = () => {
         clearInterval(interval);
       }
     }, 100);
+
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ 멤버 목록 로드
+  // 토큰 준비되면 멤버 목록 불러오기
   useEffect(() => {
     if (!tokenReady) return;
+
     caxios
       .get("/messenger/member")
       .then((resp) => setMember(resp.data))
       .catch((err) => console.error("데이터 요청 실패:", err));
   }, [tokenReady]);
 
-  // ✅ 부서별 필터링 (DB값 한글 비교 + 오프라인 하단정렬 + 본인 제외)
-  const getDeptMembers = (deptName) => {
-    const myId = sessionStorage.getItem("LoginID");
+  /**
+   * 부서별 멤버 필터링
+   * - 본인 제외
+   * - 검색어 포함된 이름만 남김
+   * - 오프라인은 하단 정렬
+   */
+  const getDeptMembers = useCallback(
+    (deptName) => {
+      const myId = sessionStorage.getItem("LoginID");
+      return member
+        .filter(
+          (m) =>
+            m.dept_code?.trim() === deptName &&
+            m.id !== myId &&
+            (searchTerm.trim() === "" ||
+              m.name?.toLowerCase().includes(searchTerm.toLowerCase()))
+        )
+        .sort((a, b) => {
+          if (a.work_status === "offline" && b.work_status !== "offline") return 1;
+          if (a.work_status !== "offline" && b.work_status === "offline") return -1;
+          return 0;
+        });
+    },
+    [member, searchTerm]
+  );
 
-    return member
-      .filter(
-        (m) =>
-          m.dept_code?.trim() === deptName &&
-          m.id !== myId && // ✅ 로그인한 본인 제외
-          m.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .sort((a, b) => {
-        if (a.work_status === "offline" && b.work_status !== "offline") return 1;
-        if (a.work_status !== "offline" && b.work_status === "offline") return -1;
-        return 0;
-      });
-  };
-
-  // ✅ 더블클릭 시 채팅 팝업 오픈
+  // 더블클릭 시 채팅방 오픈
   const openChatPopup = async (member) => {
     const myId = sessionStorage.getItem("LoginID");
     if (!myId) {
@@ -104,7 +115,6 @@ const ContactList = () => {
     const targetName = member.name;
     const targetRank = ranks[member.rank_code] || "";
 
-    // 방 키 (중복 방 방지용)
     const roomMembersKey = [myId, targetId].sort().join("_");
 
     try {
@@ -113,7 +123,6 @@ const ContactList = () => {
       );
       const roomId = resp.data.roomId;
 
-      // 팝업 URL
       const url = `${window.location.origin}/chatroom?room_id=${roomId}&target=${encodeURIComponent(
         targetName
       )}&rank=${encodeURIComponent(targetRank)}`;
@@ -136,9 +145,10 @@ const ContactList = () => {
 
   return (
     <div className={styles.contactContainer}>
-      {/* 상단바 */}
+      {/* 상단 헤더 */}
       <div className={styles.header}>
         <span className={styles.title}>주소록</span>
+        {/* 검색창 토글 버튼 */}
         <span
           className={styles.searchToggle}
           onClick={() => setShowSearch(!showSearch)}
@@ -149,7 +159,7 @@ const ContactList = () => {
         </span>
       </div>
 
-      {/* 검색창 */}
+      {/* 검색 입력창 */}
       <div
         className={`${styles.searchBox} ${
           showSearch ? styles.searchBoxVisible : ""
@@ -159,11 +169,11 @@ const ContactList = () => {
           type="text"
           placeholder="이름 검색..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => setSearchTerm(e.target.value)} // 실시간 반영
         />
       </div>
 
-      {/* 본문 */}
+      {/* 부서별 사원 목록 */}
       <div className={styles.scrollArea}>
         <Accordion alwaysOpen>
           {departments.map((dept, idx) => {
@@ -187,12 +197,15 @@ const ContactList = () => {
                           onDoubleClick={() => openChatPopup(m)}
                           style={{ cursor: "pointer" }}
                         >
+                          {/* 이름 + 직급 */}
                           <div>
                             <strong>{m.name}</strong>
                             <span className="text-muted ms-1">
                               {ranks[m.rank_code] || ""}
                             </span>
                           </div>
+
+                          {/* 근무 상태 뱃지 */}
                           <Badge
                             bg={
                               statusVariant[m.work_status?.toLowerCase()] ||
@@ -206,7 +219,9 @@ const ContactList = () => {
                       ))}
                     </ListGroup>
                   ) : (
-                    <div className="text-muted small">등록된 인원이 없습니다.</div>
+                    <div className="text-muted small">
+                      등록된 인원이 없습니다.
+                    </div>
                   )}
                 </Accordion.Body>
               </Accordion.Item>

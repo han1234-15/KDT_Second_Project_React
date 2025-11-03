@@ -128,3 +128,12 @@
   margin-left: 6px;
 }
 
+.noResult {
+  display: flex;
+  align-items: center;       /* 수직 가운데 정렬 */
+  justify-content: center;   /* 수평 가운데 정렬 */
+  height: 100%;              /* 부모 높이 기준으로 중앙 */
+  color: #999;
+  font-size: 14px;
+  text-align: center;
+}
