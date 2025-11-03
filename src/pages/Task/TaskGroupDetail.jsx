@@ -120,6 +120,16 @@ const TaskGroupDetail = () => {
     setIsEditModalOpen(true);
   };
 
+  const sendTestNotice = async (receiver_id, type, message) => {
+    await caxios.post("/notification/send", {
+      receiver_id: receiver_id, // 실제 로그인 ID로 전달받을 사람.
+      type: type,
+      message: message,
+      created_at: new Date().toISOString(),
+    });
+    //alert("테스트 알림 전송 완료 ✅");
+  };
+
   const handleUpdateTask = async () => {
     if (!editTask.title.trim()) {
       alert("업무 제목을 입력해주세요.");
@@ -133,7 +143,8 @@ const TaskGroupDetail = () => {
         const updatedTask = resp.data; // ✅ 서버에서 최신 데이터 받기 (created_at, updated_at 포함)
         alert("업무가 수정되었습니다.");
         console.log("서버에서 받은 수정된 데이터:", updatedTask);
-
+        console.log("담당자 이름" + editTask.assignee_id);
+        sendTestNotice(editTask.assignee_id,"task","담당 업무가 배정되었습니다.");
         // ✅ 전체 목록 반영
         setTasks((prev) =>
           prev.map((t) => (t.seq === updatedTask.seq ? updatedTask : t))
@@ -144,6 +155,8 @@ const TaskGroupDetail = () => {
 
         // 모달 닫기
         setIsEditModalOpen(false);
+
+
         setIsDrawerOpen(false);
       } else {
         alert("업무 수정에 실패했습니다.");
@@ -273,15 +286,6 @@ const TaskGroupDetail = () => {
     setIsModalOpen(true);
   };
   
-  const sendTestNotice = async (receiver_id, type, message) => {
-    await caxios.post("/notification/send", {
-      receiver_id: receiver_id, // 실제 로그인 ID로 전달받을 사람.
-      type: type,
-      message: message,
-      created_at: new Date().toISOString(),
-    });
-    //alert("테스트 알림 전송 완료 ✅");
-  };
 
 
   const handleAddTask = async () => {

@@ -4,7 +4,7 @@ import { AutoComplete, Input, Pagination } from 'antd';
 import styles from "./TaskGroupAdd.module.css";
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore.js';
-import {ranks} from '../../config/options.js';
+import { ranks } from '../../config/options.js';
 
 // 업무 그룹 추가페이지
 const TaskGroupAdd = ({ onClose }) => {
@@ -46,8 +46,9 @@ const TaskGroupAdd = ({ onClose }) => {
 
         const filtered = members
             .filter(m =>
-                m.name.toLowerCase().includes(value.toLowerCase()) &&
-                m.id != manager // ✅ 관리자 자신은 제외
+                (m.name.toLowerCase().includes(value.toLowerCase()) ||
+                    m.id.toLowerCase().includes(value.toLowerCase())) &&
+                m.id != manager
             )
             .slice(0, 10)
             .map(m => ({
@@ -110,14 +111,14 @@ const TaskGroupAdd = ({ onClose }) => {
 
             // ✅ 알림 전송
             await Promise.all(
-                selectedMembers.map((m) =>{
+                selectedMembers.map((m) => {
                     console.log(m.id)
                     caxios.post("/notification/send", {
                         receiver_id: m.id,
                         type: "taskgroup",
                         message: `[${groupName}] 업무 그룹에 초대되었습니다.`,
                     })
-                    }
+                }
                 )
             );
 
@@ -199,7 +200,7 @@ const TaskGroupAdd = ({ onClose }) => {
                                 handleSelect(value);
                                 setSearchValue(""); //  선택 후 입력창 비우기
                             }}
-                            placeholder="이름으로 검색"
+                            placeholder="이름 혹은 ID로 검색"
                             style={{ width: "100%" }}
                         >
                             <Input />
