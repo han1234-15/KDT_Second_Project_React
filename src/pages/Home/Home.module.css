@@ -242,6 +242,7 @@
   justify-content: space-between;
   padding: 0 20px;
   color: #6b7280;
+  
 }
 
 .clockDate {
@@ -261,8 +262,9 @@
 }
 
 .liveClock {
+  text-align: center;
   margin-top: 12px;
-  font-size: 34px;
+  font-size: 35px;
   font-weight: 600;
   letter-spacing: 2px;
 }
@@ -621,5 +623,3 @@
   vertical-align: middle !important;
   margin: 0 !important;
 }
-
-

@@ -123,14 +123,23 @@ function Home() {
   }, [fetchHomeData]);
 
   /* ---------------------- Layout (네 코드 유지) ---------------------- */
+  // const defaultLayout = [
+  //   { i: "notice", x: 0, y: 0, w: 12, h: 4 },
+  //   { i: "mail", x: 4, y: 11, w: 4, h: 3 },
+  //   { i: "vacation", x: 4, y: 4, w: 4, h: 3 },
+  //   { i: "calendar", x: 0, y: 4, w: 4, h: 10 },
+  //   //{ i: "profile", x: 8, y: 8, w: 4, h: 6 },
+  //   { i: "myTask", x: 4, y: 7, w: 4, h: 4 },
+  //   { i: "myPage", x: 8, y: 4, w: 4, h: 4 },
+  // ];
+
   const defaultLayout = [
-    { i: "notice", x: 0, y: 0, w: 12, h: 4 },
-    { i: "mail", x: 4, y: 11, w: 4, h: 3 },
-    { i: "vacation", x: 4, y: 4, w: 4, h: 3 },
-    { i: "calendar", x: 0, y: 4, w: 4, h: 10 },
-    { i: "profile", x: 8, y: 8, w: 4, h: 6 },
-    { i: "myTask", x: 4, y: 7, w: 4, h: 4 },
-    { i: "myPage", x: 8, y: 4, w: 4, h: 4 },
+    { i: "notice", x: 4, y: 7, w: 4, h: 4 },
+    { i: "mail", x: 8, y: 7, w: 4, h: 4 },
+    { i: "calendar", x: 0, y: 0, w: 4, h: 11 },
+    { i: "profile", x: 8, y: 0, w: 2, h: 7 },
+    { i: "myTask", x: 4, y: 0, w: 4, h: 7 },
+    { i: "myPage", x: 10, y: 0, w: 2, h: 7 },
   ];
 
   const saveLayoutToServer = useCallback(async (newLayout) => {
@@ -260,7 +269,7 @@ function Home() {
       <ResponsiveGridLayout
         layout={layout}
         cols={12}
-        rowHeight={35}
+        rowHeight={50}
         margin={[16, 16]}
         draggableHandle=".drag-area"
         isResizable
@@ -300,14 +309,14 @@ function Home() {
         </div>
 
         {/* 잔여 휴가 (네 코드 유지) */}
-        <div key="vacation">
+        {/* <div key="vacation">
           <Card title={<span className={`${styles.cardHeader} drag-area`}><AirplaneFill /> 잔여 휴가</span>} className={styles.card}>
             <p>남은 휴가 : <b>{leaveCount}일</b></p>
             <Button type="primary" onClick={() => setIsLeaveModalOpen(true)}>
               휴가 신청
             </Button>
           </Card>
-        </div>
+        </div> */}
 
         {/* 달력 */}
         <div key="calendar">
@@ -352,24 +361,24 @@ function Home() {
 
             <div className={styles.liveClock}>{new Date().toLocaleTimeString("ko-KR")}</div>
 
-        <div className={styles.workActions}>
-  <button
-    className={`${styles.clockBtn} ${styles.start} ${checkIn !== "-- : --" ? styles.disabledBtn : ""}`}
-    onClick={handleCheckIn}
-    disabled={checkIn !== "-- : --"}   // ✅ 클릭도 막기
-  >
-    출근
-  </button>
-             
-  <button
-    className={`${styles.clockBtn} ${styles.end} ${checkOut !== "-- : --" ? styles.disabledBtn : ""}`}
-    onClick={handleCheckOut}
-    disabled={checkOut !== "-- : --"}   // ✅ 클릭도 막기
-  >
-    퇴근
-  </button>
-</div>
-<hr></hr>
+            <div className={styles.workActions}>
+              <button
+                className={`${styles.clockBtn} ${styles.start} ${checkIn !== "-- : --" ? styles.disabledBtn : ""}`}
+                onClick={handleCheckIn}
+                disabled={checkIn !== "-- : --"}   // ✅ 클릭도 막기
+              >
+                출근
+              </button>
+
+              <button
+                className={`${styles.clockBtn} ${styles.end} ${checkOut !== "-- : --" ? styles.disabledBtn : ""}`}
+                onClick={handleCheckOut}
+                disabled={checkOut !== "-- : --"}   // ✅ 클릭도 막기
+              >
+                퇴근
+              </button>
+            </div>
+            <hr></hr>
 
             <div className={styles.timeLog}>
               <div><b>출근</b> {checkIn}</div>
@@ -385,14 +394,15 @@ function Home() {
           <Card title={<span className={`${styles.cardHeader} drag-area`}><PersonWorkspace /> 담당 업무</span>} className={styles.card} >
 
             <Table
+              tableLayout="fixed"
               columns={taskColumns}
               dataSource={tasks}
               rowKey="seq"
               bordered={false}              // 테두리 제거
               pagination={
-                tasks.length > 5
+                tasks.length > 3
                   ? {
-                    pageSize: 5,
+                    pageSize: 3,
                     showSizeChanger: false, // 사용자가 페이지당 항목 수 변경 불가
                   }
                   : false // 5개 이하일 땐 페이지네이션 숨김
@@ -417,47 +427,57 @@ function Home() {
             }
             className={styles.card}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column", // ✅ 세로 배치로 변경
+                alignItems: "center", // ✅ 가운데 정렬
+                gap: 16,
+              }}
+            >
               {/* 프로필 이미지 */}
               <div style={{ flexShrink: 0 }}>
                 <img
                   src={myInfo?.profileImage_servName ? `https://storage.googleapis.com/yj_study/${myInfo.profileImage_servName}` : defaultProfile}
                   alt="프로필 미리보기"
                   style={{
-                    width: 180,
-                    height: 180,
+                    width: 140,
+                    height: 140,
                     borderRadius: '50%',
                     objectFit: 'cover',
                     border: '2px solid #ebebeb',
                     boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                    marginTop: '5px'
                   }}
                 />
               </div>
-
-              {/* 사용자 정보 */}
-              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', flexGrow: 1 }}>
-                <div
-                  className={styles.userName}
-                  style={{ fontSize: 22, fontWeight: 600, color: '#222', marginBottom: 4 }}
-                >
-                  {myInfo?.name || "로딩 중..."}
+              <div style={{ display: 'block' }}>
+                {/* 사용자 정보 */}
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', flexGrow: 1 }}>
+                  <div
+                    className={styles.userName}
+                    style={{ textAlign: 'center', fontSize: 22, fontWeight: 600, color: '#222', marginBottom: 4 }}
+                  >
+                    {myInfo?.name || "로딩 중..."}
+                  </div>
+                  <div style={{ textAlign: 'center', fontSize: 15, color: '#555', marginBottom: 2 }}>
+                    {ranks[myInfo?.rank_code] || "--"} / {myInfo?.dept_code || "--"}
+                  </div>
+                  <div style={{ textAlign: 'center', fontSize: 14, color: '#888', marginBottom: 5 }}>
+                    {myInfo?.officeEmail || "--"}
+                  </div>
+                  <hr></hr>
+                  {/* 정보 수정 버튼 */}
+                  <Button
+                    type="primary"
+                    size="small"
+                    style={{ alignSelf: 'center', borderRadius: 4, padding: '4px 12px', marginTop: '10px' }}
+                    onClick={() => navigate("/mypage")} // 여기에 수정 모달 연결 가능
+                  >
+                    정보 수정
+                  </Button>
                 </div>
-                <div style={{ fontSize: 15, color: '#555', marginBottom: 2 }}>
-                  {ranks[myInfo?.rank_code] || "--"} / {myInfo?.dept_code || "--"}
-                </div>
-                <div style={{ fontSize: 14, color: '#888', marginBottom: 12 }}>
-                  {myInfo?.officeEmail || "--"}
-                </div>
-                <hr></hr>
-                {/* 정보 수정 버튼 */}
-                <Button
-                  type="primary"
-                  size="small"
-                  style={{ alignSelf: 'flex-start', borderRadius: 4, padding: '4px 12px', marginTop: '10px' }}
-                  onClick={() => navigate("/mypage")} // 여기에 수정 모달 연결 가능
-                >
-                  정보 수정
-                </Button>
               </div>
             </div>
           </Card>
