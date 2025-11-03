@@ -4,6 +4,7 @@ import { AutoComplete, Input, Pagination } from 'antd';
 import styles from "./TaskGroupAdd.module.css";
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore.js';
+import {ranks} from '../../config/options.js';
 
 // 업무 그룹 추가페이지
 const TaskGroupAdd = ({ onClose }) => {
@@ -53,7 +54,7 @@ const TaskGroupAdd = ({ onClose }) => {
                 value: m.name,
                 label: (
                     <div>
-                        <strong>{m.name}({m.id})</strong> ({m.dept_code} / {m.rank_code})
+                        <strong>{m.name}({m.id})</strong> ({m.dept_code} / {ranks[m.rank_code]})
                     </div>
                 ),
             }));
@@ -81,17 +82,15 @@ const TaskGroupAdd = ({ onClose }) => {
     }, [selectedMembers]);
 
     // 그룹 생성
-    const handleAdd = () => {
-        if (groupName == null || groupName == "") {
+    const handleAdd = async () => {
+        if (!groupName.trim()) {
             alert("그룹 이름을 입력해주세요.");
             return;
         }
-
-        if (groupDesc == null || groupDesc == "") {
+        if (!groupDesc.trim()) {
             alert("그룹 설명을 입력해주세요.");
             return;
         }
-
         if (selectedMembers.length === 0) {
             alert("공유 대상을 최소 1명 이상 선택해주세요.");
             return;
@@ -101,17 +100,31 @@ const TaskGroupAdd = ({ onClose }) => {
             group_name: groupName,
             description: groupDesc,
             manager_id: manager,
-            members: selectedMembers.map(m => m.id),
+            members: selectedMembers.map((m) => m.id),
         };
-        console.log("그룹 생성 요청:", payload);
 
-        caxios.post("/task/addGroup", payload)
-            .then(resp => {
-                console.log("그룹 생성 완료:", resp.data);
-                onClose();
-            })
-            .catch(err => console.error(err));
+        console.log(selectedMembers);
+        try {
+            const resp = await caxios.post("/task/addGroup", payload);
+            console.log("그룹 생성 완료:", resp.data);
 
+            // ✅ 알림 전송
+            await Promise.all(
+                selectedMembers.map((m) =>{
+                    console.log(m.id)
+                    caxios.post("/notification/send", {
+                        receiver_id: m.id,
+                        type: "taskgroup",
+                        message: `[${groupName}] 업무 그룹에 초대되었습니다.`,
+                    })
+                    }
+                )
+            );
+
+            onClose();
+        } catch (err) {
+            console.error("❌ 그룹 생성 실패:", err);
+        }
     };
 
     const handleOut = () => onClose();
@@ -175,7 +188,7 @@ const TaskGroupAdd = ({ onClose }) => {
                                         value: m.name,
                                         label: (
                                             <div>
-                                                <strong>{m.name}({m.id})</strong> ({m.dept_code} / {m.rank_code})
+                                                <strong>{m.name}({m.id})</strong> ({m.dept_code} / {ranks[m.rank_code]})
                                             </div>
                                         ),
                                     }));
@@ -209,7 +222,7 @@ const TaskGroupAdd = ({ onClose }) => {
                             <tr key={m.id}>
                                 <td>{m.name}({m.id})</td>
                                 <td>{m.dept_code}</td>
-                                <td>{m.rank_code}</td>
+                                <td>{ranks[m.rank_code]}</td>
                                 <td>
                                     <button
                                         className={styles.removeBtn}

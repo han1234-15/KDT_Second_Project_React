@@ -10,7 +10,13 @@ import { ranks } from "../../config/options";
 import { Send } from "react-bootstrap-icons";   // ✅ 부트스트랩 아이콘 추가
 import defaultProfile from "../../assets/images/defaultProfile.png";
 
+
+
+
 const Header = () => {
+    const [notifications, setNotifications] = useState([]);
+    const [hasNew, setHasNew] = useState(false);
+
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
     const [userProfile, setUserProfile] = useState(null); //프로필용 useState
@@ -110,11 +116,76 @@ const Header = () => {
         },
     ];
 
-    const notificationMenu = [
-        { label: <div>내용 넣을거면 여기에 render 내용 쓰기1</div>, key: '1' },
-        { label: <div>알림 드롭다운</div>, key: '2' },
-        { label: <div>알림 드롭다운</div>, key: '3' },
-    ];
+    const notificationUpdate = () => {
+        caxios.put(`/notification/read`);
+    }
+
+    const getNotiLabel = (type) => {
+        switch (type) {
+            case "task":
+                return "📋 업무 알림";
+            case "taskgroup":
+                return "📋 업무 그룹 알림";
+            case "mail":
+                return "✉️ 메일 알림";
+            case "board":
+                return "📰 게시판 알림";
+            default:
+                return "🔔 기타 알림";
+        }
+    };
+
+    // ✅ 알림 드롭다운 메뉴 구성
+    const notificationMenu = notifications.length
+        ? notifications.map((noti, index) => ({
+            key: index,
+            label: (
+                <div
+                    onClick={() => {
+                        console.log("🔔 알림 클릭:", noti);
+                        // 클릭 시 이동 처리 (type별 라우팅 가능)
+                        if (noti.type === "task") navigate("/task/responsible");
+                        else if (noti.type === "mail") navigate("/mail/all");
+                        else if (noti.type === "board") navigate("/board/1/announcement");
+                        else if (noti.type === "taskgroup") navigate("/task/group");
+                        // 클릭하면 빨간 점 제거
+                        setHasNew(false);
+
+                    }}
+                    style={{
+                        padding: "8px 12px",
+                        cursor: "pointer",
+                        backgroundColor: noti.is_read === "N" ? "#f6f8fa" : "white",
+                        borderBottom: "1px solid #f0f0f0",
+                    }}
+                >
+                    <div style={{ fontWeight: "bold", color: "#333" }}>
+                        {getNotiLabel(noti.type)}
+                    </div>
+                    <div style={{ fontSize: 13, color: "#555" }}>{noti.message}</div>
+                    <div style={{ fontSize: 11, color: "#999" }}>
+                        {new Date(noti.created_at).toLocaleString("ko-KR", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit"
+                        })}
+                    </div>
+                </div>
+            ),
+        }))
+        : [
+            {
+                key: "empty",
+                label: (
+                    <div style={{ padding: 12, textAlign: "center", color: "#888" }}>
+                        새 알림이 없습니다.
+                    </div>
+                ),
+            },
+        ];
 
     const widgetSetMenu = [
         { label: <div>내용 넣을거면 여기에 render 내용 쓰기1</div>, key: '1' },
@@ -154,20 +225,64 @@ const Header = () => {
         }
     };
 
-    //   useEffect(() => {
-    //     const token = sessionStorage.getItem("token");
+    // ✅ 알림 목록 불러오기
+    const getNotificationList = async () => {
+        try {
+            const notiResp = await caxios.get(`/notification`);
+            const data = notiResp.data;
 
-    //     if (!token) {
-    //       navigate("/login");
-    //       return;
-    //     }
-    //     fetchUserData();
-    //   }, []);
+            console.log("📬 알림 목록:", data);
+
+            // 응답이 배열 형태라고 가정 (List<NotificationDTO>)
+            if (Array.isArray(data)) {
+                // 최신순 정렬 (created_at 기준, 혹시 백엔드 정렬이 안되어 있다면)
+                const sorted = [...data].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                setNotifications(sorted);
+                // 안 읽은 알림이 있으면 빨간 점 표시
+                const hasUnread = sorted.some((n) => n.is_read === "N" || n.is_read === "n");
+                setHasNew(hasUnread);
+            } else {
+                console.warn("⚠️ 서버에서 알림 배열이 아닌 응답을 받았습니다:", data);
+                setNotifications([]);
+            }
+        } catch (err) {
+            console.error("❌ 알림 목록 불러오기 실패:", err);
+            // 토큰 만료나 인증 실패 시 로그아웃 처리
+            navigate("/");
+            logout();
+        }
+    };
+
+    useEffect(() => {
+        const token = sessionStorage.getItem("token");
+
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+        fetchUserData();
+
+        const handleNewNotification = (e) => {
+            const n = e.detail;
+            setNotifications((prev) => [n, ...prev]);
+            setHasNew(true);
+            console.log(e.detail);
+        };
+
+        getNotificationList();
+        window.addEventListener("new-notification", handleNewNotification);
+        return () => window.removeEventListener("new-notification", handleNewNotification);
+
+    }, []);
 
     //  로딩 중일 때 렌더링 차단
-    //   if (loading) {
-    //     return null; // 혹은 스켈레톤 화면, 로딩 스피너
-    //   }
+    if (loading) {
+        return null; // 혹은 스켈레톤 화면, 로딩 스피너
+    }
+
+
+
 
     return (
         <div className={styles.header}>
@@ -189,10 +304,26 @@ const Header = () => {
 
 
                     {/* 알림 */}
-                    <Dropdown menu={{ items: notificationMenu }} trigger={['click']}>
-                        <a onClick={e => { e.preventDefault(); fetchUserData(); }}>
+                    <Dropdown
+                        menu={{ items: notificationMenu }}
+                        trigger={['click']}
+                        onOpenChange={(open) => {
+                            if (!open) {
+                                // 드롭다운 닫힐 때
+                                setHasNew(false);
+                            } else {
+                                // 열릴 때 최신 리스트 불러오고 읽음 처리
+                                getNotificationList();
+                                notificationUpdate(); // 서버에 전체 읽음 PUT
+                            }
+                        }}
+                    >
+                        <a onClick={(e) => e.preventDefault()}>
                             <Space>
-                                <BellOutlined style={{ fontSize: '28px', color: '#6d6d6dff', marginRight: '8px' }} />
+                                <div className={styles.noticeContainer}>
+                                    <BellOutlined className={styles.noticeIcon} />
+                                    {hasNew && <span className={styles.noticeBadge}></span>}
+                                </div>
                             </Space>
                         </a>
                     </Dropdown>
@@ -221,6 +352,7 @@ const Header = () => {
                 </Space>
             </div>
         </div>
+
     );
 };
 

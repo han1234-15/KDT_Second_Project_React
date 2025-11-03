@@ -272,6 +272,17 @@ const TaskGroupDetail = () => {
     setNewTask({ title: "", description: "", assignee_id: "", status });
     setIsModalOpen(true);
   };
+  
+  const sendTestNotice = async (receiver_id, type, message) => {
+    await caxios.post("/notification/send", {
+      receiver_id: receiver_id, // 실제 로그인 ID로 전달받을 사람.
+      type: type,
+      message: message,
+      created_at: new Date().toISOString(),
+    });
+    //alert("테스트 알림 전송 완료 ✅");
+  };
+
 
   const handleAddTask = async () => {
     if (!newTask.title.trim()) {
@@ -294,8 +305,9 @@ const TaskGroupDetail = () => {
         created_id: loginId,         // 현재 로그인한 사용자
       };
 
-
-
+      console.log(newTask.assignee_id);
+      
+      sendTestNotice(newTask.assignee_id,"task",`담당 업무가 배정되었습니다.`);
       setIsModalOpen(false);
       const resp = await caxios.post("/task/insertTask", payload);
 

@@ -16,12 +16,15 @@ import TaskRoute from "../Task/TaskRoute";
 import ManagementRoute from "../Management/ManagementRoute";
 import MyPage from "./Mypage.jsx";
 import LeaveRoute from "../WorkExpense/LeaveRoute";
+import NotificationSocket from "../../config/NotificationSocket.js";
 
 const ContentMain = () => {
   const location = useLocation();
 
   return (
+    
     <div className={styles.container}>
+      <NotificationSocket />
       {/* ✅ 헤더 */}
       <header className={styles.header}>
         <Header />
