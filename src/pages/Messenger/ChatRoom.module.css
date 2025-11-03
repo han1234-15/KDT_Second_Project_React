@@ -14,7 +14,6 @@
   background: #fff;
   border-bottom: 1px solid #ddd;
   padding: 12px 16px;
-  position: relative;
 }
 
 .chatTitle {
@@ -31,7 +30,7 @@
   position: relative;
   cursor: pointer;
   font-size: 22px;
-  color: #555;
+  color: #222;
 }
 
 .dropdownMenu {
@@ -47,26 +46,34 @@
 }
 
 .dropdownMenu button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: block;
   padding: 8px 12px;
   width: 180px;
-  background: #ffffff;
+  background: #fff;
   border: none;
-  color: #000 !important; /*  강제 적용 */
+  color: #000;
   font-size: 14px;
   text-align: left;
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
-
 .dropdownMenu button:hover {
   background: #f1f3f5;
 }
 
-/* ===== 채팅 박스 ===== */
+.leaveBtn {
+  color: #e03131 !important;
+  font-weight: bold;
+  border-top: 1px solid #eee;
+  margin-top: 4px;
+}
+
+.leaveBtn:hover {
+  background-color: #ffe3e3;
+}
+
+/* ===== 채팅 영역 ===== */
 .chatBox {
   flex: 1;
   overflow-y: auto;
@@ -74,6 +81,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  background: #e9f3fb;
 }
 
 /* ===== 메시지 공통 ===== */
@@ -83,39 +91,46 @@
   max-width: 80%;
 }
 
-/* 상대 메시지 (왼쪽) */
 .you {
   justify-content: flex-start;
 }
 
-.you .msgBubble {
-  background: #ffffff;
-  color: #333;
-  border: 1px solid #ddd;
-  align-self: flex-start;
-  border-radius: 0 12px 12px 12px; 
-}
-
-/* 내 메시지 (오른쪽) */
 .me {
   justify-content: flex-end;
   align-self: flex-end;
-}
-
-.me .msgBubble {
-  background: linear-gradient(45deg, #4e73df, #1e88e5);
-  color: #fff;
-  border-radius: 12px 12px 0 12px;
 }
 
 /* ===== 말풍선 ===== */
 .msgBubble {
   padding: 10px 14px;
   font-size: 14px;
-  line-height: 1;
+  line-height: 1.4;
   word-break: break-word;
+  border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  
+}
+
+/* 상대방 */
+.you .msgBubble {
+  background: #ffffff;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 0 12px 12px 12px;
+}
+
+/* 나 */
+.me .msgBubble {
+  background: linear-gradient(45deg, #4e73df, #1e88e5);
+  color: #fff;
+  border-radius: 12px 12px 0 12px;
+}
+
+/* ===== 메시지 시간 ===== */
+.msgTime {
+  font-size: 11px;
+  color: #555;
+  margin-top: 4px;
+  white-space: nowrap;
 }
 
 /* ===== 입력창 ===== */
@@ -140,12 +155,7 @@
   border-color: #4e73df;
 }
 
-/*  전송 버튼 중앙 정렬 */
 .chatInput button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
   margin-left: 8px;
   background: linear-gradient(45deg, #8e44ad, #2196f3);
   border: none;
@@ -159,48 +169,6 @@
 
 .chatInput button:hover {
   opacity: 0.9;
-}
-
-/* ===== 오른쪽 확장 패널 ===== */
-.sidePanel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 400px; /*  기존 팝업의 절반 크기 */
-  height: 100%;
-  background: #fff;
-  border-left: 1px solid #ddd;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  animation: slideIn 0.3s ease forwards;
-  z-index: 50;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-.panelHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #ddd;
-  font-weight: 600;
-  font-size: 15px;
-}
-
-.panelBody {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-  font-size: 14px;
 }
 
 /* ===== 오른쪽 확장 패널 ===== */
@@ -230,11 +198,25 @@
 
 .panelHeader {
   display: flex;
-  justify-content: space-between; /*  X 오른쪽 끝 */
+  justify-content: space-between;
   align-items: center;
-  padding: 10px 12px; /*  상단바 높이 과하지 않게 */
-  background: #fff;
+  padding: 12px 16px;
   border-bottom: 1px solid #ddd;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.closeBtn:hover {
+  color: #000;
 }
 
 .panelBody {
@@ -244,122 +226,128 @@
   font-size: 14px;
 }
 
-.closeBtn {
-  background: none !important;
-  border: none !important;
-  font-size: 15px;
-  font-weight: bold;
-  width: auto;
-  height: auto;
-  padding: 0;
-  margin: 0;
-  color: #575757 !important;
-  cursor: pointer;
-  line-height: 1;
+/* ===== 첨부파일 목록 ===== */
+.fileList {
+  margin-top: 15px;
+  padding: 10px;
+  background: #fafafa;
+  border-radius: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.noFile {
+  text-align: center;
+  color: #999;
+  padding: 20px 0;
+  font-size: 14px;
+}
+
+.fileCard {
   display: flex;
   align-items: center;
-  justify-content: center;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
 }
-/* ===== 상대 메시지 정보 ===== */
-.senderInfo {
+
+.fileCard:hover {
+  background: #f5f0ff;
+  border-color: #d1b3ff;
+  transform: translateY(-1px);
+  box-shadow: 0 1px 4px rgba(111, 66, 193, 0.2);
+}
+
+.fileIcon {
+  font-size: 22px;
+  color: #6f42c1;
+  margin-right: 10px;
+}
+
+.fileInfo {
+  flex: 1;
+  overflow: hidden;
+}
+
+.fileName {
+  display: block;
+  color: #333;
+  font-weight: 600;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.fileName:hover {
+  color: #6f42c1;
+  text-decoration: underline;
+}
+
+.fileSize {
+  font-size: 12px;
+  color: #999;
+}
+
+.fileAction {
+  margin-left: 10px;
+}
+
+.downloadBtn {
+  background: #6f42c1;
+  color: #fff;
+  border-radius: 6px;
+  padding: 5px 8px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.downloadBtn:hover {
+  background: #563d7c;
+}
+.fileMessage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 5px 0;
+  max-width: 75%;
+}
+
+.fileMessage.mine {
+  margin-left: auto;
+  background: #e9e1ff;
+  border-color: #a68af5;
+}
+
+.filePreview {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 2px;
-  
 }
 
-.profileThumb {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
+.filePreview i {
+  color: #6f42c1;
+  font-size: 18px;
 }
 
-/* 가짜 프로필 공간 - 프로필 숨겨도 정렬 유지 */
-.emptyProfileSpace {
-  width: 32px;
-  height: 32px;
-}
-
-.senderMeta {
-  display: flex;
-  flex-direction: column;
-
-}
-
-.senderName {
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 2px;
-}
-
-.menuContainer {
-  position: relative;
+.downloadMiniBtn {
+  background: none;
+  border: none;
+  color: #6f42c1;
   cursor: pointer;
-  font-size: 22px;
-  color: #121212 !important;
+  font-size: 16px;
+  transition: 0.2s;
 }
 
-.msgTime {
-  font-size: 11px;
-  color: #555;
-  margin-top: 4px;
-  margin-left: 6px;
-  white-space: nowrap;
+.downloadMiniBtn:hover {
+  color: #4e26b8;
+  transform: scale(1.1);
 }
-
-.myWrapper {
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-}
-/*  내 메시지 (시간 + 말풍선 정렬) */
-.msgRowMe {
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-.msgRowYou {
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-  margin-left: 4px; /* 프로필 아래 정렬 보정 */
-}
-
-.msgTime {
-  font-size: 11px;
-  color: #555;
-  white-space: nowrap;
-  margin: 4px;
-}
-
-
- .msgMeta {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  gap: 6px;
-  margin-top: 2px;
-}
-
-.readCount {
-  font-size: 11px;
-  color: #4a90e2;
-  font-weight: 600;
-}
-
-.leaveBtn {
-  color: #e03131 !important;
-  font-weight: bold;
-  border-top: 1px solid #eee;
-  margin-top: 4px;
-}
-
-.leaveBtn:hover {
-  background-color: #ffe3e3;
-}
-
- 

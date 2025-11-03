@@ -4,28 +4,23 @@ import { caxios } from "../../config/config";
 import styles from "./ContactList.module.css";
 
 const ContactList = () => {
-  // 전체 멤버 데이터
   const [member, setMember] = useState([]);
-  // JWT 토큰 준비 여부
   const [tokenReady, setTokenReady] = useState(false);
-  // 검색창 표시 여부
   const [showSearch, setShowSearch] = useState(false);
-  // 검색어
   const [searchTerm, setSearchTerm] = useState("");
 
-  // 부서 리스트 (표시용)
+  // ✅ 부서 목록 (DB에 한글 저장)
   const departments = [
-    { name: "연구개발", code: "RND" },
-    { name: "사업관리팀", code: "BM" },
-    { name: "AI센터", code: "AIC" },
-    { name: "인사과", code: "HR" },
-    { name: "재무/회계", code: "FNA" },
-    { name: "마케팅팀", code: "MKT" },
+    "연구개발",
+    "사업관리",
+    "AI센터",
+    "인사과",
+    "재무/회계",
+    "마케팅팀",
   ];
 
-  // 직급 코드 → 명칭 매핑
+  // ✅ 직급 코드 (유지)
   const ranks = {
-    J000: "사장",
     J001: "사원",
     J002: "주임",
     J003: "대리",
@@ -34,17 +29,18 @@ const ContactList = () => {
     J006: "부장",
     J007: "이사",
     J008: "부사장",
+    J009: "사장",
   };
 
-  // 근무 상태 → 배지 색상
+  // ✅ 근무 상태 → 색상
   const statusVariant = {
-    working: "success",
-    busy: "warning",
-    away: "secondary",
-    offline: "dark",
+    working: "success", // 근무중
+    busy: "warning", // 다른용무중
+    away: "secondary", // 자리비움
+    offline: "dark", // 오프라인
   };
 
-  // 근무 상태 → 한글 텍스트
+  // ✅ 근무 상태 → 한글 텍스트
   const statusText = {
     working: "근무중",
     busy: "다른용무중",
@@ -52,7 +48,7 @@ const ContactList = () => {
     offline: "오프라인",
   };
 
-  // 토큰 감시: 로그인 완료 전이라면 polling 으로 대기
+  // ✅ 토큰 감시
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -69,7 +65,7 @@ const ContactList = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // 토큰 준비되면 멤버 목록 로드
+  // ✅ 멤버 목록 로드
   useEffect(() => {
     if (!tokenReady) return;
     caxios
@@ -78,12 +74,15 @@ const ContactList = () => {
       .catch((err) => console.error("데이터 요청 실패:", err));
   }, [tokenReady]);
 
-  // 부서별 필터링 (검색 + 오프라인은 하단 정렬)
-  const getDeptMembers = (deptCode) => {
+  // ✅ 부서별 필터링 (DB값 한글 비교 + 오프라인 하단정렬 + 본인 제외)
+  const getDeptMembers = (deptName) => {
+    const myId = sessionStorage.getItem("LoginID");
+
     return member
       .filter(
         (m) =>
-          m.dept_code?.trim().toUpperCase() === deptCode &&
+          m.dept_code?.trim() === deptName &&
+          m.id !== myId && // ✅ 로그인한 본인 제외
           m.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .sort((a, b) => {
@@ -93,42 +92,32 @@ const ContactList = () => {
       });
   };
 
-  /**
-   * 더블클릭 시 채팅 팝업 오픈
-   * 1) 로그인한 사용자 id(LoginID)와 상대 id(member.id)로 방 키를 만든다.
-   * 2) 서버에 방 생성/조회 요청(같은 조합이면 같은 방을 재사용).
-   * 3) room_id(UUID)를 응답받아 팝업 URL 쿼리에 넣어 연다.
-   */
+  // ✅ 더블클릭 시 채팅 팝업 오픈
   const openChatPopup = async (member) => {
-    const myId = sessionStorage.getItem("LoginID"); // 로그인한 사용자 식별자(id)
+    const myId = sessionStorage.getItem("LoginID");
     if (!myId) {
       alert("로그인 정보가 없습니다. 다시 로그인 해주세요.");
       return;
     }
 
-    const targetId = member.id; // 상대방 식별자(id) - 백엔드 Member.id
+    const targetId = member.id;
     const targetName = member.name;
     const targetRank = ranks[member.rank_code] || "";
 
-    // 두 사용자 id를 정렬하여 고유 키 생성 (동일 조합은 동일 방)
+    // 방 키 (중복 방 방지용)
     const roomMembersKey = [myId, targetId].sort().join("_");
 
     try {
-      // 방 생성/조회 요청 (이미 있으면 조회, 없으면 생성)
       const resp = await caxios.post(
         `/api/chat/room?key=${encodeURIComponent(roomMembersKey)}`
       );
-
-      // 서버가 반환하는 채팅방 PK(UUID)
       const roomId = resp.data.roomId;
-      console.log(resp.data);
-      
-      // 팝업 파라미터: room_id, 상대 표시용 이름/직급
+
+      // 팝업 URL
       const url = `${window.location.origin}/chatroom?room_id=${roomId}&target=${encodeURIComponent(
         targetName
       )}&rank=${encodeURIComponent(targetRank)}`;
 
-      // 팝업 창 크기/위치 계산
       const width = 400;
       const height = 550;
       const left = window.screen.width - width - 40;
@@ -161,7 +150,11 @@ const ContactList = () => {
       </div>
 
       {/* 검색창 */}
-      <div className={`${styles.searchBox} ${showSearch ? styles.searchBoxVisible : ""}`}>
+      <div
+        className={`${styles.searchBox} ${
+          showSearch ? styles.searchBoxVisible : ""
+        }`}
+      >
         <input
           type="text"
           placeholder="이름 검색..."
@@ -170,15 +163,15 @@ const ContactList = () => {
         />
       </div>
 
-      {/* 본문 - 스크롤 영역 */}
+      {/* 본문 */}
       <div className={styles.scrollArea}>
         <Accordion alwaysOpen>
           {departments.map((dept, idx) => {
-            const deptMembers = getDeptMembers(dept.code);
+            const deptMembers = getDeptMembers(dept);
             return (
-              <Accordion.Item eventKey={String(idx)} key={dept.code}>
+              <Accordion.Item eventKey={String(idx)} key={dept}>
                 <Accordion.Header>
-                  {dept.name}
+                  {dept}
                   <Badge bg="info" className="ms-2">
                     {deptMembers.length}
                   </Badge>
@@ -197,13 +190,17 @@ const ContactList = () => {
                           <div>
                             <strong>{m.name}</strong>
                             <span className="text-muted ms-1">
-                              {ranks[m.rank_code] || "직급미상"}
+                              {ranks[m.rank_code] || ""}
                             </span>
                           </div>
                           <Badge
-                            bg={statusVariant[m.work_status?.toLowerCase()] || "secondary"}
+                            bg={
+                              statusVariant[m.work_status?.toLowerCase()] ||
+                              "secondary"
+                            }
                           >
-                            {statusText[m.work_status?.toLowerCase()] || "상태미상"}
+                            {statusText[m.work_status?.toLowerCase()] ||
+                              "상태미상"}
                           </Badge>
                         </ListGroup.Item>
                       ))}

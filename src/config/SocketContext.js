@@ -14,7 +14,7 @@ function SocketProvider({ children }) {
   /** ✅ WebSocket 연결 */
   useEffect(() => {
     const sock = new SockJS("http://10.10.55.97/ws-chat");
-    // const sock = new SockJS("http://192.168.219.108/ws-chat");
+     //const sock = new SockJS("http://192.168.219.108/ws-chat");
 
     clientRef.current = new Client({
       webSocketFactory: () => sock,

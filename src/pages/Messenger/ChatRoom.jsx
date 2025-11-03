@@ -12,7 +12,7 @@ import { useSocket } from "../../config/SocketContext";
 import { caxios } from "../../config/config";
 import ContactListInvite from "./ContactListInvite";
 import MessengerFileUpload from "./MessengerFileUpload";
-import ChatMessageItem from "./ChatMessageItem"; // ✅ 추가 (메모 컴포넌트)
+import ChatMessageItem from "./ChatMessageItem";
 
 export default function ChatRoom() {
   const [params] = useSearchParams();
@@ -37,7 +37,7 @@ export default function ChatRoom() {
 
   const list = useMemo(() => messages[room_id] || [], [messages, room_id]);
 
-  // ✅ 팝업 열릴 때 미읽음 초기화
+  /** ✅ 채팅방 열릴 때 상태 초기화 */
   useEffect(() => {
     if (room_id) {
       window.opener?.dispatchEvent(
@@ -46,7 +46,7 @@ export default function ChatRoom() {
     }
   }, [room_id]);
 
-  // ✅ 참여자 목록
+  /** ✅ 참여자 목록 */
   const fetchParticipants = useCallback(async () => {
     if (!room_id) return;
     try {
@@ -59,9 +59,9 @@ export default function ChatRoom() {
 
   useEffect(() => {
     fetchParticipants();
-  }, [room_id]); // 
+  }, [room_id]);
 
-  // ✅ sender 이름 변환
+  /** ✅ sender 이름 변환 */
   const getSenderInfo = useCallback(
     (senderId) => {
       const found = participants.find((p) => p.memberId === senderId);
@@ -73,7 +73,7 @@ export default function ChatRoom() {
     [participants, targetName, targetRank]
   );
 
-  // ✅ 읽음 처리
+  /** ✅ 읽음 처리 */
   useEffect(() => {
     if (!room_id || !userId || list.length === 0) return;
     const last = list[list.length - 1];
@@ -90,7 +90,7 @@ export default function ChatRoom() {
     }
   }, [list, room_id, userId, sendRead]);
 
-  // ✅ 최초 메시지 로드 (append 대신 초기 세팅)
+  /** ✅ 최초 메시지 로드 */
   useEffect(() => {
     if (!room_id) return;
     let mounted = true;
@@ -107,14 +107,13 @@ export default function ChatRoom() {
     };
   }, [room_id, setMessages]);
 
-  // ✅ 소켓 구독
+  /** ✅ 소켓 구독 */
   useEffect(() => {
     if (!room_id) return;
     subscribeRoom(room_id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [room_id, subscribeRoom]);
 
-  // ✅ 시간 포맷
+  /** ✅ 시간 포맷 */
   const formatTime = useCallback((t) => {
     if (!t) return "";
     return new Date(t).toLocaleTimeString("ko-KR", {
@@ -124,7 +123,7 @@ export default function ChatRoom() {
     });
   }, []);
 
-  // ✅ 메시지 전송
+  /** ✅ 메시지 전송 */
   const handleSend = useCallback(() => {
     if (!input.trim() || !userId || !room_id) return;
     sendMessage(room_id, {
@@ -140,7 +139,7 @@ export default function ChatRoom() {
     setChromeOffset(offset);
   }, []);
 
-  // ✅ 내가 보낸 메시지면 자동 스크롤
+  /** ✅ 자동 스크롤 */
   useEffect(() => {
     if (list.length === 0) return;
     const last = list[list.length - 1];
@@ -149,7 +148,7 @@ export default function ChatRoom() {
     }
   }, [list, userId]);
 
-  // ✅ 사이드 패널 제어
+  /** ✅ 사이드 패널 제어 */
   const openSidePanel = (mode) => {
     setPanelMode(mode);
     setPanelOpen(true);
@@ -169,45 +168,44 @@ export default function ChatRoom() {
     window.moveTo(w, h);
   };
 
-  /** ✅ 채팅방 나가기 기능 */
-const handleLeaveRoom = async () => {
-  if (!room_id || !userId) return;
-  const confirmLeave = window.confirm("이 채팅방을 나가시겠습니까?");
-  if (!confirmLeave) return;
+  /** ✅ 방 나가기 */
+  const handleLeaveRoom = async () => {
+    if (!room_id || !userId) return;
+    const confirmLeave = window.confirm("이 채팅방을 나가시겠습니까?");
+    if (!confirmLeave) return;
 
-  try {
-    const resp = await caxios.post("/api/chat/leave", null, {
-      params: { roomId: room_id },
-    });
+    try {
+      const resp = await caxios.post("/api/chat/leave", null, {
+        params: { roomId: room_id },
+      });
 
-    if (resp.status === 200) {
-      alert("채팅방을 나갔습니다.");
-      window.opener?.dispatchEvent(
-        new CustomEvent("chatRoomUpdated", { detail: { roomId: room_id } })
-      );
-      window.close();
-    } else {
-      alert("채팅방 나가기 실패");
+      if (resp.status === 200) {
+        alert("채팅방을 나갔습니다.");
+        window.opener?.dispatchEvent(
+          new CustomEvent("chatRoomUpdated", { detail: { roomId: room_id } })
+        );
+        window.close();
+      } else {
+        alert("채팅방 나가기 실패");
+      }
+    } catch (err) {
+      console.error("채팅방 나가기 오류:", err);
+      alert("오류가 발생했습니다.");
     }
-  } catch (err) {
-    console.error("채팅방 나가기 오류:", err);
-    alert("오류가 발생했습니다.");
-  }
-};
+  };
 
-
-  // ✅ 파일 목록 조회
-const fetchFileList = useCallback(async () => {
-  if (!room_id) return;
-  try {
-    const resp = await caxios.get("/api/chat/files", {
-      params: { roomId: room_id },
-    });
-    setFileList(resp.data);
-  } catch (err) {
-    console.error("파일 목록 조회 실패:", err);
-  }
-}, [room_id]);
+  /** ✅ 파일 목록 조회 */
+  const fetchFileList = useCallback(async () => {
+    if (!room_id) return;
+    try {
+      const resp = await caxios.get("/api/chat/files", {
+        params: { roomId: room_id },
+      });
+      setFileList(resp.data);
+    } catch (err) {
+      console.error("파일 목록 조회 실패:", err);
+    }
+  }, [room_id]);
 
   useEffect(() => {
     if (panelMode === "files") {
@@ -215,7 +213,73 @@ const fetchFileList = useCallback(async () => {
     }
   }, [panelMode, fetchFileList]);
 
-  // ✅ 상단 제목
+  /** ✅ 파일 다운로드 */
+  const handleDownload = async (file) => {
+    try {
+      const resp = await caxios.get(`/api/chat/download/${file.sysName}`, {
+        responseType: "blob",
+      });
+      const blobUrl = window.URL.createObjectURL(new Blob([resp.data]));
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = file.originalName || "download";
+      a.click();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("파일 다운로드 실패:", err);
+      alert("파일을 찾을 수 없습니다.");
+    }
+  };
+
+  /** ✅ 전역 드래그 앤 드롭 업로드 */
+  const handleGlobalDrop = useCallback(
+    async (e) => {
+      e.preventDefault();
+      const files = Array.from(e.dataTransfer.files);
+      if (!files.length || !room_id) return;
+
+      try {
+        const token = sessionStorage.getItem("token");
+        for (const file of files) {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("roomId", room_id);
+
+          const resp = await caxios.post("/api/chat/upload", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          const uploaded = resp.data;
+          sendMessage(room_id, {
+            sender: userId,
+            content: uploaded.originalName,
+            fileUrl: uploaded.sysName,
+            type: "FILE",
+          });
+        }
+
+        fetchFileList();
+      } catch (err) {
+        console.error("드래그앤드롭 파일 업로드 실패:", err);
+      }
+    },
+    [room_id, userId, sendMessage, fetchFileList]
+  );
+
+  useEffect(() => {
+    const preventDefault = (e) => e.preventDefault();
+    window.addEventListener("dragover", preventDefault);
+    window.addEventListener("drop", handleGlobalDrop);
+    return () => {
+      window.removeEventListener("dragover", preventDefault);
+      window.removeEventListener("drop", handleGlobalDrop);
+    };
+  }, [handleGlobalDrop]);
+
+  /** ✅ 상단 제목 */
   const chatTitle = useMemo(() => {
     if (participants.length > 0) {
       return `${participants
@@ -226,7 +290,7 @@ const fetchFileList = useCallback(async () => {
     return `${targetName}${targetRank ? " " + targetRank : ""} 님과의 대화`;
   }, [participants, userId, targetName, targetRank]);
 
-  // ✅ 렌더링
+  /** ✅ 렌더링 */
   return (
     <div className={styles.popupContainer}>
       {/* 상단 */}
@@ -266,6 +330,34 @@ const fetchFileList = useCallback(async () => {
             Math.abs(new Date(msg.sendTime) - new Date(prevMsg.sendTime)) <=
               60000;
           const hideProfile = isSameSender && withinOneMin;
+
+          // ✅ 파일 메시지 표시
+          if (msg.type === "FILE") {
+            return (
+              <div
+                key={msg.messageId ?? `${msg.sender}_${idx}`}
+                className={`${styles.fileMessage} ${
+                  isMine ? styles.mine : styles.theirs
+                }`}
+              >
+                <div className={styles.filePreview}>
+                  <i className="bi bi-file-earmark"></i>
+                  <span>{msg.content}</span>
+                </div>
+                <button
+                  className={styles.downloadMiniBtn}
+                  onClick={() =>
+                    handleDownload({
+                      sysName: msg.fileUrl,
+                      originalName: msg.content,
+                    })
+                  }
+                >
+                  <i className="bi bi-download"></i>
+                </button>
+              </div>
+            );
+          }
 
           return (
             <ChatMessageItem
@@ -314,18 +406,27 @@ const fetchFileList = useCallback(async () => {
                 />
                 <div className={styles.fileList}>
                   {fileList.length === 0 ? (
-                    <p>첨부된 파일이 없습니다.</p>
+                    <p className={styles.noFile}>첨부된 파일이 없습니다.</p>
                   ) : (
                     fileList.map((f, idx) => (
-                      <div key={idx} className={styles.fileItem}>
-                        <a
-                          href={`/api/chat/download/${f.savedName}`}
-                          target="_blank"
-                          rel="noreferrer"
+                      <div key={idx} className={styles.fileCard}>
+                        <div className={styles.fileIcon}>
+                          <i className="bi bi-file-earmark-text"></i>
+                        </div>
+                        <div className={styles.fileInfo}>
+                          <span className={styles.fileName}>
+                            {f.originalName}
+                          </span>
+                          <span className={styles.fileSize}>
+                            {(f.size / 1024).toFixed(1)} KB
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => handleDownload(f)}
+                          className={styles.downloadBtn}
                         >
-                          {f.originalName}
-                        </a>
-                        <span>({(f.size / 1024).toFixed(1)} KB)</span>
+                          <i className="bi bi-download"></i>
+                        </button>
                       </div>
                     ))
                   )}
