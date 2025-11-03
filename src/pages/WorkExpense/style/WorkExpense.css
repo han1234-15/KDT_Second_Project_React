@@ -298,3 +298,82 @@ button:disabled:hover {
   opacity: 0.4;
 }
 
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 20px 0 10px;
+}
+
+.info-row {
+  display: flex;
+  gap: 16px;
+}
+
+.info-box {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 14px 18px;
+  background: #fafafa;
+}
+
+.info-box legend {
+  font-weight: 600;
+  padding: 0 6px;
+}
+
+.calendar-box {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.calendar-date {
+  text-align: center;
+  min-width: 70px;
+  border-right: 1px solid #ddd;
+  padding-right: 14px;
+}
+
+.calendar-date .month {
+  font-size: 13px;
+  color: #666;
+}
+
+.calendar-date .day {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 2px 0;
+}
+
+.calendar-date .weekday {
+  font-size: 13px;
+  color: #888;
+}
+
+.time-text,
+.time-range {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.work-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.work-buttons button {
+  border: 1px solid #aaa;
+  background: white;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.work-buttons button:hover {
+  background: #eaeaea;
+}
+
