@@ -40,6 +40,16 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
     backgroundColor: "#82b1ff",
   }));
 
+    const sendTestNotice = async (receiver_id, type, message) => {
+    await caxios.post("/notification/send", {
+      receiver_id: receiver_id, // 실제 로그인 ID로 전달받을 사람.
+      type: type,
+      message: message,
+      created_at: new Date().toISOString(),
+    });
+    //alert("테스트 알림 전송 완료 ✅");
+  };
+
   // ✅ 모달에서 저장한 결재선 반영
   const applyApprovalLine = ({ approverList, referenceList }) => {
     setApproverList(approverList);
@@ -66,6 +76,10 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
 
     try {
       await caxios.post("/leave/request", payload);
+    const firstApproverId = approverList[0]?.id || approverList[0]?.member_id || approverList[0]?.userId;
+if (!isCEO && firstApproverId) {
+  sendTestNotice(firstApproverId, "휴가 결재 요청", `${applicant.name}님의 휴가 결재 요청이 도착했습니다.`);
+}
       alert(isCEO ? "휴가가 정상적으로 등록되었습니다." : "휴가 신청 완료되었습니다.");
       onClose();
       refresh();

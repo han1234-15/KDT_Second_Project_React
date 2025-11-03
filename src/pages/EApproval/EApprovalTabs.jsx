@@ -28,12 +28,12 @@ const EApprovalTabs = () => {
   /** 문서 보관함 sub Tab */
   const subTabsStore = [
     { label: "기안", path: "/Eapproval/APPROVED" },
-    { label: "예정", path: "/Eapproval/PENDING" },
+  
   ];
 
   /** 메인 탭 활성 기준 */
   const progressStatus = ["SHOW", "WAIT","PROCESSING", "REJECTED", "TEMP"];
-  const storeStatus = ["APPROVED", "PENDING"];
+  const storeStatus = ["APPROVED"];
 
   const mainActivePath = progressStatus.includes(status)
     ? "/Eapproval/show"
