@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Select, Input, Checkbox } from "antd";
 import styles from "./BoardWrite.module.css";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { caxios } from "../../config/config.js";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import TiptapEditor from "../Common/TipTapEditor.jsx";
+import useAuthStore from "../../store/authStore.js";
 
 const { Option } = Select;
 
 const BoardWrite = () => {
+  const token = useAuthStore((state) => state.token); //  로그인 상태의 토큰을 가져옴
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -25,6 +25,29 @@ const BoardWrite = () => {
 
   const [category_id, setCategory_id] = useState(initialCategory);
   const [files, setFiles] = useState([]);
+  const [myInfo, setMyInfo] = useState(null); // ✅ 사용자 정보
+  const [isAdmin, setIsAdmin] = useState(false); // ✅ 관리자 여부
+  const [loading, setLoading] = useState(true);
+
+   useEffect(() => {
+  
+    // 서버에 권한 확인 요청
+    const checkAdmin = async () => {
+      try {
+        const res = await caxios.get("/auth/check");
+        // 서버에서 { isAdmin: true/false } 형태로 응답한다고 가정
+
+        console.log("어드민:" + res.data);
+        setIsAdmin(res.data);
+      } catch (err) {
+        console.error("권한 확인 실패", err);
+        setIsAdmin(false);
+      }
+    };
+
+    if (token) checkAdmin();
+  }, [token]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -112,13 +135,16 @@ const BoardWrite = () => {
           placeholder="제목을 입력하세요"
         />
 
-        <Checkbox
-          className={styles.noticeCheck}
-          checked={board.noticeYn === "Y"}
-          onChange={handleNoticeChange}
-        >
-          공지 등록
-        </Checkbox>
+        {/* 관리자만 공지 체크 가능 */}
+        {isAdmin  && (
+          <Checkbox
+            className={styles.noticeCheck}
+            checked={board.noticeYn === "Y"}
+            onChange={handleNoticeChange}
+          >
+            공지 등록
+          </Checkbox>
+        )}
       </div>
 
 

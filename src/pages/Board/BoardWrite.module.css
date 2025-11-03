@@ -52,7 +52,7 @@
   display: flex;
   align-items: center;
   /* ✅ 제목 + 체크박스 수평 정렬 */
-  gap: 12px;
+  gap: 16px;
   font-weight: 500;
   font-size: 15px;
 }

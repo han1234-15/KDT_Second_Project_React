@@ -205,7 +205,7 @@ const [form, setForm] = useState({
             <TimePicker
               value={form.startAt}
               format="HH:mm"
-              getPopupContainer={(triggerNode) => triggerNode.parentNode}
+              getPopupContainer={(triggerNode) => triggerNode.parentNode} 
               onChange={(t) =>
                 setForm({
                   ...form,

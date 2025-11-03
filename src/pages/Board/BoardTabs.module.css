@@ -1,11 +1,10 @@
-.boardTabsWrapper {
+.boardWrapper {
     position: relative;
-    margin-top: 20px;
 }
 
 .writeBtn {
     position: absolute;
-    top: 84px;
+    top: 0px;
     /* 탭 줄과 수직 맞춤 */
     right: 50px;
     /* 화면 오른쪽 여백 */
