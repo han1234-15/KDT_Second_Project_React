@@ -20,7 +20,7 @@ const EApprovalTabs = () => {
   const subTabsProgress = [
     { label: "전체", path: "/Eapproval/show" },
     { label: "승인 대기", path: "/Eapproval/WAIT" },
-    { label: "진행 중", path: "/Eapproval/CHECKING" },
+    {label: "진행 중", path: "/Eapproval/PROCESSING"},
     { label: "반려", path: "/Eapproval/REJECTED" },
    
   ];
@@ -28,12 +28,12 @@ const EApprovalTabs = () => {
   /** 문서 보관함 sub Tab */
   const subTabsStore = [
     { label: "기안", path: "/Eapproval/APPROVED" },
-    { label: "예정", path: "/Eapproval/PROCESSING" }, 
+    { label: "예정", path: "/Eapproval/PENDING" },
   ];
 
   /** 메인 탭 활성 기준 */
-  const progressStatus = ["SHOW", "WAIT", "CHECKING", "REJECTED", "TEMP"];
-  const storeStatus = ["APPROVED", "PROCESSING"]; 
+  const progressStatus = ["SHOW", "WAIT","PROCESSING", "REJECTED", "TEMP"];
+  const storeStatus = ["APPROVED", "PENDING"];
 
   const mainActivePath = progressStatus.includes(status)
     ? "/Eapproval/show"
