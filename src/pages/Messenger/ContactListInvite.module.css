@@ -1,12 +1,42 @@
-
+/* ===== 전체 컨테이너 ===== */
 .container {
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
 }
 
+/* ===== 리스트 ===== */
 .memberItem {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.memberItem:hover {
+  background: #f7f7ff;
+}
+
+.memberItem.active {
+  background: #e9f3ff;
+  border-left: 3px solid #0d6efd;
+}
+
+.memberInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rankText {
+  font-size: 13px;
+  color: #888;
 }
 
 .check {
@@ -15,8 +45,32 @@
   font-weight: bold;
 }
 
+/* ===== 초대 버튼 ===== */
 .inviteButton {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 10px 0;
+}
+
+/* ===== 비어있을 때 ===== */
+.noMember {
+  font-size: 13px;
+  color: #777;
+  text-align: center;
+  padding: 12px;
+}
+
+/* ===== 아코디언 ===== */
+.accordion-header {
+  font-weight: 600 !important;
+  font-size: 15px !important;
+}
+
+.badge {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
 }
