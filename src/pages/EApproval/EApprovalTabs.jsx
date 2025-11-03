@@ -22,7 +22,7 @@ const EApprovalTabs = () => {
     { label: "승인 대기", path: "/Eapproval/WAIT" },
     { label: "진행 중", path: "/Eapproval/CHECKING" },
     { label: "반려", path: "/Eapproval/REJECTED" },
-    { label: "임시 저장", path: "/Eapproval/TEMP" }
+   
   ];
 
   /** 문서 보관함 sub Tab */

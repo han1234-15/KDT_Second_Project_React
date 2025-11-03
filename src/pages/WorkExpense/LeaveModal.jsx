@@ -16,9 +16,10 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
   const [referenceList, setReferenceList] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // ✅ 사장 여부 체크
   const isCEO = applicant?.rank_code === "사장";
 
-  // ✅ 오늘 날짜 (과거 선택 막기)
+  // ✅ 오늘 날짜
   const today = new Date().toISOString().split("T")[0];
 
   const handleDateClick = (info) => {
@@ -34,7 +35,6 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
     );
   };
 
-  // ✅ 과거 날짜 시각적 구분 (회색 배경)
   const dayCellClassNames = (arg) => {
     const date = arg.date.toISOString().split("T")[0];
     return date < today ? styles.pastDay : "";
@@ -52,7 +52,7 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
     setReferenceList(referenceNames);
   };
 
-  // ✅ 신청 처리
+  // ✅ 휴가 신청 처리
   const submitVacation = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
@@ -69,6 +69,7 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
       return;
     }
 
+    // ✅ 사장이 아닌 경우만 결재선 필요
     if (!isCEO && !approverList.length) {
       alert("결재선을 설정해야 합니다.");
       setIsSubmitting(false);
@@ -81,7 +82,6 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
       return;
     }
 
-    // ✅ 휴가는 한 번에 5일까지만 가능
     if (vacType !== "half_am" && vacType !== "half_pm" && selectedDates.length > 5) {
       alert("휴가는 한 번에 최대 5일까지만 신청할 수 있습니다.");
       setIsSubmitting(false);
@@ -103,7 +103,14 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
 
     try {
       await caxios.post("/leave/request", payload);
-      alert("휴가 신청 완료되었습니다.");
+
+      // ✅ 메시지 분기: 사장만 다르게
+      if (isCEO) {
+        alert("휴가가 정상적으로 등록되었습니다.");
+      } else {
+        alert("휴가 신청 완료되었습니다.");
+      }
+
       onClose();
       refresh();
     } catch {
@@ -115,7 +122,7 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
 
   return (
     <Modal open={open} onCancel={onClose} footer={null} width="75%">
-      {/* ✅ 사장만 결재선 숨김 */}
+      {/* ✅ 사장은 결재선 UI 숨김 */}
       {!isCEO && (
         <div className={styles.approvalTableBox}>
           <div className={styles.approvalTableTitle}>
@@ -136,7 +143,7 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
         initialView="dayGridMonth"
         dateClick={handleDateClick}
         events={selectedEvents}
-        dayCellClassNames={dayCellClassNames} // ✅ 회색 처리 적용
+        dayCellClassNames={dayCellClassNames}
         height={450}
         locale="ko"
       />
