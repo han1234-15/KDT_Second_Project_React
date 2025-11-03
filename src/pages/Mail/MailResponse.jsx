@@ -55,17 +55,17 @@ const MailResponse = () => {
     setMail(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // // CKEditor 내용 변경 처리
-  // const handleEditorChange = (event, editor) => {
-  //   const data = editor.getData();
-  //   setMail(prev => ({ ...prev, content: data }));
-  // };
-
-
-  //  CKEditor → TipTap 변경 처리
-  const handleEditorChange = (html) => {
-    setMail(prev => ({ ...prev, content: html }));
+  // CKEditor 내용 변경 처리
+  const handleEditorChange = (event, editor) => {
+    const data = editor.getData();
+    setMail(prev => ({ ...prev, content: data }));
   };
+
+
+  // //  CKEditor → TipTap 변경 처리
+  // const handleEditorChange = (html) => {
+  //   setMail(prev => ({ ...prev, content: html }));
+  // };
 
   const handleFileClick = () => {
     fileRef.current.click();
@@ -210,12 +210,12 @@ const MailResponse = () => {
 
       {/* 본문 영역 */}
 
-      <TipTapEditor
+      {/* <TipTapEditor
         content={mail.content || ""}
         onChange={handleEditorChange}
 
-      />
-      {/* <CKEditor
+      /> */}
+      <CKEditor
           editor={ClassicEditor}
           data={mail.content || ''}
           className={styles.ckEditor}
@@ -228,7 +228,7 @@ const MailResponse = () => {
             ]
           }}
 
-        /> */}
+        />
 
 
       <button className={styles.btns} onClick={handleFileClick} style={{ marginTop: "10px", float: "left" }}>파일 추가</button>
@@ -258,7 +258,7 @@ const MailResponse = () => {
           ))}
         </ul>
         <hr></hr>
-        <h5>추가 파일</h5>
+    
         <ul>
           {files.map((file, i) => (
             <li key={i}>{file.name}</li>

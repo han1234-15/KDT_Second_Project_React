@@ -21,7 +21,7 @@ const OrganizationView = ({ member, onClose }) => {
                 <p>개인 번호: {member.mobilePhone}</p>
              
 
-                <button onClick={onClose} style={{ float: "right" }}>닫기</button>
+                <button className={styles.btns} onClick={onClose} style={{ float: "right" }}>닫기</button>
             </div>
 
 

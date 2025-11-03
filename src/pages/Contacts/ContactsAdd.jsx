@@ -34,17 +34,17 @@ const ContactsAdd = ({ onClose, handleContactsList }) => {
             alert("이메일을 입력해주세요.");
             return;
         }
-        // 이름 체크
+       // 이름 체크
         const nameRegex = /^[가-힣a-zA-Z\s]{2,6}$/;
 
         // 번호 체크
         const phoneRegex = /^010-\d{4}-\d{4}$/;
 
         // 이메일 체크
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-zA-Z0-9]+$/;
 
         if (!nameRegex.test(name)) {
-            alert("이름에는 숫자나 특수문자를 포함할 수 없습니다 (2~6글자).");
+            alert("이름에는 숫자나 특수문자를 포함할 수 없습니다 (최소 2글자 ~ 최대 6글자).");
             return;
         }
 
@@ -54,11 +54,12 @@ const ContactsAdd = ({ onClose, handleContactsList }) => {
             return;
         }
 
-
         if (!emailRegex.test(email)) {
-            alert("올바른 이메일 형식이 아닙니다. 예: user@example.com , user@example.co.kr");
+            alert("이메일에는 특수문자를 포함할 수 없습니다. ");
             return;
         }
+
+
 
 
 
@@ -116,8 +117,8 @@ const ContactsAdd = ({ onClose, handleContactsList }) => {
                     <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>이메일  </div>
                     <input type="text" className={styles.NewSharedMailbox2}
                         style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
-                        onChange={handlechange} name="email" value={Contacts.email} />
-                </div>
+                        onChange={handlechange} name="email" value={Contacts.email} />@Infinity.com
+                </div>    
                 <br></br>
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "10px" }}>
                     <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>부서  </div>
