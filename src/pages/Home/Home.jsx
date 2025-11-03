@@ -352,14 +352,24 @@ function Home() {
 
             <div className={styles.liveClock}>{new Date().toLocaleTimeString("ko-KR")}</div>
 
-            <div className={styles.workActions}>
-              <button className={`${styles.clockBtn} ${styles.start}`} onClick={handleCheckIn}>
-                출근
-              </button>
-              <button className={`${styles.clockBtn} ${styles.end}`} onClick={handleCheckOut}>
-                퇴근
-              </button>
-            </div>
+        <div className={styles.workActions}>
+  <button
+    className={`${styles.clockBtn} ${styles.start} ${checkIn !== "-- : --" ? styles.disabledBtn : ""}`}
+    onClick={handleCheckIn}
+    disabled={checkIn !== "-- : --"}   // ✅ 클릭도 막기
+  >
+    출근
+  </button>
+             
+  <button
+    className={`${styles.clockBtn} ${styles.end} ${checkOut !== "-- : --" ? styles.disabledBtn : ""}`}
+    onClick={handleCheckOut}
+    disabled={checkOut !== "-- : --"}   // ✅ 클릭도 막기
+  >
+    퇴근
+  </button>
+</div>
+<hr></hr>
 
             <div className={styles.timeLog}>
               <div><b>출근</b> {checkIn}</div>
