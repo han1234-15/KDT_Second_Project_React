@@ -4,47 +4,64 @@
 }
 
 .container {
-
     width: 100%;
     height: 100%;
-    font-size: 15px;
-
-
-}
-
-
-/* 메인 */
-.main {
-    width: 100%;
-    height: 100%;
-    float: left;
-
 }
 
 .mainHeader {
+    display: flex;
     width: 100%;
-    height: 20%;
+    height: 2%;
 
 }
-
-.headerbutton {
-    font-size: 15px;
-    margin: 10px;
-}
-
 
 .mainHeadertop {
-
-    height: 60%;
-    font-size: 35px;
+    border-bottom: solid gray;
+    border-top: solid gray;
+    display: flex;
+    margin-top: 26px;
+    width: 80%;
+    height: 100%;
+    font-size: 20px;
 
 }
+.createbtn {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-left: 15px;
+    background: linear-gradient(45deg, #8e44ad, #2196f3);
+    border: none;
+    color: white !important;
+    font-weight: 500;
+    width: 110px;
+    height: 30px;
+    border-radius: 5px;
+
+}
+.addBtns {
+    display: flex;
+    margin-top: 30px;
+    margin-left: 50px;
+    width: 20%;
+    height: 100%;
+    gap: 13px;
+}
+
+.createbtn:hover {
+    cursor: pointer;
+}
+
 
 .mainHeaderbottom {
-
-    height: 40%;
+    display: flex;
+    height: 100%;
     margin-top: 10px;
+}
 
+.searchBox {
+display: flex;
+justify-content: flex-end;
 }
 
 .mainHeadertag {
@@ -159,33 +176,6 @@
     text-align: center;
     float: left;
 }
-
-
-
-
-.createbtn {
-    width: 10%;
-    height: 60%;
-    display: block;
-    /* 블록처럼 쌓이게 */
-    font-size: 15px;
-    margin: 2px 0;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    /* 밑줄 제거 */
-    border-radius: 10px;
-    text-align: center;
-    font-weight: 500;
-    float: right;
-    margin-right: 50px;
-
-}
-
-.createbtn:hover {
-    cursor: pointer;
-}
-
 
 /* modal */
 

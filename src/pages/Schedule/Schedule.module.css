@@ -2,23 +2,7 @@
   margin-top: 29px;
 }
 
-/* 전체 캘린더 영역 라운드 + 테두리 */
-:global(.fc) {
-  font-family: "Pretendard", "Noto Sans KR", sans-serif;
-  background-color: #ffffff;
-  border-radius: 14px;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  padding: 20px;
-}
 
-/* ✅ 헤더 툴바 영역 (← → today / month week day 버튼 등) */
-:global(.fc-toolbar-chunk) {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
 
 /* ✅ 상단 제목 (예: 2025년 10월) */
 :global(.fc-toolbar-title) {
@@ -84,28 +68,6 @@
 /* ✅ 버튼 간격 정렬 */
 :global(.fc-toolbar-chunk > .fc-button-group) {
   gap: 10px;
-}
-
-/* ========================= 🟦 캘린더 셀 스타일 ========================= */
-
-/* ✅ 셀을 정사각형 비율로 고정 (스크롤형) */
-:global(.fc-daygrid-day-frame) {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: 120px !important;
-  /* 원하는 높이 조정 가능 */
-  position: relative;
-}
-
-/* ✅ 셀 내부 일정 스크롤 */
-:global(.fc-daygrid-day-events) {
-  flex: 1;
-  overflow-y: auto !important;
-  overflow-x: hidden;
-  padding-right: 3px;
-  top: 15px;
-  cursor: pointer !important;
 }
 
 /* ✅ 셀 테두리 균일 */
@@ -383,3 +345,8 @@ hr {
 .hr {
   margin-bottom: 8px;
 }
+:global(.fc-daygrid-event) {
+  margin-top: 10px !important;
+  margin-bottom: 2px !important;
+}
+:global(.fc-daygrid-event) { margin-top: 4px !important; }

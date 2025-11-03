@@ -1,11 +1,11 @@
-.boardTabsWrapper {
+.ScheduleWrapper {
     position: relative;
-    margin-top: 20px;
+    margin-top: 0px;
 }
 
-.writeBtn {
-    position: absolute;
-    top: 84px;
+.addBtn {
+     position: absolute !important;
+    top: 0px;
     /* 탭 줄과 수직 맞춤 */
     right: 50px;
     /* 화면 오른쪽 여백 */
@@ -21,12 +21,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+      /* ✅ 추가 */
+  position: absolute !important; /* fixed ❌ 절대 금지 */
+  z-index: 3; /* 캘린더 위에만 살짝 올라오게 */
+
 }
-.writeBtn:hover {
+.addBtn:hover {
     opacity: 0.9;
 }
 
-.subTabPlaceholder {
-  height: 47px; /* 기존 서브탭 높이만큼 */
-  width: 100%;
-}
+

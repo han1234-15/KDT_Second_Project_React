@@ -14,34 +14,57 @@ const BoardDetail = () => {
   const [board, setBoard] = useState(null);
   const [files, setFiles] = useState([]);
   const [comments, setComments] = useState([]);
+  const [commentProfiles, setCommentProfiles] = useState({});
+  const [writerProfile, setWriterProfile] = useState(null);
+  const [loginProfile, setLoginProfile] = useState(null); // ✅ 로그인 사용자 프로필 추가
   const [newComment, setNewComment] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize] = useState(5);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const loginId = useAuthStore(state => state.loginId);
-  const logout = useAuthStore(state => state.logout);
+  const loginId = useAuthStore((state) => state.loginId);
+  const logout = useAuthStore((state) => state.logout);
 
-  // ✅ 게시글 및 파일 불러오기
+  // ✅ 게시글 + 파일 + 로그인 프로필 + 작성자 프로필 불러오기
   useEffect(() => {
     const loadBoard = async () => {
       try {
         const token = sessionStorage.getItem("token");
         if (token) {
-          await caxios.get("/member/userInfo").catch(() => {
+          // ✅ 로그인 사용자 프로필 가져오기
+          const meResp = await caxios.get("/member/userInfo").catch(() => {
             logout();
             sessionStorage.removeItem("token");
           });
+
+          if (meResp?.data?.profileImage_servName) {
+            setLoginProfile(
+              `https://storage.googleapis.com/yj_study/${meResp.data.profileImage_servName}`
+            );
+          }
         }
 
+        // ✅ 게시글 불러오기
         const boardResp = await caxios.get(`/board/detail/${seq}`);
         setBoard(boardResp.data);
 
+        // ✅ 첨부파일 불러오기
         const fileResp = await caxios.get(
           `/files/fileList?module_type=board&module_seq=${seq}`
         );
         setFiles(fileResp.data);
+
+        // ✅ 게시글 작성자 프로필 (익명 게시판 제외)
+        if (boardResp.data?.writer_id && boardResp.data.category_id !== 3) {
+          const writerResp = await caxios.get(`/member/info/${boardResp.data.writer_id}`);
+          const profileName = writerResp.data?.profileImage_servName;
+          setWriterProfile(
+            profileName
+              ? `https://storage.googleapis.com/yj_study/${profileName}`
+              : null
+          );
+        }
       } catch (err) {
         console.error("게시글 불러오기 실패:", err);
       } finally {
@@ -58,9 +81,31 @@ const BoardDetail = () => {
         params: { page: pageNum, size: pageSize },
       });
       const { list, totalCount } = resp.data;
-      setComments(list || resp.data);
+      const commentList = list || resp.data;
+      setComments(commentList);
       if (totalCount) setTotal(totalCount);
       setPage(pageNum);
+
+      // ✅ 댓글 작성자 프로필 (익명 제외)
+      if (board?.category_id !== 3) {
+        const profileMap = {};
+        await Promise.all(
+          commentList.map(async (c) => {
+            if (c.writer_id) {
+              try {
+                const res = await caxios.get(`/member/info/${c.writer_id}`);
+                const profileName = res.data?.profileImage_servName;
+                profileMap[c.writer_id] = profileName
+                  ? `https://storage.googleapis.com/yj_study/${profileName}`
+                  : null;
+              } catch {
+                profileMap[c.writer_id] = null;
+              }
+            }
+          })
+        );
+        setCommentProfiles(profileMap);
+      }
     } catch (err) {
       console.error("댓글 불러오기 실패:", err);
     }
@@ -68,7 +113,7 @@ const BoardDetail = () => {
 
   useEffect(() => {
     if (seq) fetchComments();
-  }, [seq]);
+  }, [seq, board?.category_id]);
 
   // ✅ 댓글 작성
   const handleAddComment = async () => {
@@ -95,6 +140,7 @@ const BoardDetail = () => {
     }
   };
 
+  // ✅ 파일 다운로드
   const handleDownload = async (sysname, orgname) => {
     try {
       const response = await caxios.get(
@@ -137,8 +183,12 @@ const BoardDetail = () => {
       <div className={styles.detailHeader}>
         <div className={styles.headerProfile}>
           <img
-            src={defaultProfile}
-            alt="익명 프로필"
+            src={
+              board.category_id === 3
+                ? defaultProfile
+                : writerProfile || defaultProfile
+            }
+            alt="작성자 프로필"
             style={{
               width: "50px",
               height: "50px",
@@ -164,7 +214,11 @@ const BoardDetail = () => {
             />
           </div>
           <div className={styles.boardInfo}>
-            <div>익명</div> {/* ✅ 작성자 표시 비식별 */}
+            <div>
+              {board.category_id === 3
+                ? "익명"
+                : board.writer_name || board.writer_id}
+            </div>
             <div>{board.category_name}</div>
             <div>조회수 {board.hit}</div>
           </div>
@@ -209,9 +263,14 @@ const BoardDetail = () => {
       >
         <div className={styles.writeReply}>
           <div className={styles.replyProfile}>
+            {/* ✅ 로그인한 사용자 프로필 표시 */}
             <img
-              src={defaultProfile}
-              alt="기본 프로필"
+              src={
+                board.category_id === 3
+                  ? defaultProfile
+                  : loginProfile || defaultProfile
+              }
+              alt="로그인 사용자 프로필"
               style={{
                 width: "50px",
                 height: "50px",
@@ -246,8 +305,12 @@ const BoardDetail = () => {
               <div key={c.seq} className={styles.commentItem}>
                 <div className={styles.commentProfile}>
                   <img
-                    src={defaultProfile}
-                    alt="익명 댓글 프로필"
+                    src={
+                      board.category_id === 3
+                        ? defaultProfile
+                        : commentProfiles[c.writer_id] || defaultProfile
+                    }
+                    alt="댓글 프로필"
                     style={{
                       width: "40px",
                       height: "40px",
@@ -261,22 +324,30 @@ const BoardDetail = () => {
                 <div className={styles.commentMain}>
                   <div className={styles.commentHeader}>
                     <div className={styles.commentInfo}>
-                      <span className={styles.commentWriter}>익명</span> {/* ✅ writer_id 숨김 */}
+                      <span className={styles.commentWriter}>
+                        {board.category_id === 3
+                          ? "익명"
+                          : c.writer_name || c.writer_id}
+                      </span>
                       <span className={styles.commentDate}>
                         {new Date(c.writeDate).toLocaleString("ko-KR")}
                       </span>
                     </div>
-                    {board?.category_id !== 3 && loginId === c.writer_id && (
+                  </div>
+                  <div className={styles.commentBody}>{c.comments}</div>
+                </div>
+                 {loginId === c.writer_id && (
                       <button
-                        className={styles.commentDelete}
+                        className={
+                          board.category_id === 3
+                            ? styles.commentDeleteAnonymous
+                            : styles.commentDelete
+                        }
                         onClick={() => handleDeleteComment(c.seq)}
                       >
                         X
                       </button>
                     )}
-                  </div>
-                  <div className={styles.commentBody}>{c.comments}</div>
-                </div>
               </div>
             ))
           ) : (

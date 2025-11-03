@@ -33,7 +33,7 @@ const ScheduleTabs = () => {
       : null;
 
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.ScheduleWrapper}>
       <div className={styles.headerRow}>
         <ContentTap
           mainTabs={mainTabs}
@@ -46,7 +46,7 @@ const ScheduleTabs = () => {
         {/* 일정 추가 버튼 */}
         {location.pathname.startsWith("/schedule") && (
           <button
-            className={styles.writeBtn}
+            className={styles.addBtn}
             onClick={() => setIsModalOpen(true)}
           >
             + 일정 추가

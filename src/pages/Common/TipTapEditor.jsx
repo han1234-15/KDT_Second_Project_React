@@ -80,14 +80,19 @@ export default function TiptapEditor({ value = "", onChange, moduleType = "board
       TableCell,
       StarterKit.configure({
         bulletList: { keepMarks: true, keepAttributes: false },
+        heading: false,        // 중복 방지
+        blockquote: false,     // 중복 방지
+        horizontalRule: false, // 중복 방지
+        link: false,           // 중복 방지
+        underline: false,      // 중복 방지
       }),
       Underline,
-      Image,
       Link.configure({ openOnClick: false }),
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
       Heading.configure({ levels: [1, 2, 3] }),
       Blockquote,
       HorizontalRule,
+      Image,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
       Placeholder.configure({ placeholder: "내용을 입력하세요..." }),
       Highlight,
       CharacterCount,
