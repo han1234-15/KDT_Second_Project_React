@@ -1,12 +1,13 @@
 /* ✅ 전체 컨테이너 */
 .container {
-  background: #f0f2f5;
   height: auto;
   min-height: 100vh;
-  padding: 20px;
+  padding: 0px;
   overflow-x: hidden !important;
-  overflow-y: auto !important; /* 스크롤 가능 */
+  overflow-y: auto !important;
+  /* 스크롤 가능 */
   display: block;
+  margin-top: 20px;
 }
 
 /* ✅ 공통 카드 스타일 */
@@ -19,31 +20,62 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
   position: relative !important;
   overflow: hidden !important;
+  height: 100%;
 }
 
 .card:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.164) !important;
 }
 
-/* ✅ 카드 헤더 (드래그 핸들) */
+/* ✅ 카드 헤더 여백 제거 */
+:global(.ant-card-head) {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ✅ 카드 헤더 내부 타이틀 부분도 여백 제거 */
+:global(.ant-card-head-title) {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ✅ 카드 헤더 gradient와 완전히 밀착되도록 */
 .cardHeader {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 12px 16px !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+  background: linear-gradient(
+    45deg,
+    #8e4fd7 0%,
+    #7a5ee0 35%,
+    #655cf0 60%,
+    #507fe0 80%,
+    #3f9fe8 100%
+  );
+  color: #fff !important;
   font-weight: 600 !important;
-  font-size: 16px !important;
-  cursor: move !important; /* 드래그 핸들 */
+  font-size: 19px !important;
   display: flex !important;
   align-items: center !important;
   gap: 8px;
-  padding: 10px 14px;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
-  color: #fff;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  cursor: move !important;
 }
 
 .headerIcon {
   font-size: 18px;
 }
+.icon {
+  width: 18px;
+  height: 18px;
+  color: #6b5cf6;
+  margin-right: 6px;
+  vertical-align: middle;
+  transition: color 0.2s ease;
+}
+
 
 /* ✅ 카드 본문 */
 .cardBody {
@@ -106,19 +138,22 @@
 /* 메일 css */
 .mailListItem {
   display: flex;
-  align-items: center; /* 수직 중앙 정렬 */
+  align-items: center;
+  /* 수직 중앙 정렬 */
   padding: 6px 0;
-  gap: 8px; /* 항목 간 간격 */
-   text-align: center;
+  gap: 8px;
+  /* 항목 간 간격 */
+  text-align: center;
 }
 
-.mailListItem:hover{
+.mailListItem:hover {
   cursor: pointer;
-   background-color: rgb(252, 252, 252);
+  background-color: rgb(252, 252, 252);
 }
 
 .mailSender {
-  width: 20%; /* 발신자 폭 고정 */
+  width: 20%;
+  /* 발신자 폭 고정 */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -126,18 +161,20 @@
 }
 
 .mailTitle {
-  width: 50%; /* 제목 폭 고정 */
+  width: 50%;
+  /* 제목 폭 고정 */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-   text-align: center;
+  text-align: center;
 }
 
 .mailDate {
-  width: 30%; /* 날짜 폭 고정 */
+  width: 30%;
+  /* 날짜 폭 고정 */
   text-align: right;
   color: #6b7280;
-   text-align: center;
+  text-align: center;
 }
 
 .profileCard {
@@ -256,6 +293,7 @@
 .start {
   background: #7d5fff;
 }
+
 .start:hover:not(:disabled) {
   background: #6b4efc;
 }
@@ -263,6 +301,7 @@
 .end {
   background: #ff6b6b;
 }
+
 .end:hover:not(:disabled) {
   background: #e55050;
 }
@@ -273,3 +312,312 @@
   line-height: 1.6;
 }
 
+/* ==============================
+   📅 일정 전용 전체 CSS (최종 완성)
+   ============================== */
+
+/* ✅ 카드 내부 전체 달력 컨테이너 */
+.calendarCard {
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  overflow: visible !important;
+}
+
+/* ✅ 달력 전체 (반응형 + 중앙 정렬 + 스크롤 허용) */
+:global(.ant-picker-calendar) {
+  width: 100% !important;
+  max-width: 880px !important;
+  margin: 0 auto !important;
+  padding-top: 4px !important;
+  box-sizing: border-box;
+}
+
+/* ✅ 달력 헤더 (연도, 월, Month/Year 선택 부분) */
+:global(.ant-picker-calendar-header) {
+  width: 100% !important;
+  max-width: 880px !important;
+  margin: 0 auto 10px auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  /* 왼쪽 정렬 */
+  gap: 8px;
+  padding: 0 14px !important;
+  box-sizing: border-box;
+}
+
+/* ✅ 헤더 Month/Year 버튼 스타일 */
+:global(.ant-picker-calendar-header .ant-select-selector) {
+  height: 28px !important;
+  line-height: 26px !important;
+  font-size: 13px !important;
+  border: 1px solid #aa96ff !important;
+  color: #aa96ff !important;
+}
+
+:global(.ant-radio-button-checked) {
+  color: #aa96ff !important;
+  background: #fff !important;
+  border: 1px solid #aa96ff;
+}
+
+/* ✅ Month / Year 버튼 기본 상태 */
+:global(.ant-radio-button-wrapper) {
+  border: 1.5px solid #aa96ff !important;
+  /* 💜 테두리 색 */
+  color: #aa96ff !important;
+  /* 💜 글자 색 */
+  background: #fff !important;
+  border-radius: 6px !important;
+  transition: all 0.25s ease;
+  font-weight: 500 !important;
+  padding: 0 12px !important;
+  height: 30px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* ✅ hover 시 (보라빛 살짝 강조) */
+:global(.ant-radio-button-wrapper:hover) {
+  border-color: #8b5cf6 !important;
+  color: #8b5cf6 !important;
+  background: #f8f5ff !important;
+}
+
+/* ✅ 선택된 Month / Year 버튼 */
+:global(.ant-radio-button-wrapper-checked) {
+  background: #fff !important;
+  border: 1.5px solid #8b5cf6 !important;
+  color: #8b5cf6 !important;
+  box-shadow: 0 0 4px rgba(139, 92, 246, 0.3);
+}
+
+/* ✅ 내부 불필요한 before 선 제거 */
+:global(.ant-radio-button-wrapper:not(:first-child)::before) {
+  display: none !important;
+}
+
+/* ✅ 둥근 모서리 유지 */
+:global(.ant-radio-button-wrapper:first-child) {
+  border-top-left-radius: 6px !important;
+  border-bottom-left-radius: 6px !important;
+}
+
+:global(.ant-radio-button-wrapper:last-child) {
+  border-top-right-radius: 6px !important;
+  border-bottom-right-radius: 6px !important;
+}
+
+/* ✅ 달력 본문 */
+:global(.ant-picker-calendar-body) {
+  width: 100% !important;
+  max-width: 880px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  row-gap: 4px !important;
+  padding-bottom: 8px !important;
+  box-sizing: border-box;
+}
+
+/* ✅ 주간 테이블 구조 */
+:global(.ant-picker-content) {
+  display: table !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+  border-collapse: separate !important;
+  border-spacing: 0px 0 !important;
+}
+
+/* ✅ 주(week) row — 일정이 많으면 자동 확장 */
+:global(.ant-picker-content tr) {
+  display: table-row !important;
+  height: auto !important;
+  min-height: 120px !important;
+}
+
+/* ✅ 날짜 셀(td) */
+:global(.ant-picker-content td) {
+  display: table-cell !important;
+  width: calc(100% / 7) !important;
+  vertical-align: top !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  height: 100% !important;
+}
+
+/* ✅ 날짜 전체 박스 */
+:global(.ant-picker-calendar-date) {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  height: 100% !important;
+  width: 100% !important;
+  padding: 6px 6px 4px 6px !important;
+  border-radius: 8px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+/* ✅ 날짜 숫자 */
+:global(.ant-picker-calendar-date-value) {
+  display: block;
+  font-size: 13px;
+  color: #111;
+  margin-bottom: 4px !important;
+}
+
+/* ✅ 날짜 내용 컨테이너 */
+:global(.ant-picker-calendar-date-content) {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 60px !important;
+  overflow: visible !important;
+  padding-bottom: 4px !important;
+}
+
+/* ✅ 일정 리스트 */
+.scheduleList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  overflow: visible !important;
+}
+
+/* ✅ 개별 일정 항목 */
+.scheduleItem {
+  display: flex;
+  align-items: center;
+  font-size: 12.5px;
+  color: #333;
+  background: #f5f7ff;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.4;
+  width: 100%;
+  max-width: 100%;
+}
+
+.scheduleItem:hover {
+  background: linear-gradient(90deg, #dbeafe, #ede9fe) !important;
+  transform: translateY(-1px);
+}
+
+/* ✅ 일정 앞 점 */
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #8e44ad, #2196f3);
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+/* ✅ 일정 제목 */
+.scheduleTitle {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ✅ “+N개” 표시 */
+.more {
+  font-size: 12px;
+  color: #777;
+  text-align: left;
+  padding-left: 4px;
+  margin-top: 1px;
+}
+
+/* ==============================
+   🌈 색상 통일 (오늘/hover/선택)
+   ============================== */
+
+/* ✅ 오늘 날짜 */
+:global(.ant-picker-calendar-date-today) {
+  border: 1.5px solid #8b5cf6 !important;
+  background: #faf9ff !important;
+  box-shadow: 0 0 6px rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+}
+
+/* ✅ 날짜 hover */
+:global(.ant-picker-calendar-date:hover) {
+  background: linear-gradient(90deg, #e5e7ff, #f3e8ff) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 0 4px rgba(139, 92, 246, 0.15);
+}
+
+/* ✅ 클릭된 날짜 (활성 셀) */
+:global(.ant-picker-cell-selected .ant-picker-calendar-date),
+:global(.ant-picker-cell-selected .ant-picker-calendar-date-today) {
+  background: #a7a3ff !important;
+  color: #fff !important;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(205, 205, 255, 0.767);
+}
+
+/* ✅ 클릭된 날짜 안의 일정 텍스트 */
+:global(.ant-picker-cell-selected .ant-picker-calendar-date .scheduleItem) {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #fff !important;
+}
+
+/* ✅ 요일 아래 회색선 완전히 제거 */
+:global(.ant-picker-content thead),
+:global(.ant-picker-content thead tr),
+:global(.ant-picker-content thead th) {
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* ✅ 반응형: 화면이 900px 이하일 때 */
+@media (max-width: 900px) {
+
+  :global(.ant-picker-calendar),
+  :global(.ant-picker-calendar-header),
+  :global(.ant-picker-calendar-body) {
+    max-width: 100% !important;
+    padding: 0 10px !important;
+  }
+
+  :global(.ant-picker-content td) {
+    width: calc(100% / 7) !important;
+  }
+}
+
+/* ✅ Month / Year 버튼을 옆으로 정렬 고정 */
+:global(.ant-radio-group) {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 0 !important;
+  /* 버튼 간격 밀착 */
+}
+
+/* ✅ 버튼이 세로로 겹치는 문제 방지 */
+:global(.ant-radio-button-wrapper) {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  margin: 0 !important;
+}

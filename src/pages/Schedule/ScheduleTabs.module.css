@@ -5,7 +5,7 @@
 
 .writeBtn {
     position: absolute;
-    top: 90px;
+    top: 84px;
     /* 탭 줄과 수직 맞춤 */
     right: 50px;
     /* 화면 오른쪽 여백 */
@@ -22,7 +22,11 @@
     align-items: center;
     justify-content: center;
 }
-
 .writeBtn:hover {
     opacity: 0.9;
+}
+
+.subTabPlaceholder {
+  height: 47px; /* 기존 서브탭 높이만큼 */
+  width: 100%;
 }

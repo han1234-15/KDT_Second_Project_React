@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Button, Modal } from 'antd';
 import TaskGroupAdd from './TaskGroupAdd.jsx';
 import styles from "./Task.module.css";
-import TaskDataAdd from './TaskDataAdd.jsx';
 import { FaUser } from "react-icons/fa";
 import { CiCirclePlus } from "react-icons/ci";
 
@@ -74,8 +73,8 @@ const TaskGroup = () => {
 
             )
             }
-            <button className={styles.groupBtn} onClick={showTaskGroupAdd} style={{color:"#939393ff"}}><CiCirclePlus style={{color:"#e9e9e9ff",fontSize:"100px",display:"block",}}/>업무 그룹 추가 </button>
-            <button className={styles.groupBtn} onClick={showTaskDataAdd}> 데이터 추가 </button>
+            <button className={styles.groupBtn} onClick={showTaskGroupAdd} style={{ color: "#939393ff" }}><CiCirclePlus style={{ color: "#e9e9e9ff", fontSize: "100px", display: "block", }} />업무 그룹 추가 </button>
+
 
             <div className={styles.mainBody}>
 
@@ -101,33 +100,11 @@ const TaskGroup = () => {
                         style={{ top: 100, marginTop: '50px' }}
 
                     >
-                        <TaskGroupAdd onClose={() => {setTaskGroupAddOpen(false);  fetchGroups(); }} />
+                        <TaskGroupAdd onClose={() => { setTaskGroupAddOpen(false); fetchGroups(); }} />
                     </Modal>
 
 
-                    {/* (임시)데이터 등록 modale */}
 
-                    <Modal
-
-                        centered={false}
-                        open={TaskDataAddOpen}
-                        onCancel={() => setTaskDataAddOpen(false)}
-                        footer={null}
-                        destroyOnHidden
-                        width={{
-                            xs: '90%',  // 모바일
-                            sm: '80%',
-                            md: '70%',
-                            lg: '60%',
-                            xl: '50%',
-                            xxl: '70%', // 큰 화면
-                        }}
-                        style={{ top: 100, height: '100px', marginTop: '3%' }}
-
-                    >
-                        <TaskDataAdd onClose={() => setTaskDataAddOpen(false)} />
-
-                    </Modal>
 
 
                 </div>

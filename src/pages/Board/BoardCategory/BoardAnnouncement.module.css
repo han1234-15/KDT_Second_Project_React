@@ -52,7 +52,14 @@
   height: 36px !important; /* ✅ 셀 높이 줄이기 */
   padding: 6px 0 !important; /* ✅ 위아래 여백 축소 */
   vertical-align: middle !important; /* ✅ 내용 세로 가운데 */
+  cursor: pointer;
 }
+
+:global(.ant-table-tbody td.col-title) {
+  text-align: left !important;     /* ✅ 강제 왼쪽 정렬 */
+  padding-left: 12px !important;   /* 보기 좋게 약간 들여쓰기 */
+}
+
 
 /* ✅ hover 시에도 배경 유지 */
 :global(.ant-table-tbody > tr:hover > td) {

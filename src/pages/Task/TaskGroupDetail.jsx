@@ -6,7 +6,10 @@ import styles from "./TaskGroupDetail.module.css";
 import { FaUser, FaCog } from "react-icons/fa";
 import { caxios } from "../../config/config";
 import { FaUserAlt } from "react-icons/fa";
+import { ranks } from "../../config/options";
+
 const { TextArea } = Input;
+
 
 const TaskGroupDetail = () => {
 
@@ -58,6 +61,7 @@ const TaskGroupDetail = () => {
         setMembersCount(resp.data.membersCount || 0);
         setMembers(resp.data.members || []);
 
+        console.log(resp.data.members);
         //  로그인id가 전송되지 않은 경우
         if (!resp.data.loginId) {
           navigate("/");
@@ -398,7 +402,7 @@ const TaskGroupDetail = () => {
     if (!text) return;
 
     const newComment = {
-      writer_name: members.find(m => m.id === loginId)?.name || "익명",
+      writer_name: members.find(m => m.id === loginId)?.name || "그룹탈퇴자",
       writer_id: loginId,
       content: text,
       created_at: new Date(),
@@ -631,7 +635,11 @@ const TaskGroupDetail = () => {
                           </span>
 
                           {/* 삭제 버튼 (오른쪽 끝 고정) */}
-                          <button className={styles.commentDeleteBtn} onClick={() => handleDeleteComment(c.seq)}>x</button>
+                          {
+                            c.writer_id == loginId
+                            &&
+                            <button className={styles.commentDeleteBtn} onClick={() => handleDeleteComment(c.seq)}>x</button>
+                          }
                         </div>
 
                         <div className={styles.commentContent}>{c.content}</div>
@@ -705,7 +713,7 @@ const TaskGroupDetail = () => {
 
       {/*  멤버 목록 모달 */}
       <Modal
-        title={`그룹 멤버 (${members.length}명)`}
+        title={`그룹 멤버 (${membersCount}명)`}
         open={isMemberModalOpen}
         onCancel={() => setIsMemberModalOpen(false)}
         footer={null}
@@ -780,7 +788,9 @@ const TaskGroupDetail = () => {
               dataIndex: "rank_code",
               key: "rank_code",
               align: "center",
-            },
+              render: (code) => ranks[code] || code
+            }
+            ,
             {
               title: "직무",
               dataIndex: "job_code",
@@ -920,7 +930,7 @@ const TaskGroupDetail = () => {
             resi
           />
 
-          <label style={{ marginTop: "10px",display:"block" }}>매니저 위임</label>
+          <label style={{ marginTop: "10px", display: "block" }}>매니저 위임</label>
           <Select
             style={{ width: "75%" }}
             value={editGroup.manager_id || group.manager_id}
@@ -945,9 +955,9 @@ const TaskGroupDetail = () => {
               padding: "6px 12px",
               cursor: "pointer",
               fontWeight: "500",
-              fontSize:"13px",
-              marginLeft:"6%",
-              height:"31.2px"
+              fontSize: "13px",
+              marginLeft: "6%",
+              height: "31.2px"
             }}
           >
             그룹 제거

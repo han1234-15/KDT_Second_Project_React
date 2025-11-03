@@ -4,6 +4,7 @@ import { caxios } from '../../config/config.js';
 import { useNavigate } from "react-router-dom";
 import OrganizationView from "./OrganizationView.jsx";
 import { Button, Modal } from 'antd';
+import { ranks } from "../../config/options.js";
 const Organization = () => {
 
     const [organization, setOrganization] = useState([]);
@@ -119,12 +120,12 @@ const Organization = () => {
                     {checkedList.length === 0 ? (
                         <>
                             <div style={{ display: "flex", gap: "10px", width: "50%" }}>
-                                <input type="text" placeholder="검색할 이름"
-                                    style={{flex: 1, borderRadius: "10px", border: "none",fontSize: "20px"}}
+                                <input type="text" placeholder="검색할 조직도 성함"
+                                    style={{flex: 1, borderRadius: "10px", border: "1px solid lightgrey",fontSize: "20px"}}
                                     onChange={(e) => setSearchName(e.target.value)}
                                     onKeyDown={(e) => { if (e.key === "Enter") handleOrganizationList(); }}
                                 />
-                                <button onClick={handleOrganizationList} style={{ padding: "5px 15px", fontSize: "16px" }}>
+                                <button onClick={handleOrganizationList} style={{ fontSize: "15px" }}>
                                     검색
                                 </button>
                             </div>
@@ -192,7 +193,7 @@ const Organization = () => {
                     <div style={{ display: "flex", backgroundColor: "#fafafa", padding: "10px", borderBottom: "1px solid #d9d9d9", textAlign: "center" }}>
                         <div style={{ flex: 0.5 }}><input type="checkbox" onClick={handleAllcheckbox} /></div>
                         <div style={{ flex: 1 }}>부서</div>
-                        <div style={{ flex: 1 }}>이름</div>
+                        <div style={{ flex: 1 }}>성함</div>
                         <div style={{ flex: 1 }}>직위</div>
                         <div style={{ flex: 1 }}>직무</div>
                         <div style={{ flex: 1 }}>재직여부</div>
@@ -214,7 +215,7 @@ const Organization = () => {
                             </div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.dept_code}</div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.name}</div>
-                            <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.rank_code}</div>
+                            <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{ranks[e.rank_code]}</div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.job_code}</div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.status}</div>
                         </div>

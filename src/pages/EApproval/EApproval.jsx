@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Table, Tag, Empty } from "antd";   // ✅ Empty 추가
 import { caxios } from "../../config/config";
 import "./styles/ApprovalPage.css";
 
@@ -8,9 +9,9 @@ function EApproval() {
   const { status = "show" } = useParams();
   const [docs, setDocs] = useState([]);
 
-const userId = sessionStorage.getItem("LoginID");
-console.log("🔥 최종 userId:", userId);
- const upperStatus = status.toUpperCase();
+  const userId = sessionStorage.getItem("LoginID");
+  const upperStatus = status.toUpperCase();
+
   const statusMap = {
     WAIT: "승인 대기",
     CHECKING: "진행 중",
@@ -20,76 +21,98 @@ console.log("🔥 최종 userId:", userId);
     TEMP: "임시 저장",
   };
 
-useEffect(() => {
-  let url = "";
- 
+  const renderStatusTag = (value) => {
+    const text = statusMap[value] || value;
+    const color = {
+      "승인 대기": "gold",
+      "진행 중": "geekblue",
+      "예정": "cyan",
+      "기안": "green",
+      "반려": "red",
+      "임시 저장": "gray",
+    }[text];
 
-  switch (upperStatus) {
-    case "WAIT": // 승인 대기
-      url = `/Eapproval/my/wait?userId=${userId}`;
-      break;
+    return <Tag color={color}>{text}</Tag>;
+  };
 
-    case "PROCESSING": // 예정 (앞으로 결재할 문서)
-      url = `/Eapproval/my/scheduled?userId=${userId}`;
-      break;
+  const columns = [
+    { title: "문서번호", dataIndex: "seq", align: "center", width: 100 },
+    {
+      title: "제목",
+      dataIndex: "title",
+      render: (text, record) => (
+        <span
+          className="title-link"
+          onClick={() =>
+            record.status === "TEMP"
+              ? navigate(`/Eapproval/edit/${record.seq}`)
+              : navigate(`/Eapproval/detail/${record.seq}`)
+          }
+        >
+          {text}
+        </span>
+      ),
+    },
+    { title: "기안자", dataIndex: "writer", align: "center", width: 120 },
+    {
+      title: "기안일",
+      dataIndex: "writeDate",
+      align: "center",
+      width: 200,
+      render: (date) => new Date(date).toLocaleString("ko-KR"),
+    },
+    {
+      title: "상태",
+      dataIndex: "status",
+      align: "center",
+      width: 130,
+      render: (value) => renderStatusTag(value),
+    },
+  ];
 
-    case "CHECKING": // 진행 중 (결재가 일부 완료됨)
-      url = `/Eapproval/CHECKING`;
-      break;
+  useEffect(() => {
+    let url = "";
 
-    case "APPROVED":
-    case "REJECTED":
-    case "TEMP":
-      url = `/Eapproval/${upperStatus}`;
-      break;
+    switch (upperStatus) {
+      case "WAIT":
+        url = `/Eapproval/my/wait?userId=${userId}`;
+        break;
+      case "PROCESSING":
+        url = `/Eapproval/my/scheduled?userId=${userId}`;
+        break;
+      case "CHECKING":
+        url = `/Eapproval/CHECKING`;
+        break;
+      case "APPROVED":
+      case "REJECTED":
+      case "TEMP":
+        url = `/Eapproval/${upperStatus}`;
+        break;
+      default:
+        url = `/Eapproval/A`;
+    }
 
-    default:
-      url = `/Eapproval/A`;
-  }
-
-  caxios.get(url).then((res) => setDocs(res.data));
-}, [status, userId]);
+    caxios.get(url).then((res) => setDocs(res.data));
+  }, [status, userId]);
 
   return (
     <div className="approval-container">
-      <table className="approval-table">
-        <thead>
-          <tr>
-            <th>문서번호</th>
-            <th>제목</th>
-            <th>기안자</th>
-            <th>기안일</th>
-            <th>상태</th>
-          </tr>
-        </thead>
-        <tbody>
-          {docs.length > 0 ? (
-            docs.map((doc) => (
-              <tr key={doc.seq}>
-                <td>{doc.seq}</td>
-                <td
-                  className="title-cell"
-                  style={{ cursor: "pointer", color: "#0077cc", textDecoration: "underline" }}
-                  onClick={() => {
-                    if (doc.status === "TEMP") navigate(`/Eapproval/edit/${doc.seq}`);
-                    else navigate(`/Eapproval/detail/${doc.seq}`);
-                  }}
-                >
-                  {doc.title}
-                </td>
-                <td>{doc.writer}</td>
-                <td>{new Date(doc.writeDate).toLocaleString("ko-KR")}</td>
-                <td>{statusMap[ upperStatus === "PROCESSING" ? "PROCESSING" : doc.status]}
-                  </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" className="empty-msg">표시할 문서가 없습니다.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <Table
+        className="custom-table"
+        dataSource={docs ?? []}             
+        columns={columns}
+        rowKey="seq"
+        pagination={false}
+        bordered
+        locale={{
+          emptyText: (
+            <Empty
+              description="No data"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}  
+            />
+          ),
+        }}
+      />
     </div>
   );
 }

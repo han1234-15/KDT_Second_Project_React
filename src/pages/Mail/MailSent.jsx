@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { caxios } from '../../config/config.js';
 import { useEffect, useState } from 'react';
 import { Table } from 'antd';
+import Search from "antd/es/input/Search.js";
 
 const MailSent = () => {
 
@@ -74,22 +75,27 @@ const MailSent = () => {
                     {/* 메일 헤더 1 */}
                     <div className={styles.mainHeadertop}>
                         보낸 메일 : {mail.length}개의 메일 <br />
-                        <button onClick={handleMailWrite} className={styles.createbtn}>메일쓰기</button>
                     </div>
 
                     {/* 메일 헤더 2 */}
                     <div className={styles.mainHeaderbottom}>
                         {checkedList.length === 0 ? (
                             <>
-                                <input type="text" placeholder="검색할 수신자 이름"
-                                    style={{ width: "50%", height: "50%", borderRadius: "5px", border: "none", fontSize: "20px" }}
-                                    onChange={(e) => setSearchName(e.target.value)}
-                                    onKeyDown={(e) => { if (e.key === "Enter") handleMailList(); }} />
-                                <button onClick={handleMailList}>검색</button>
+                                <div className={styles.search}>
+                                    <Search
+                                        placeholder="검색할 수신인 이름"
+                                        allowClear
+                                        enterButton="검색"
+                                        style={{ width: 400 }}
+                                        value={searchName}
+                                        onChange={(e) => setSearchName(e.target.value)}
+                                        onSearch={handleMailList} // Enter 또는 버튼 클릭 시
+                                    />
+                                </div>
                             </>
                         ) : (
                             <>
-                                <button onClick={handleMailDelete} style={{ margin: "10px" }}>삭제</button>
+                                <button className={styles.btns} onClick={handleMailDelete} style={{ margin: "10px" }}>삭제</button>
                             </>
                         )}
                     </div>
@@ -101,7 +107,11 @@ const MailSent = () => {
                     rowSelection={rowSelection} // 체크박스 기능
                     columns={[
                         { title: "수신자", dataIndex: "recipientName", key: "recipientName" },
-                        { title: "수신자 아이디", dataIndex: "recipientId", key: "recipientId" },
+                        {
+                            title: "수신자 이메일", dataIndex: "recipientId", key: "recipientId",
+                            render: (recipientId) => recipientId.includes('@') ? recipientId : `${recipientId}@Infinity.com`
+                        },
+
                         { title: "제목", dataIndex: "title", key: "title" },
                         { title: "발신 날짜", dataIndex: "sendDateStr", key: "sendDateStr" },
                     ]}

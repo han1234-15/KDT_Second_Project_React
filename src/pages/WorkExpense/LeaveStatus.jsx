@@ -1,23 +1,15 @@
 import { useEffect, useState } from "react";
+import { Table, Modal, Button, Tag, Input } from "antd";
 import { caxios } from "../../config/config";
 
-// 직급 순서
 const rankOrder = ["사원", "대리", "과장", "차장", "부장", "이사", "부사장", "사장"];
 
 function LeaveStatus() {
   const [list, setList] = useState([]);
   const [loginUser, setLoginUser] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
-  const [showRejectInput, setShowRejectInput] = useState(false);
-
-
-  const getCurrentApprover = () => {
-    if (!selectedRow?.approvalLine) return null;
-    const waiting = selectedRow.approvalLine.find(a => a.STATUS === "WAITING");
-    return waiting ? waiting.ID : null;
-  };
 
   const leaveCodeMap = {
     half_pm: "반차(오후)",
@@ -30,20 +22,19 @@ function LeaveStatus() {
     WAITING: "결재대기",
     APPROVED: "승인",
     REJECTED: "반려",
-    CHECKING: "확인중"
+    CHECKING: "확인중",
   };
 
-  const isAdmin =
-    loginUser &&
-    rankOrder.indexOf(loginUser.rank_code) >= rankOrder.indexOf("과장");
-
-  const formatDate = (isoString) => {
-    if (!isoString) return "-";
-    const validString = isoString.replace(" ", "T");
-    const date = new Date(validString);
-    if (isNaN(date)) return "-";
-    return date.toISOString().split("T")[0];
+  const fetchData = () => {
+    caxios.get("/leave/status").then(res => setList(res.data));
   };
+
+  useEffect(() => {
+    fetchData();
+    caxios.get("/member/me").then(res => setLoginUser(res.data));
+  }, []);
+
+  const formatDate = (str) => str ? new Date(str).toISOString().split("T")[0] : "-";
 
   const formatLeaveRange = (row) => {
     const date = formatDate(row.startLeaveTime);
@@ -52,208 +43,154 @@ function LeaveStatus() {
     return `${formatDate(row.startLeaveTime)} ~ ${formatDate(row.endLeaveTime)}`;
   };
 
-  const fetchData = () => {
-    caxios.get("/leave/status").then((res) => setList(res.data));
+  const openModal = async (row) => {
+    const res = await caxios.get(`/Eapproval/line/${row.approvalId}`);
+    setSelectedRow({ ...row, approvalLine: res.data });
+    setModalOpen(true);
   };
 
-  useEffect(() => {
-    fetchData();
-    caxios.get("/member/me").then((res) => setLoginUser(res.data));
-  }, []);
+  const closeModal = () => {
+    setModalOpen(false);
+    setRejectReason("");
+  };
 
   const approveHandler = () => {
     caxios.post(`/leave/approve`, { seq: selectedRow.seq }).then(() => {
-      alert("승인 처리되었습니다.");
+      Modal.success({ content: "✅ 승인 완료!" });
       closeModal();
       fetchData();
     });
   };
 
   const rejectHandler = () => {
-    if (!rejectReason.trim()) {
-      alert("반려 사유를 입력하세요.");
-      return;
-    }
-
-    caxios.post(`/leave/reject`, { seq: selectedRow.seq, reason: rejectReason })
-      .then(() => {
-        alert("반려 처리되었습니다.");
-        closeModal();
-        fetchData();
-      });
+    if (!rejectReason.trim()) return Modal.warning({ content: "반려 사유를 입력하세요." });
+    caxios.post(`/leave/reject`, { seq: selectedRow.seq, reason: rejectReason }).then(() => {
+      Modal.error({ content: "❌ 반려 처리 완료" });
+      closeModal();
+      fetchData();
+    });
   };
 
-  const openModal = async (row) => {
-    setSelectedRow(row);
-    setIsModalOpen(true);
+  const isAdmin =
+    loginUser && rankOrder.indexOf(loginUser.rank_code) >= rankOrder.indexOf("과장");
 
-    if (row.approvalId) {
-      try {
-        const res = await caxios.get(`/Eapproval/line/${row.approvalId}`);
-        let lineData = res.data;
-        if (lineData.approvers) lineData = lineData.approvers;
+  const getCurrentApprover = () =>
+    selectedRow?.approvalLine?.find(a => a.STATUS === "WAITING")?.ID;
 
-        setSelectedRow(prev => ({
-          ...prev,
-          approvalLine: lineData,
-        }));
-
-      } catch (err) {
-        console.error("결재선 불러오기 실패:", err);
-      }
-    }
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedRow(null);
-    setRejectReason("");
-    setShowRejectInput(false);
-  };
-
-  const isReferenceUser = () =>
-    selectedRow?.approvalLine?.some(
-      a => a.ID === loginUser?.id && a.STATUS === "REFERENCE"
-    );
+  const columns = [
+    {
+      title: "신청자",
+      render: (row) => `${row.memberName} (${row.rankCode})`,
+      align: "center",
+    },
+    { title: "휴가종류", dataIndex: "leaveCode", render: c => leaveCodeMap[c], align: "center" },
+    { title: "기간", render: row => formatLeaveRange(row), align: "center" },
+    { title: "사유", dataIndex: "reason", align: "center" },
+    {
+      title: "상태",
+      dataIndex: "status",
+      align: "center",
+      render: (v) => (
+        <Tag color={
+          v === "WAITING" ? "gold" :
+          v === "APPROVED" ? "green" :
+          v === "REJECTED" ? "red" :
+          "blue"
+        }>
+          {statusMap[v]}
+        </Tag>
+      ),
+    },
+    {
+      title: "상세",
+      align: "center",
+      render: (row) => (
+        <Button style={detailBtn} onClick={() => openModal(row)}>
+          보기
+        </Button>
+      ),
+    },
+  ];
 
   return (
     <div style={{ padding: "20px" }}>
       <h2>휴가 현황</h2>
 
-      <table border="1" width="100%" cellPadding="10">
-        <thead>
-          <tr>
-            <th>신청자</th>
-            <th>휴가종류</th>
-            <th>기간</th>
-            <th>사유</th>
-            <th>상태</th>
-            <th>상세</th>
-          </tr>
-        </thead>
-        <tbody>
-          {list.map((row, index) => (
-            <tr key={`${row.seq}-${index}`}>
-              <td>{row.memberName} ({row.rankCode})</td>
-              <td>{leaveCodeMap[row.leaveCode?.toLowerCase()] || row.leaveCode}</td>
-              <td>{formatLeaveRange(row)}</td>
-              <td>{row.reason}</td>
-              <td>{statusMap[row.status]}</td>
-       <td>
-  <button
-    style={{
-      background: "linear-gradient(45deg, #00b4db, #0083b0)",
-      border: "none",
-      padding: "6px 14px",
-      borderRadius: "6px",
-      color: "white",
-      fontSize: "14px",
-      fontWeight: "500",
-      cursor: "pointer"
-    }}
-    onClick={() => openModal(row)}
-  >
-    보기
-  </button>
-  </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Table
+        dataSource={list}
+        columns={columns}
+        rowKey="seq"
+        bordered
+        pagination={false}
+        locale={{ emptyText: "표시할 휴가 내역이 없습니다." }}
+      />
 
-      {isModalOpen && selectedRow && (
-        <div style={modalBackdrop}>
-          <div style={modalBox}>
+      <Modal open={modalOpen} onCancel={closeModal} footer={null} width={500} centered>
+        {selectedRow && (
+          <>
             <h3>휴가 상세</h3>
+            <p><b>신청자:</b> {selectedRow.memberName} ({selectedRow.rankCode})</p>
+            <p><b>휴가종류:</b> {leaveCodeMap[selectedRow.leaveCode]}</p>
+            <p><b>기간:</b> {formatLeaveRange(selectedRow)}</p>
+            <p><b>사유:</b> {selectedRow.reason}</p>
 
-            <p><strong>신청자:</strong> {selectedRow.memberName} ({selectedRow.rankCode})</p>
-            <p><strong>휴가종류:</strong> {leaveCodeMap[selectedRow.leaveCode]}</p>
-            <p><strong>기간:</strong> {formatLeaveRange(selectedRow)}</p>
-            <p><strong>사유:</strong> {selectedRow.reason}</p>
-            <p><strong>상태:</strong> {statusMap[selectedRow.status]}</p>
-
-            {/* ✅ 결재자 테이블 */}
             {selectedRow.approvalLine && (
-              <div style={{ marginTop: "10px" }}>
-                <strong>결재자</strong>
-                <table style={{ width: "100%", marginTop: "5px", textAlign: "center", borderCollapse: "collapse" }}>
+              <>
+                <b>결재선</b>
+                <table style={lineTable}>
                   <tbody>
                     <tr>
-                      {selectedRow.approvalLine.filter(a => a.STATUS !== "REFERENCE").map((a, idx) => (
-                        <td key={idx} style={tdStyle}>{a.NAME} ({a.RANK_CODE})</td>
-                      ))}
+                      {selectedRow.approvalLine.filter(a => a.STATUS !== "REFERENCE").map(a =>
+                        <td key={a.ID}>{a.NAME} ({a.RANK_CODE})</td>
+                      )}
                     </tr>
-                  <tr>
-          {selectedRow.approvalLine.filter(a => a.STATUS !== "REFERENCE").map((a, idx) => (
-            <td key={idx} style={tdStyle}>
-              {statusMap[a.STATUS] || "-"}
-            </td>
-          ))}
-        </tr>
-      </tbody>
-    </table>
-  </div>
-)}
-
-            {/* ✅ 참조자 테이블 */}
-            {selectedRow.approvalLine?.some(a => a.STATUS === "REFERENCE") && (
-              <div style={{ marginTop: "10px" }}>
-                <strong>참조자</strong>
-                <table style={{ width: "100%", marginTop: "5px", textAlign: "center", borderCollapse: "collapse" }}>
-                  <tbody>
                     <tr>
-                      {selectedRow.approvalLine.filter(a => a.STATUS === "REFERENCE").map((a, idx) => (
-                        <td key={idx} style={tdStyle}>{a.NAME} ({a.RANK_CODE})</td>
-                      ))}
+                      {selectedRow.approvalLine.filter(a => a.STATUS !== "REFERENCE").map(a =>
+                        <td key={a.ID}>{statusMap[a.STATUS] || "-"}</td>
+                      )}
                     </tr>
                   </tbody>
                 </table>
-              </div>
+              </>
             )}
 
-            {/* ✅ 참조자는 버튼 숨김 */}
-            {isAdmin &&
-              !isReferenceUser() &&
-              (selectedRow.status === "WAITING" || selectedRow.status === "CHECKING") &&
-              getCurrentApprover() === loginUser.id && (
-                <>
-                  <button onClick={approveHandler}>승인</button>
-                  <button onClick={() => setShowRejectInput(true)}>반려</button>
-
-                  {showRejectInput && (
-                    <div style={{ marginTop: "10px" }}>
-                      <textarea
-                        placeholder="반려 사유 입력"
-                        value={rejectReason}
-                        onChange={(e) => setRejectReason(e.target.value)}
-                        style={{ width: "100%", height: "60px" }}
-                      />
-                      <button onClick={rejectHandler} style={{ marginTop: "5px" }}>반려 확정</button>
-                    </div>
-                  )}
-                </>
-              )}
-
-            <button onClick={closeModal} style={{ marginTop: "10px" }}>닫기</button>
-          </div>
-        </div>
-      )}
+            {/* 승인/반려 버튼 조건 */}
+            {isAdmin && getCurrentApprover() === loginUser?.id && (
+              <div style={{ marginTop: "15px", textAlign: "center" }}>
+                <Button type="primary" onClick={approveHandler}>✅ 승인</Button>
+                <Button danger style={{ marginLeft: "8px" }} onClick={() => {}}>
+                  ❌ 반려
+                </Button>
+                <Input.TextArea
+                  placeholder="반려 사유"
+                  value={rejectReason}
+                  onChange={e => setRejectReason(e.target.value)}
+                  style={{ marginTop: "10px" }}
+                />
+                <Button danger block style={{ marginTop: "8px" }} onClick={rejectHandler}>
+                  반려 확정
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </Modal>
     </div>
   );
 }
 
-const modalBackdrop = {
-  position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-  backgroundColor: "rgba(0,0,0,0.5)",
-  display: "flex", justifyContent: "center", alignItems: "center",
+const detailBtn = {
+  background: "linear-gradient(45deg, #00b4db, #0083b0)",
+  border: "none",
+  color: "white",
+  borderRadius: "6px",
 };
 
-const modalBox = {
-  backgroundColor: "white", padding: "20px", borderRadius: "8px", width: "420px",
-};
-
-const tdStyle = {
-  border: "1px solid #ccc", padding: "6px",
+const lineTable = {
+  width: "100%",
+  textAlign: "center",
+  marginTop: "6px",
+  borderCollapse: "collapse",
 };
 
 export default LeaveStatus;

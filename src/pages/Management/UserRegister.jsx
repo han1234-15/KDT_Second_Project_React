@@ -7,7 +7,7 @@ import { Button, Dropdown, Input, Space, Select } from 'antd';
 import { Link, useNavigate } from "react-router-dom";
 
 import { caxios } from "../../config/config";
-import { departmentOptions, jobOptions, positionOptions } from '../../config/options';
+import { departmentOptions, jobOptions, positionOptions, ranks } from '../../config/options';
 import { useDaumPostcodePopup } from 'react-daum-postcode'; // Daum 주소 검색 관련 hook
 import { Alert } from 'antd';
 import defaultProfile from "../../assets/images/defaultProfile.png";
@@ -166,16 +166,6 @@ const UserRegister = () => {
             return;
         }
 
-        // caxios.post("/member", memberInfo)
-        //     .then(resp => {
-        //         alert("회원 등록 성공", "사용자 추가가 완료되었습니다.");
-        //         navigate("/management");
-        //     })
-        //     .catch(err => {
-        //         alert("회원 등록 실패", "알 수 없는 오류가 발생했습니다.");
-        //     });
-
-
         const formData = new FormData();
         formData.append("member", new Blob([JSON.stringify(memberInfo)], { type: "application/json" }));
         if (profileImage) formData.append("profileImage", profileImage);
@@ -330,7 +320,7 @@ const UserRegister = () => {
                         <Space wrap>
                             <Select
                                 defaultValue="연구&개발"
-                                style={{ width:  288 }}
+                                style={{ width: 288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, dept_code: value }))
                                 }
@@ -342,7 +332,7 @@ const UserRegister = () => {
                         <label>직위*</label><Space wrap>
                             <Select
                                 defaultValue="사원"
-                                style={{ width:  288 }}
+                                style={{ width: 288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, rank_code: value }))
                                 }
@@ -355,7 +345,7 @@ const UserRegister = () => {
                         <label>직무*</label><Space wrap>
                             <Select
                                 defaultValue="기획"
-                                style={{ width:  288 }}
+                                style={{ width: 288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, job_code: value }))
                                 }
@@ -395,7 +385,7 @@ const UserRegister = () => {
                     <div>
                         <label></label>
                         <Input readOnly name="address_line1"
-                            style={{width:'100px'}}
+                            style={{ width: '100px' }}
                             value={memberInfo.address_line1}
                             onChange={handleMemberInfoChange}
                             placeholder="주소" />

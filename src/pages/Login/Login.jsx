@@ -30,7 +30,7 @@ export default function Login() {
                 sessionStorage.setItem("token", token);
                 sessionStorage.setItem("LoginID", member.id); //  중요
 
-                login(token , member.id); // 상태 저장
+                login(token, member.id); // 상태 저장
             })
             .catch(() => {
                 sessionStorage.removeItem("token");
@@ -73,7 +73,6 @@ export default function Login() {
                     </button>
                 </div>
                 <div className={styles.footer}>
-                    <a href="#">아이디 찾기</a> | <a href="#">비밀번호 찾기</a>
                 </div>
             </div>
             <footer className={styles.copy}>© 2025 Infinity. All Rights Reserved.</footer>

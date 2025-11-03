@@ -26,23 +26,23 @@ const [form, setForm] = useState({
   const [saving, setSaving] = useState(false);
 
   // 모달 열릴 때 초기값 세팅 및 에러 초기화
-  useEffect(() => {
-    if (isOpen) {
-      setForm({
-        category: "1",
-        title: "",
-        content: "",
-        startAt: initialData?.startAt ? dayjs(initialData.startAt) : dayjs(),
-        endAt: initialData?.endAt ? dayjs(initialData.endAt) : dayjs().add(1, "hour"),
-        place: "",
-        color: "#6BB5FF",
-        importantYn: "N",
-        created_id: "testUser",
-      });
-      setErrorMsg("");
-      setSaving(false);
-    }
-  }, [isOpen, initialData]);
+ useEffect(() => {
+  if (isOpen) {
+    setForm({
+      category: initialData?.category ?? "1",
+      title: "",
+      content: "",
+      startAt: initialData?.startAt ? dayjs(initialData.startAt) : dayjs(),
+      endAt: initialData?.endAt ? dayjs(initialData.endAt) : dayjs().add(1, "hour"),
+      place: "",
+      color: initialData?.color ?? "#6BB5FF",
+      importantYn: initialData?.importantYn ?? "N",
+      created_id: loginId || "testUser",
+    });
+    setErrorMsg("");
+    setSaving(false);
+  }
+}, [isOpen, initialData]);
 
   const toggleImportant = () =>
     setForm((p) => ({ ...p, importantYn: p.importantYn === "Y" ? "N" : "Y" }));
@@ -110,6 +110,7 @@ const [form, setForm] = useState({
       open={isOpen}
       width={630}
       title="일정 추가"
+      destroyOnHidden 
       onCancel={onClose}
       footer={
         <div className={styles.modalFooter}>
@@ -204,12 +205,14 @@ const [form, setForm] = useState({
             <TimePicker
               value={form.startAt}
               format="HH:mm"
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
               onChange={(t) =>
                 setForm({
                   ...form,
                   startAt: t
                     ? dayjs(form.startAt).hour(t.hour()).minute(t.minute())
                     : form.startAt,
+                    
                 })
               }
             />
@@ -221,6 +224,7 @@ const [form, setForm] = useState({
             <TimePicker
               value={form.endAt}
               format="HH:mm"
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
               onChange={(t) =>
                 setForm({
                   ...form,
