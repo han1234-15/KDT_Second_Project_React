@@ -79,16 +79,19 @@
   border-radius: 8px;
   margin-bottom: 20px;
   margin-top: 20px;
-}
 
+}
 .row {
   display: flex;
-  align-items: center;
+  align-items: center; /* 세로 정렬 문제 해결 */
   gap: 10px;
+  width: 40%;
 }
 
 .row label {
   font-weight: 500;
+  white-space: nowrap;
+  line-height: 32px; /* Input/Select 높이에 맞춤 */
 }
 
 .periodLabel {
