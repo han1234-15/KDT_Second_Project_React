@@ -6,7 +6,7 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { Button, Modal } from 'antd';
 import MailAddContacts from "./MailAddContacts.jsx";
-
+import TipTapEditor from "../Common/TipTapEditor"; // ✅ TipTap 컴포넌트로 교체
 
 const MailResponse = () => {
 
@@ -55,12 +55,17 @@ const MailResponse = () => {
     setMail(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // CKEditor 내용 변경 처리
-  const handleEditorChange = (event, editor) => {
-    const data = editor.getData();
-    setMail(prev => ({ ...prev, content: data }));
-  };
+  // // CKEditor 내용 변경 처리
+  // const handleEditorChange = (event, editor) => {
+  //   const data = editor.getData();
+  //   setMail(prev => ({ ...prev, content: data }));
+  // };
 
+
+  //  CKEditor → TipTap 변경 처리
+  const handleEditorChange = (html) => {
+    setMail(prev => ({ ...prev, content: html }));
+  };
 
   const handleFileClick = () => {
     fileRef.current.click();
@@ -101,7 +106,7 @@ const MailResponse = () => {
         await caxios.post(`/files/upload/original`, params);
       }
 
-Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: mail.seq }, Mailres: false } });
+      Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: mail.seq }, Mailres: false } });
 
       Navigate("/mail");
     } catch (err) {
@@ -167,7 +172,7 @@ Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: ma
         recipientId: originalMail.senderId,
         recipientName: originalMail.senderName,
         title: `RE: ${originalMail.title}`,
-        content: `[원본 메시지]${originalMail.content}`,
+        content: `[원본 메시지] ${originalMail.content}`,
         seq: originalMail.seq
       }));
 
@@ -186,26 +191,31 @@ Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: ma
       <div className={styles.mainHeader} style={{ display: "flex", marginTop: "10px" }}>
 
         <div style={{ width: "5%", fontSize: "20px" }}>수신인 </div>
-        <input type="text" className={styles.containerhalf} style={{ width: "40%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }}
+        <input type="text" className={styles.containerhalf} style={{ width: "40%", height: "80%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }}
           onChange={handleChange} name="recipientName"
           value={
             mail.recipientName && mail.recipientId
               ? `${mail.recipientName} (${mail.recipientId.includes("@") ? mail.recipientId : mail.recipientId + "@Infinity.com"})`
               : mail.recipientName || ""
           }
-          readOnly /><br></br>
+          readOnly />
       </div>
 
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div style={{ width: "5%", fontSize: "20px" }}>제목 </div>
-        <input type="text" className={styles.containerhalf} style={{ width: "40%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px" }}
+        <input type="text" className={styles.containerhalf}
+         style={{ width: "40%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px", marginBottom:"20px" }}
           onChange={handleChange} name="title" value={mail.title} />
       </div>
 
+      {/* 본문 영역 */}
 
-      <div className={styles.mainBody}>
+      <TipTapEditor
+        content={mail.content || ""}
+        onChange={handleEditorChange}
 
-        <CKEditor
+      />
+      {/* <CKEditor
           editor={ClassicEditor}
           data={mail.content || ''}
           className={styles.ckEditor}
@@ -218,10 +228,10 @@ Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: ma
             ]
           }}
 
-        />
-      </div>
+        /> */}
 
-      <button onClick={handleFileClick} style={{ marginTop: "10px", float: "left" }}>파일 추가</button>
+
+      <button className={styles.btns} onClick={handleFileClick} style={{ marginTop: "10px", float: "left" }}>파일 추가</button>
       <div style={{ marginTop: "10px", marginLeft: "50px", width: "40%", float: "left" }}>
 
         <input
@@ -238,23 +248,23 @@ Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: ma
 
 
 
-        <h4>기존 첨부파일</h4>
+        <h5>첨부 파일</h5>
         <ul>
           {originalFiles.map((file, i) => (
             <li key={i}>
               {file.orgname || file.sysname}
-              <button onClick={() => handleDownload(file.sysname, file.orgname)}>다운받기</button>
+              <button className={styles.btns} onClick={() => handleDownload(file.sysname, file.orgname)}>다운받기</button>
             </li>
           ))}
         </ul>
-
-        <h4>추가한 파일</h4>
+        <hr></hr>
+        <h5>추가 파일</h5>
         <ul>
           {files.map((file, i) => (
             <li key={i}>{file.name}</li>
           ))}
         </ul>
-
+        <hr></hr>
         {/* {files.map((file, idx) => (
           <li key={idx} style={{ marginBottom: "3px" }}>
             {file.name}
@@ -283,9 +293,9 @@ Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: ma
 
       </div>
 
-      <button className={styles.backBtn} onClick={() => Navigate(-1)} style={{ marginTop: "10px" }}>뒤로가기</button>
-      <button style={{ float: "right", marginRight: "30px", marginTop: "10px" }} onClick={handleMailWrite}>전송</button>
+      <button className={styles.btns} onClick={() => Navigate(-1)} style={{ width: "100px", float: "right", marginTop: "10px" }}>뒤로가기</button>
 
+      <button className={styles.btns} style={{ float: "right", marginRight: "30px", marginTop: "10px" }} onClick={handleMailWrite}>전송</button>
 
       <Modal
 

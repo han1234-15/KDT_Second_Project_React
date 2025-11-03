@@ -43,7 +43,7 @@ const MailWrite = () => {
     setMail(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // ✅ CKEditor → TipTap 변경 처리
+  //  CKEditor → TipTap 변경 처리
   const handleEditorChange = (html) => {
     setMail(prev => ({ ...prev, content: html }));
   };

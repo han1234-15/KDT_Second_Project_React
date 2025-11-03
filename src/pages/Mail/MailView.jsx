@@ -137,7 +137,7 @@ const MailView = () => {
                         style={{ borderRadius: "6px", backgroundColor: "#f8f9fa" }}
                         value={
                             mail.recipientName && mail.recipientId
-                                ? `${mail.recipientName} (${mail.recipientId})`
+                                ? `${mail.recipientName} (${mail.recipientId.includes('@') ? mail.recipientId : `${mail.recipientId}@Infinity.com`})`
                                 : mail.recipientName || ""
                         }
                     />
@@ -167,19 +167,20 @@ const MailView = () => {
             <hr style={{ width: "96%", marginLeft: "20px", marginBottom: "20px" }} />
             {/* 파일 업로드 (출력용) */}
             <div className={styles.fileUploadBox}>
-                <div className={styles.fileTitle} style={{width:"8%"}}>파일 첨부</div>
-                <div className={styles.fileList} style={{width:"90%"}}>
+                <div className={styles.fileTitle} style={{ width: "8%" }}>파일 첨부</div>
+                <div className={styles.fileList} style={{ width: "90%" }}>
                     <ul>
                         {files.map((file, i) => (
                             <li key={i}>
                                 {file.orgname || file.sysname}
                                 <Button
-                            
+
                                     size="small"
-                                    style={{ marginLeft: "10px", background: "linear-gradient(45deg, #8e44ad, #2196f3)", color: "white", border: "none", 
-                                        display: "flex" , justifyContent:"flex-end"
+                                    style={{
+                                        marginLeft: "10px", background: "linear-gradient(45deg, #8e44ad, #2196f3)", color: "white", border: "none",
+                                        display: "flex", justifyContent: "flex-end"
                                     }}
-                                    onClick={() => handleDownload(file.sysname, file.orgname)} 
+                                    onClick={() => handleDownload(file.sysname, file.orgname)}
                                 >
                                     다운로드
                                 </Button>

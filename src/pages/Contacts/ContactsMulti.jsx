@@ -78,25 +78,25 @@ const ContactsMulti = () => {
         handleContactsList();
     }
 
-    // 내 개인 주소록으로 복사
-    // const handleCopyToSolo = async () => {
-    //     await caxios.put("/contacts/toSoloCopy",
-    //         { seqList: checkedList },
-    //         { withCredentials: true }
-    //     );
-
-    //     setCheckedList([]);
-    //     handleContactsList(); // 리스트 새로고침
-    // };
-
-    // 개인 주소록으로 이동
-    const handleContactsUpdateTypeSingle = async () => {
-        await caxios.put("/contacts", { seqList: checkedList, type: "solo" }, { withCredentials: true });
+    //내 개인 주소록으로 복사
+    const handleCopyToSolo = async () => {
+        await caxios.put("/contacts/toSoloCopy",
+            { seqList: checkedList },
+            { withCredentials: true }
+        );
 
         setCheckedList([]);
-        setAllChecked(false);
-        handleContactsList();
-    }
+        handleContactsList(); // 리스트 새로고침
+    };
+
+    // // 개인 주소록으로 이동
+    // const handleContactsUpdateTypeSingle = async () => {
+    //     await caxios.put("/contacts", { seqList: checkedList, type: "solo" }, { withCredentials: true });
+
+    //     setCheckedList([]);
+    //     setAllChecked(false);
+    //     handleContactsList();
+    // }
 
     // 전체 체크박스를 클릭하면(true) 아래 체크박스 전체 적용
     useEffect(() => {
@@ -253,17 +253,20 @@ const ContactsMulti = () => {
                     {checkedList.length === 0 ? (
                         <>
                             <input type="text" placeholder="검색할 주소록 성함"
-                                style={{ width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center", fontSize: "20px" }}
+                                style={{ float: "left", width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center", fontSize: "20px" }}
                                 onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
-                            <button onClick={handleContactsList}>검색</button>
+                            <button className={styles.createbtn} style={{ width: "5%", marginLeft: "10px", float: "left" }} onClick={handleContactsList}>검색</button>
+
 
                         </>) : (
                         <>
 
-                            <button onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
-                            <button onClick={showUpdateModal} style={{ margin: "10px" }}> 수정 </button>
-                            <button onClick={handleContactsUpdateTypeSingle} style={{ margin: "10px" }}> 개인 주소록으로 이동</button>
-                            <button onClick={handleMail} style={{ margin: "10px" }}> 메일쓰기 </button>
+                            <button className={styles.btns} onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
+                            <button className={styles.btns} onClick={showUpdateModal} style={{ margin: "10px" }}> 수정 </button>
+                            <button className={styles.btns} onClick={handleCopyToSolo} style={{ margin: "10px" }}> 개인 주소록으로 복사</button>
+
+                            {/* <button className={styles.btns} onClick={handleContactsUpdateTypeSingle} style={{ margin: "10px" }}> 개인 주소록으로 이동</button> */}
+                            <button className={styles.btns} onClick={handleMail} style={{ margin: "10px" }}> 메일 쓰기 </button>
 
                         </>
                     )}
