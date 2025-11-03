@@ -7,6 +7,18 @@ import ApprovalLineModal from "./ApprovalLineModal";
 import { caxios } from "../../config/config";
 import styles from "./style/LeaveModal.module.css";
 
+const rankMap = {
+  J001: "사원",
+  J002: "주임",
+  J003: "대리",
+  J004: "과장",
+  J005: "차장",
+  J006: "부장",
+  J007: "이사",
+  J008: "부사장",
+  J009: "사장",
+};
+
 const LeaveModal = ({ open, onClose, refresh, applicant }) => {
   const [vacType, setVacType] = useState("annual");
   const [vacReason, setVacReason] = useState("");
@@ -118,7 +130,7 @@ if (!isCEO && firstApproverId) {
                     <tr key={a.id}>
                       <td style={{ padding: "6px", textAlign: "center" }}>{i + 1}</td>
                       <td style={{ padding: "6px" }}>{a.name}</td>
-                      <td style={{ padding: "6px" }}>{a.rank_code}</td>
+                     <td style={{ padding: "6px" }}>{rankMap[a.rank_code] || a.rank_code}</td>
                       <td style={{ padding: "6px", color: "#666" }}>-</td>
                     </tr>
                   ))}
