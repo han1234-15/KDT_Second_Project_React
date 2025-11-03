@@ -41,17 +41,21 @@ export default function MessengerFileUpload({ roomId, onUploadComplete }) {
         formData.append("file", file);
         formData.append("roomId", roomId);
 
-        await caxios.post("/api/chat/upload", formData, {
+        const resp = await caxios.post("/api/chat/upload", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
           },
         });
+
+        // ✅ 업로드 성공 시: ChatRoom으로 전달 → 채팅창에 바로 표시 + 패널 닫힘
+        if (resp.status === 200 && resp.data) {
+          onUploadComplete?.(resp.data);
+        }
       }
 
-      alert("업로드 완료");
       setFiles([]);
-      onUploadComplete?.();
+      
     } catch (err) {
       console.error("파일 업로드 중 오류:", err);
       alert("업로드 중 오류 발생");
@@ -97,7 +101,7 @@ export default function MessengerFileUpload({ roomId, onUploadComplete }) {
                 className={styles.removeBtn}
                 onClick={(e) => {
                   e.preventDefault();
-                  e.stopPropagation(); // ✅ label 클릭 이벤트 완전 차단
+                  e.stopPropagation();
                   removeFile(idx);
                 }}
               >
@@ -112,7 +116,7 @@ export default function MessengerFileUpload({ roomId, onUploadComplete }) {
             disabled={uploading}
             onClick={(e) => {
               e.preventDefault();
-              e.stopPropagation(); // ✅ 이 버튼도 클릭 시 label 클릭 방지
+              e.stopPropagation();
               handleUpload();
             }}
           >
