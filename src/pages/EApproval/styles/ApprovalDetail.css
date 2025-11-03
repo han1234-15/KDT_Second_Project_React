@@ -38,8 +38,8 @@
   padding: 10px 14px;
   border-bottom: 1px solid #e1e1e1;
   color: #333;
-  background-color: #fff;
   line-height: 1.6;
+  background-color: #fff;
 }
 .detail-table td.content {
   white-space: pre-wrap;
@@ -51,7 +51,6 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 25px;
 }
 .button-area button {
   background-color: #4a90e2;
@@ -67,79 +66,109 @@
   background-color: #357bd8;
 }
 
-/* ✅ Ant Design 테이블을 '게시판 스타일'로 통일 */
-.custom-table.ant-table-wrapper .ant-table {
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid #e5e5e5;
+/* ✅ 결재선 테이블 */
+.line-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
 }
-
-.custom-table.ant-table-wrapper .ant-table-thead > tr > th {
-  background: #fafafa !important;
-  font-weight: 600 !important;
-  font-size: 14px;
-  color: #333 !important;
+.line-table th,
+.line-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
   text-align: center;
-  height: 45px;
-  border-bottom: 1px solid #e5e5e5 !important;
 }
 
-.custom-table.ant-table-wrapper .ant-table-tbody > tr > td {
-  text-align: center;
-  font-size: 14px;
-  padding: 12px 6px;
-  border-bottom: 1px solid #f0f0f0 !important;
+/* ✅ 결재 차례일 때 뜨는 + 버튼 */
+.approve-btn {
+  background-color: #4a90e2 !important;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 13px;
+}
+.approve-btn:hover {
+  background-color: #357bd8 !important;
 }
 
-.custom-table.ant-table-wrapper .ant-table-tbody > tr:hover > td {
-  background: #fff !important;
+/* ✅ 모달 */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-
-/* No Data 스타일 */
-.custom-table.ant-table-wrapper .ant-empty-description {
-  color: #9e9e9e !important;
-  font-size: 14px;
-}
-
-/* ✅ 현재 결재자 강조 (노란 배경 강조 효과) */
-.custom-table.ant-table-wrapper .current-approver-row td {
-  background: #fff8d1 !important;
-  font-weight: 600 !important;
-}
-
-/* ✅ 반려 정보 박스 */
-.rejected-info {
-  background: #fff2f2;
-  border: 1px solid #ffbcbc;
-  padding: 14px;
-  border-radius: 6px;
-  margin-top: 20px;
-  color: #b60000;
-  font-size: 14px;
-}
-.reject-reason-box {
-  margin-top: 8px;
+.modal-box {
   background: #fff;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ffbcbc;
-  color: #444;
+  width: 340px;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  animation: fadeIn 0.2s ease-in-out;
 }
 
-/* ✅ 모달 내부 */
+/* ✅ 승인 / 반려 버튼 영역 */
 .action-buttons {
   display: flex;
   justify-content: center;
   gap: 12px;
   margin-top: 18px;
 }
+
 .action-buttons button {
   width: 100px;
   height: 40px;
+  border: none;
   border-radius: 6px;
   font-size: 15px;
   font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
 }
+
+.action-buttons .approve-btn {
+  background: #4a90e2;
+  color: #fff;
+}
+.action-buttons .approve-btn:hover {
+  background: #357bd8;
+}
+
+.action-buttons .reject-btn {
+  background: #d9534f;
+  color: #fff;
+}
+.action-buttons .reject-btn:hover {
+  background: #c64541;
+}
+
+/* ✅ 반려 사유 입력 */
+.modal-box textarea {
+  width: 100%;
+  height: 80px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  font-size: 14px;
+  resize: none;
+  margin-top: 12px;
+}
+
+.close-btn {
+  margin-top: 12px;
+  background: #777;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 
 /* ✅ 등장 애니메이션 */
 @keyframes fadeIn {

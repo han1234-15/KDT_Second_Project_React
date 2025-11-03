@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Table, Tag, Empty } from "antd";   // ✅ Empty 추가
+import { Table, Tag, Empty } from "antd";
 import { caxios } from "../../config/config";
 import "./styles/ApprovalPage.css";
 
@@ -12,29 +12,56 @@ function EApproval() {
   const userId = sessionStorage.getItem("LoginID");
   const upperStatus = status.toUpperCase();
 
+  // ✅ DB 상태값 → 화면 상태값 통일 함수
+  const normalizeStatus = (raw) => {
+  const s = (raw || "").toUpperCase();
+  switch (s) {
+    case "WAIT":
+    case "N":
+      return "WAITING";   // 승인대기
+    case "P":
+      return "PENDING";   // ✅ 예정
+    case "PROCESSING":
+      return "PROCESSING";
+    case "APPROVED":
+    case "Y":
+      return "APPROVED";
+    case "REJECTED":
+    case "R":
+      return "REJECTED";
+    case "TEMP":
+      return "TEMP";
+    default:
+      return "WAITING";
+  }
+};
+
+  // ✅ 화면 표시 텍스트
   const statusMap = {
-    WAIT: "승인 대기",
-    CHECKING: "진행 중",
-    PROCESSING: "예정",
-    APPROVED: "기안",
-    REJECTED: "반려",
-    TEMP: "임시 저장",
-  };
+  WAITING: "승인 대기",
+  PROCESSING: "결재 진행 중",
+  PENDING: "예정",          // ✅ 추가
+  APPROVED: "승인",
+  REJECTED: "반려",
+
+};
+
+const statusColor = {
+  "승인 대기": "gold",
+  "결재 진행 중": "geekblue",
+  "예정": "gray",           // ✅ 새로운 색 (원하면 바꿔도 됨)
+  "승인": "green",
+  "반려": "red",
+
+};
 
   const renderStatusTag = (value) => {
     const text = statusMap[value] || value;
-    const color = {
-      "승인 대기": "gold",
-      "진행 중": "geekblue",
-      "예정": "cyan",
-      "기안": "green",
-      "반려": "red",
-      "임시 저장": "gray",
-    }[text];
-
+    const color = statusColor[text] || "blue";
     return <Tag color={color}>{text}</Tag>;
   };
 
+  // ✅ 테이블 컬럼
   const columns = [
     { title: "문서번호", dataIndex: "seq", align: "center", width: 100 },
     {
@@ -70,46 +97,56 @@ function EApproval() {
     },
   ];
 
+  // ✅ 데이터 불러오기
   useEffect(() => {
-    let url = "";
+  
+  let url = "";
 
-    switch (upperStatus) {
-      case "WAIT":
-        url = `/Eapproval/my/wait?userId=${userId}`;
-        break;
-      case "PROCESSING":
-        url = `/Eapproval/my/scheduled?userId=${userId}`;
-        break;
-      case "CHECKING":
-        url = `/Eapproval/CHECKING`;
-        break;
-      case "APPROVED":
-      case "REJECTED":
-      case "TEMP":
-        url = `/Eapproval/${upperStatus}`;
-        break;
-      default:
-        url = `/Eapproval/A`;
-    }
+  switch (upperStatus) {
+    case "WAIT":
+  url = `/Eapproval/WAIT`; 
+  break;
 
-    caxios.get(url).then((res) => setDocs(res.data));
-  }, [status, userId]);
+    case "PROCESSING": // ✅ 진행 중
+      url = `/Eapproval/PROCESSING`;
+      break;
+
+    case "PENDING": // ✅ 예정 (내 차례 아직 X)
+      url = `/Eapproval/my/scheduled?userId=${userId}`;
+      break;
+
+    case "APPROVED":
+    case "REJECTED":
+    case "TEMP":
+      url = `/Eapproval/${upperStatus}`;
+      break;
+
+    default:
+      url = `/Eapproval/A`;
+  }
+
+ caxios.get(url).then((res) => {
+  setDocs(
+    (res.data ?? []).map((doc) => ({
+      ...doc,
+      status: normalizeStatus(doc.myStatus || doc.status), // ✅ 여기서 myStatus 우선 반영
+    }))
+  );
+});
+}, [upperStatus, userId]);
 
   return (
     <div className="approval-container">
       <Table
         className="custom-table"
-        dataSource={docs ?? []}             
+        dataSource={docs}
         columns={columns}
         rowKey="seq"
         pagination={false}
         bordered
         locale={{
           emptyText: (
-            <Empty
-              description="No data"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}  
-            />
+            <Empty description="표시할 문서가 없습니다." image={Empty.PRESENTED_IMAGE_SIMPLE} />
           ),
         }}
       />

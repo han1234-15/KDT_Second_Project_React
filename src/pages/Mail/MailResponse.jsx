@@ -70,15 +70,25 @@ const MailResponse = () => {
   const handleFileClick = () => {
     fileRef.current.click();
   }
+  //알람
+   const sendTestNotice = async (receiver_id, type, message) => {
+      await caxios.post("/notification/send", {
+        receiver_id: receiver_id, // 실제 로그인 ID로 전달받을 사람.
+        type: type,
+        message: message,
+        created_at: new Date().toISOString(),
+      });
+      //alert("테스트 알림 전송 완료 ✅");
+    };
 
-  // // 전송 버튼 (답장용)
+  // 전송 버튼 (답장용)
   const handleMailWrite = async () => {
     try {
       const res = await caxios.post("/mail", mail, {
         headers: { "Content-Type": "application/json" }
       });
-
-      const mailSeq = res.data; // MailController에서 seq 반환
+      const [mailSeq, senderName] = res.data.split("|");
+      // const mailSeq = res.data; // MailController에서 seq 반환
 
       if (files && files.length > 0) {
 
@@ -109,6 +119,7 @@ const MailResponse = () => {
       Navigate("/mail/view", { state: { mail: { ...mail, seq: mailSeq, originalSeq: mail.seq }, Mailres: false } });
 
       Navigate("/mail");
+          sendTestNotice(mail.recipientId, "mail", `${senderName}님으로부터 답장 메일이 도착했습니다.`)
     } catch (err) {
       console.error("메일 발송 중 오류:", err);
 
@@ -204,7 +215,7 @@ const MailResponse = () => {
       <div style={{ display: "flex", marginTop: "10px" }}>
         <div style={{ width: "5%", fontSize: "20px" }}>제목 </div>
         <input type="text" className={styles.containerhalf}
-         style={{ width: "40%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px", marginBottom:"20px" }}
+          style={{ width: "40%", fontSize: "20px", border: "1px solid lightgrey", borderRadius: "5px", marginBottom: "20px" }}
           onChange={handleChange} name="title" value={mail.title} />
       </div>
 
@@ -216,19 +227,19 @@ const MailResponse = () => {
 
       /> */}
       <CKEditor
-          editor={ClassicEditor}
-          data={mail.content || ''}
-          className={styles.ckEditor}
-          onChange={handleEditorChange}
-          config={{
-            toolbar: [
-              'heading', '|', 'bold', 'italic', 'underline', 'link',
-              'bulletedList', 'numberedList', '|', 'insertTable',
-              'blockQuote', 'undo', 'redo',
-            ]
-          }}
+        editor={ClassicEditor}
+        data={mail.content || ''}
+        className={styles.ckEditor}
+        onChange={handleEditorChange}
+        config={{
+          toolbar: [
+            'heading', '|', 'bold', 'italic', 'underline', 'link',
+            'bulletedList', 'numberedList', '|', 'insertTable',
+            'blockQuote', 'undo', 'redo',
+          ]
+        }}
 
-        />
+      />
 
 
       <button className={styles.btns} onClick={handleFileClick} style={{ marginTop: "10px", float: "left" }}>파일 추가</button>
@@ -258,7 +269,7 @@ const MailResponse = () => {
           ))}
         </ul>
         <hr></hr>
-    
+
         <ul>
           {files.map((file, i) => (
             <li key={i}>{file.name}</li>
