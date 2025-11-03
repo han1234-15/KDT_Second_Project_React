@@ -59,7 +59,7 @@ const ContactsAddMulti = ({ onClose, handleContactsList }) => {
 
 
         if (!emailRegex.test(email)) {
-            alert("올바른 이메일 형식이 아닙니다.");
+              alert("올바른 이메일 형식이 아닙니다. 예: user@example.com , user@example.co.kr");
             return;
         }
 

@@ -251,16 +251,17 @@ const ContactsSolo = () => {
                 <div className={styles.mainHeaderbottom} >
                     {checkedList.length === 0 ? (
                         <>
-                            <input type="text" placeholder="검색할 주소록 성함" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center", fontSize: "20px" }}
+                            <input type="text" placeholder="검색할 주소록 성함" style={{ float: "left", width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center", fontSize: "20px" }}
                                 onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
-                            <button onClick={handleContactsList}>검색</button>
+                            <button className={styles.createbtn} style={{ width: "5%", marginLeft: "10px", float: "left" }} onClick={handleContactsList}>검색</button>
+
 
                         </>) : (
                         <>
-                            <button onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
-                            <button onClick={showUpdateModal} style={{ margin: "10px" }}> 수정 </button>
-                            <button onClick={handleContactsUpdateTypeMulti} style={{ margin: "10px" }}> 공용 주소록으로 이동</button>
-                            <button onClick={handleMail} style={{ margin: "10px" }}> 메일쓰기 </button>
+                            <button className={styles.btns} onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
+                            <button className={styles.btns} onClick={showUpdateModal} style={{ margin: "10px" }}> 수정 </button>
+                            <button className={styles.btns} onClick={handleContactsUpdateTypeMulti} style={{ margin: "10px" }}> 공용 주소록으로 이동</button>
+                            <button className={styles.btns} onClick={handleMail} style={{ margin: "10px" }}> 메일 쓰기 </button>
                         </>
                     )}
                 </div>
@@ -365,7 +366,7 @@ const ContactsSolo = () => {
                         <input type="text" className={styles.NewSharedMailbox2}
                             style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                             onChange={handleUpdateChange}
-                           value={updateData.email.includes("@")? updateData.email : `${updateData.email}@Infinity.com`} name="email" readOnly />
+                            value={updateData.email.includes("@") ? updateData.email : `${updateData.email}@Infinity.com`} name="email" readOnly />
                     </div>
                     <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
                         <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>부서  </div>
