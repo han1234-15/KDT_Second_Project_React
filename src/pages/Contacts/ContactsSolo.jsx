@@ -82,19 +82,7 @@ const ContactsSolo = () => {
         }
     };
 
-    // const handleContactsUpdateTypeMulti = () => {
-    //     caxios.put("/contacts", { seqList: checkedList, type: "multi" }, { withCredentials: true })
-    //         .then(resp => {
-    //             setContacts(prev => prev.map(contact =>
-    //                 checkedList.includes(contact.seq)
-    //                     ? { ...contact, type: "multi" }
-    //                     : contact
-    //             ));
-    //         });
-    //     setCheckedList([]);
-    //     setAllChecked(false);
-    //     handleContactsList();
-    // }
+
 
     // 전체 체크박스를 클릭하면(true) 아래 체크박스 전체 적용
     useEffect(() => {
@@ -191,6 +179,23 @@ const ContactsSolo = () => {
     }
 
     const handleContactsUpdate = () => {
+        //레직스
+        const name = updateData.name.trim();
+        let phone = updateData.phone.trim();
+
+
+        const nameRegex = /^[가-힣a-zA-Z\s]{2,6}$/;
+        const phoneRegex = /^010-\d{4}-\d{4}$/;
+        if (!nameRegex.test(name)) {
+            alert("이름에는 숫자나 특수문자를 포함할 수 없습니다 (최소 2글자 ~ 최대 6글자).");
+            return;
+        }
+
+        if (!phoneRegex.test(phone)) {
+            alert("전화번호 형식이 올바르지 않습니다. 예: 010-1234-5678");
+            return;
+        }
+
         caxios.put("/contacts/update", { dto: updateData, seqList: checkedList }, { withCredentials: true }
         ).then(resp => {
             setUpdateModalOpen(false);
@@ -381,8 +386,8 @@ const ContactsSolo = () => {
                             onChange={handleUpdateChange} value={updateData.rank_code} name="rank_code" />
                     </div>
                 </div>
-                <button style={{ float: "right", marginLeft: "30px" }} onClick={handleContactsUpdateOut}>취소</button>
-                <button style={{ float: "right", marginLeft: "10px" }} onClick={handleContactsUpdate}>완료</button>
+                <button className={styles.btns} style={{ float: "right", marginLeft: "30px" }} onClick={handleContactsUpdateOut}>취소</button>
+                <button className={styles.btns} style={{ float: "right", marginLeft: "10px" }} onClick={handleContactsUpdate}>완료</button>
 
             </Modal>
 

@@ -75,24 +75,7 @@ const Organization = () => {
     }
 
 
-    // 공유 주소록으로 이동
-    const handleContactsUpdateTypeMulti = async () => {
-        await caxios.put("/contacts/orgType", { idList: checkedList, type: "multi" }, { withCredentials: true });
 
-        setCheckedList([]);
-        setAllChecked(false);
-        handleOrganizationList();
-    }
-
-
-    // // 개인 주소록으로 이동
-    // const handleContactsUpdateTypeSingle = async () => {
-    //     caxios.put("/contacts/orgType", { idList: checkedList, type: "solo" }, { withCredentials: true });
-
-    //     setCheckedList([]);
-    //     setAllChecked(false);
-    //     handleOrganizationList();
-    // }
 
 
 
@@ -181,7 +164,7 @@ const Organization = () => {
                 {/* Organization Table */}
                 <div style={{ flex: 1, overflowY: "auto", borderRadius: "6px", border: "1px solid #d9d9d9" }}>
                     <div style={{ display: "flex", backgroundColor: "#fafafa", padding: "10px", borderBottom: "1px solid #d9d9d9", textAlign: "center" }}>
-                        <div style={{ flex: 0.5 }}><input type="checkbox" onClick={handleAllcheckbox} /></div>
+                        
                         <div style={{ flex: 1 }}>부서</div>
                         <div style={{ flex: 1 }}>성함</div>
                         <div style={{ flex: 1 }}>직위</div>
@@ -200,9 +183,7 @@ const Organization = () => {
                             transition: "all 0.2s",
                             textAlign: "center"
                         }}>
-                            <div style={{ flex: 0.5 }}>
-                                <input type="checkbox" checked={checkedList.includes(e.id)} onChange={() => handleSingleCheck(e.id)} />
-                            </div>
+                         
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.dept_code}</div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.name}</div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{ranks[e.rank_code]}</div>

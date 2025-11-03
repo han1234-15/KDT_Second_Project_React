@@ -67,36 +67,7 @@ const Contacts = () => {
         handleContactsList(); // 리스트 새로고침
     };
 
-    // // 개인 주소록으로 이동
-    // const handleContactsUpdateTypeSingle = async () => {
-    //     await caxios.put("/contacts", { seqList: checkedList, type: "solo" }, { withCredentials: true });
-    //     setCheckedList([]);
-    //     setAllChecked(false);
-    //     handleContactsList();
-    // }
 
-    // 전체 체크박스 클릭 → 아래 체크박스 전체 적용
-    const handleAllcheckbox = () => {
-        if (!allChecked) {
-            setCheckedList(contacts.map(contact => contact.seq));
-            setAllChecked(true);
-        } else {
-            setCheckedList([]);
-            setAllChecked(false);
-        }
-    }
-
-    // 개별 체크박스 선택
-    const handleSingleCheck = (seq) => {
-        let newCheckedList = [];
-        if (checkedList.includes(seq)) {
-            newCheckedList = checkedList.filter(id => id !== seq);
-        } else {
-            newCheckedList = [...checkedList, seq];
-        }
-        setCheckedList(newCheckedList);
-        setAllChecked(newCheckedList.length === contacts.length);
-    }
 
     // modal
     const [isSingleModalOpen, setIsSingleModalOpen] = useState(false);
@@ -135,9 +106,30 @@ const Contacts = () => {
     const handleUpdateChange = (e) => {
         const { name, value } = e.target;
         setUpdateData({ ...updateData, [name]: value })
+
+
     }
 
     const handleContactsUpdate = () => {
+
+        //레직스
+        const name = updateData.name.trim();
+        let phone = updateData.phone.trim();
+
+
+        const nameRegex = /^[가-힣a-zA-Z\s]{2,6}$/;
+        const phoneRegex = /^010-\d{4}-\d{4}$/;
+        if (!nameRegex.test(name)) {
+            alert("이름에는 숫자나 특수문자를 포함할 수 없습니다 (최소 2글자 ~ 최대 6글자).");
+            return;
+        }
+
+        if (!phoneRegex.test(phone)) {
+            alert("전화번호 형식이 올바르지 않습니다. 예: 010-1234-5678");
+            return;
+        }
+
+
         caxios.put("/contacts/update", { dto: updateData, seqList: checkedList }, { withCredentials: true }
         ).then(resp => {
             setUpdateModalOpen(false);
@@ -337,8 +329,8 @@ const Contacts = () => {
                         <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>직위  </div>
                         <input type="text" className={styles.NewSharedMailbox2} style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px" }} onChange={handleUpdateChange} value={updateData.rank_code} name="rank_code" />
                     </div>
-                    <button style={{ float: "right", marginLeft: "30px" }} onClick={handleContactsUpdateOut}>취소</button>
-                    <button style={{ float: "right", marginLeft: "10px" }} onClick={handleContactsUpdate}>완료</button>
+                    <button className={styles.btns} style={{ float: "right", marginLeft: "30px" }} onClick={handleContactsUpdateOut}>취소</button>
+                    <button className={styles.btns} style={{ float: "right", marginLeft: "10px" }} onClick={handleContactsUpdate}>완료</button>
                 </Modal>
 
 
