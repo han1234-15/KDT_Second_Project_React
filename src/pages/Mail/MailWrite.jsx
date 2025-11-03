@@ -32,7 +32,7 @@ const MailWrite = () => {
       setMail(prev => ({
         ...prev,
         recipientId: selectedContacts.map(c => c.email).join(", "),
-        recipientName: selectedContacts.map(c => c.name).join(", ")
+        recipientName: selectedContacts.map(c => c.name).join(", "),
       }));
     }
   }, [location.state]);
@@ -51,7 +51,16 @@ const MailWrite = () => {
   const handleFileClick = () => {
     fileRef.current.click();
   }
-
+  //알람
+  const sendTestNotice = async (receiver_id, type, message) => {
+    await caxios.post("/notification/send", {
+      receiver_id: receiver_id, // 실제 로그인 ID로 전달받을 사람.
+      type: type,
+      message: message,
+      created_at: new Date().toISOString(),
+    }); 
+    //alert("테스트 알림 전송 완료 ✅");
+  };
 
   // // 전송 버튼
   const handleMailWrite = async () => {
@@ -60,7 +69,8 @@ const MailWrite = () => {
         headers: { "Content-Type": "application/json" }
       });
 
-      const mailSeq = res.data; // MailController에서 seq 반환
+      const [mailSeq, senderName] = res.data.split("|");
+      // const mailSeq = res.data; // MailController에서 seq 반환
 
       if (files && files.length > 0) {
 
@@ -83,6 +93,8 @@ const MailWrite = () => {
         setFiles([]);
       }
       Navigate("/mail");
+      // 알람
+      sendTestNotice(mail.recipientId, "mail", `${senderName}님으로 부터 메일이 도착했습니다.`)
     } catch (err) {
       console.error("메일 발송 중 오류:", err);
 
