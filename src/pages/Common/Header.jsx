@@ -219,8 +219,8 @@ const Header = () => {
 
         } catch (err) {
             console.error(err);
-            navigate("/");
-            logout();
+            // navigate("/");
+            // logout();
             return;
         }
     };
@@ -249,8 +249,8 @@ const Header = () => {
         } catch (err) {
             console.error("❌ 알림 목록 불러오기 실패:", err);
             // 토큰 만료나 인증 실패 시 로그아웃 처리
-            navigate("/");
-            logout();
+            // navigate("/");
+            // logout();
         }
     };
 

@@ -51,7 +51,7 @@ export default function ChatRoom() {
       );
   }, [room_id]);
 
-  // ✅ 참여자 목록 + 프로필 이미지 불러오기
+  //  참여자 목록 + 프로필 이미지 불러오기
   const fetchParticipants = useCallback(async () => {
     if (!room_id) return;
     try {
@@ -98,7 +98,7 @@ export default function ChatRoom() {
     [participants, targetName, targetRank]
   );
 
-  // ✅ 발신자 프로필 이미지
+  //  발신자 프로필 이미지
   const getSenderImage = useCallback(
     (senderId) => {
       const found = participants.find((p) => p.memberId === senderId);

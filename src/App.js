@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styles from "./App.module.css";
 
-
 import Home from "./pages/Home/Home";
 import MailRoute from "./pages/Mail/MailRoute";
 import BoardRoute from "./pages/Board/BoardRoute";
@@ -17,19 +16,19 @@ import ManagementRoute from "./pages/Management/ManagementRoute";
 
 import Login from "./pages/Login/Login";
 import Messenger from "./pages/Messenger/Messenger";
-import ChatRoomRoute from "./pages/Messenger/ChatRoomRoute"; // ✅ 독립 라우트
+import ChatRoomRoute from "./pages/Messenger/ChatRoomRoute"; //  독립 라우트
 
 import Header from "./pages/Common/Header";
 import Sidebar from "./pages/Common/Sidebar";
-
 
 import useAuthStore from "./store/authStore";
 
 import ContentTap from "./pages/Common/ContentTap";
 import ContentMain from "./pages/Common/ContentMain";
-import { SocketProvider } from "./config/SocketContext"; // 우리가 만든 Provider
 import { caxios } from "./config/config";
 
+//  새로 추가된 전역 Provider
+import { AppProviders } from "./config/AppProviders";  
 
 
 function App() {
@@ -45,11 +44,11 @@ function App() {
 
       if (token) {
         try {
-          // ✅ 헤더에 토큰 추가 (caxios가 interceptor에 자동 설정되어 있지 않다면 명시적으로)
+          //  헤더에 토큰 추가 (caxios가 interceptor에 자동 설정되어 있지 않다면 명시적으로)
           const resp = await caxios.get("/member/userInfo");
 
           if (resp.status === 200 && resp.data) {
-            login(token, resp.data.id); // ✅ Zustand store 갱신
+            login(token, resp.data.id); // Zustand store 갱신
             console.log("자동 로그인 유지 완료:", resp.data.name);
           }
         } catch (err) {
@@ -60,7 +59,7 @@ function App() {
 
         }
       }
-      setLoading(false); // ✅ 토큰 확인 후 렌더링 허용
+      setLoading(false); //  토큰 확인 후 렌더링 허용
     };
 
     checkToken();
@@ -79,20 +78,25 @@ function App() {
 
   // 로그인이 되어 있으면 url 링크에 맞춰서 동작.
   return (
-    <BrowserRouter>
-      <Routes>
-        {/*  메신저 팝업 (Infinity UI) */}
-        <Route path="/messenger-popup/*" element={<Messenger />} />
+  <BrowserRouter>
+    <Routes>
+      {/* 팝업들은 Provider 밖에 있어야 함 */}
+      <Route path="/messenger-popup/*" element={<Messenger />} />
+      <Route path="/chatroom/*" element={<ChatRoomRoute />} />
 
-        {/*  독립 채팅방 팝업 (완전히 분리) */}
-        <Route path="/chatroom/*" element={<ChatRoomRoute />} />
+      {/* 그룹웨어 메인만 Provider로 감쌈 */}
+      <Route
+        path="/*"
+        element={
+          <AppProviders>
+            <ContentMain />
+          </AppProviders>
+        }
+      />
+    </Routes>
+  </BrowserRouter>
+);
 
-        {/* ✅ 공통 그룹웨어 레이아웃 */}
-        <Route
-          path="/*" element={<ContentMain />} />
-      </Routes>
-    </BrowserRouter>
-  );
 }
 
 export default App;

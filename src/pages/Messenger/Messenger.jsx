@@ -9,13 +9,13 @@ import ContactList from "./ContactList";
 import Settings from "./Settings";
 import { SocketProvider } from "../../config/SocketContext";
 import { caxios } from "../../config/config";
-import UserProfileImage from "./UserProfileImage"; // ✅ 새 컴포넌트 import
+import UserProfileImage from "./UserProfileImage"; 
 
 const Messenger = () => {
   const location = useLocation();
   const [user, setUser] = useState(null);
 
-  /** ✅ 이름 / 직급 / 근무 상태 */
+  /**  이름 / 직급 / 근무 상태 */
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -59,7 +59,7 @@ const Messenger = () => {
 
   const isChatPage = location.pathname.includes("chat");
 
-  /** ✅ 새 방 생성 시 ChatRoomList에도 즉시 갱신 신호 전달 */
+  /**  새 방 생성 시 ChatRoomList에도 즉시 갱신 신호 전달 */
   useEffect(() => {
     const handleRefresh = () => {
       console.log("📡 Messenger: 새 방 생성 신호 감지 → ChatRoomList 리프레시");
@@ -83,10 +83,10 @@ const Messenger = () => {
           <span className={styles.brand}>INFINITY</span>
         </header>
 
-        {/* ✅ 프로필 카드 */}
+        {/*  프로필 카드 */}
         <div className={styles.profileCard}>
           <div className={styles.profileImg}>
-            {/* ✅ 공통 컴포넌트로 교체 */}
+            {/*  공통 컴포넌트로 교체 */}
             <UserProfileImage size={60} />
           </div>
 
@@ -124,14 +124,14 @@ const Messenger = () => {
                   <option value="working">근무중</option>
                   <option value="busy">다른용무중</option>
                   <option value="away">자리비움</option>
-                  <option value="offline">오프라인</option>
+                
                 </select>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ✅ 사이드 메뉴 */}
+        {/*  사이드 메뉴 */}
         <aside className={styles.sidebar}>
           <Link
             to="/messenger-popup/contacts"
@@ -164,7 +164,7 @@ const Messenger = () => {
           </Link>
         </aside>
 
-        {/* ✅ 본문 */}
+        {/*  본문 */}
         <main
           className={`${styles.chatList} ${
             isChatPage ? styles.chatNoPadding : ""

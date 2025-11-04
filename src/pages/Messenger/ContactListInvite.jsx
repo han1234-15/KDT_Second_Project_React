@@ -31,7 +31,7 @@ export default function ContactListInvite({ roomId, onClose }) {
     J009: "사장",
   };
 
-  // ✅ 전체 멤버 조회 (본인 제외)
+  //  전체 멤버 조회 (본인 제외)
   useEffect(() => {
     caxios
       .get("/messenger/member")
@@ -39,7 +39,7 @@ export default function ContactListInvite({ roomId, onClose }) {
       .catch(console.error);
   }, [userId]);
 
-  // ✅ 선택 토글
+  //  선택 토글
   const toggleSelect = (id) => {
     setSelected((prev) => {
       const newSet = new Set(prev);
@@ -48,7 +48,7 @@ export default function ContactListInvite({ roomId, onClose }) {
     });
   };
 
-  // ✅ 초대 실행
+  //  초대 실행
   const inviteSelected = async () => {
     if (!roomId) return alert("roomId 없음! 창을 닫고 다시 진입해주세요!");
     if (selected.size < 1) return alert("초대할 대상을 선택해주세요!");
@@ -70,7 +70,7 @@ export default function ContactListInvite({ roomId, onClose }) {
     }
   };
 
-  // ✅ 부서별 + 직급 내림차순 정렬
+  //  부서별 + 직급 내림차순 정렬
   const getDeptMembers = (code) =>
     members
       .filter((m) => m.dept_code?.trim() === code)

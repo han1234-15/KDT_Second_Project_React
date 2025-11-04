@@ -68,14 +68,17 @@ const ContactList = () => {
   }, []);
 
   // 토큰 준비되면 멤버 목록 불러오기
-  useEffect(() => {
-    if (!tokenReady) return;
+ useEffect(() => {
+  if (!tokenReady) return;
 
-    caxios
-      .get("/messenger/member")
-      .then((resp) => setMember(resp.data))
-      .catch((err) => console.error("데이터 요청 실패:", err));
-  }, [tokenReady]);
+  caxios
+    .get("/messenger/member")
+    .then((resp) => {
+      console.log("📦 서버 응답 데이터:", resp.data); // ✅ 여기에 콘솔 추가
+      setMember(resp.data);
+    })
+    .catch((err) => console.error("데이터 요청 실패:", err));
+}, [tokenReady]);
 
   /**
    * 부서별 멤버 필터링

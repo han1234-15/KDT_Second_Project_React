@@ -37,13 +37,13 @@ const Sidebar = () => {
   const [openDropdown, setOpenDropdown] = useState(null); // 홈 눌렀을 때
 
   const toggleMenu = (menu) => {
-    // ✅ 홈 클릭 시: 모든 드롭다운 닫기
+    //  홈 클릭 시: 모든 드롭다운 닫기
     if (menu === "home") {
       setOpenMenu(null);
       return;
     }
 
-    // ✅ 다른 메뉴는 토글
+    //  다른 메뉴는 토글
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
@@ -85,7 +85,7 @@ const Sidebar = () => {
 
   return (
     <div className={styles.side}>
-      {/* ✅ gradient 정의 (아이콘 내부용) */}
+      {/*  gradient 정의 (아이콘 내부용) */}
       <svg width="0" height="0">
         <defs>
           <linearGradient id="icon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
