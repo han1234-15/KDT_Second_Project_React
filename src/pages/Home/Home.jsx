@@ -41,7 +41,7 @@ const formatDateTime = (timeString) => {
 function Home() {
   const navigate = useNavigate();
 
-  // ✅ 상태 정의
+  // 상태 정의
   const [layout, setLayout] = useState([]);
   const [mails, setMails] = useState([]);
   const [leaveCount, setLeaveCount] = useState(0);
@@ -52,10 +52,10 @@ function Home() {
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const [mySchedules, setMySchedules] = useState([]); // 일정ㄴ
 
-  // ✅ 현재 로그인 사용자 정보 (네 코드 유지)
+  // 현재 로그인 사용자 정보
   const [myInfo, setMyInfo] = useState(null);
 
-  // ✅ 시계 리렌더
+  // 시계 리렌더
   const [, setClockTick] = useState(0);
   useEffect(() => {
     const timer = setInterval(() => setClockTick((t) => t + 1), 1000);
@@ -95,7 +95,7 @@ function Home() {
     }
   }, []);
 
-  // ✅ 출퇴근 처리
+  // 출퇴근 처리
   const handleCheckIn = async (e) => {
     e.stopPropagation();
     if (checkIn !== "-- : --") return message.info("이미 출근 처리되었습니다 ✅");
@@ -113,7 +113,7 @@ function Home() {
     fetchHomeData();
   };
 
-  // ✅ 로그인 사용자 & 홈데이터 불러오기
+  // 로그인 사용자 & 홈데이터 불러오기
   useEffect(() => {
     caxios.get("/member/me").then((res) => {
       setMyInfo(res.data);
@@ -122,7 +122,7 @@ function Home() {
     fetchHomeData();
   }, [fetchHomeData]);
 
-  /* ---------------------- Layout (네 코드 유지) ---------------------- */
+  /* ---------------------- Layout ---------------------- */
   // const defaultLayout = [
   //   { i: "notice", x: 0, y: 0, w: 12, h: 4 },
   //   { i: "mail", x: 4, y: 11, w: 4, h: 3 },
@@ -182,7 +182,7 @@ function Home() {
   useEffect(() => {
     const fetchMySchedules = async () => {
       try {
-        const res = await caxios.get("/schedule/all"); // ✅ 그대로 /all 사용
+        const res = await caxios.get("/schedule/all");
         setMySchedules(res.data || []);
       } catch (err) {
         console.error("내 일정 불러오기 실패:", err);
@@ -247,7 +247,7 @@ function Home() {
       align: "center",
       render: (status) => renderStatusTag(status),
 
-      // 🔽 정렬 추가
+      // 정렬 추가
       sorter: (a, b) => {
         const order = { 대기: 1, 진행중: 2, 완료: 3 };
         return order[a.STATUS] - order[b.STATUS];
@@ -281,9 +281,40 @@ function Home() {
       >
 
         {/* 공지 */}
-        <div key="notice">
-          <Card title={<span className={`${styles.cardHeader} drag-area`}><MegaphoneFill /> 공지사항</span>} className={styles.card}>
-            <List dataSource={["공지 1", "공지 2", "공지 3"]} renderItem={(i) => <List.Item>{i}</List.Item>} />
+        <div key="notice" >
+          <Card
+            title={
+              <span className={`${styles.cardHeader} drag-area`}>
+                <MegaphoneFill /> 공지사항
+              </span>
+            }
+            className={styles.card}
+          >
+            <List
+              dataSource={["공지 전사 워크숍 일정 안내 ", "공지 보안 정책 변경 사전 안내", "공지 휴가 신청 시스템 개편 공지"]}
+              renderItem={(item) => {
+                const parts = item.split("공지"); 
+                return (
+                  <List.Item style={{ fontSize: "13px" , cursor:"pointer" }}
+                  onClick={ () => navigate ("board")}>
+                    <span
+                      style={{
+                        backgroundColor: "#ffecb3",
+                        color: "#d48806",
+                        fontWeight: "bold",
+                        borderRadius: "4px",
+                        padding: "2px 6px",
+                        marginRight: "6px",
+                
+                      }}
+                    >
+                      공지
+                    </span>
+                    {parts[1]} {}
+                  </List.Item>
+                )
+              }}
+            />
           </Card>
         </div>
 
@@ -308,7 +339,7 @@ function Home() {
           </Card>
         </div>
 
-        {/* 잔여 휴가 (네 코드 유지) */}
+        {/* 잔여 휴가  */}
         {/* <div key="vacation">
           <Card title={<span className={`${styles.cardHeader} drag-area`}><AirplaneFill /> 잔여 휴가</span>} className={styles.card}>
             <p>남은 휴가 : <b>{leaveCount}일</b></p>
@@ -365,7 +396,7 @@ function Home() {
               <button
                 className={`${styles.clockBtn} ${styles.start} ${checkIn !== "-- : --" ? styles.disabledBtn : ""}`}
                 onClick={handleCheckIn}
-                disabled={checkIn !== "-- : --"}   // ✅ 클릭도 막기
+                disabled={checkIn !== "-- : --"}   // 클릭도 막기
               >
                 출근
               </button>
@@ -373,7 +404,7 @@ function Home() {
               <button
                 className={`${styles.clockBtn} ${styles.end} ${checkOut !== "-- : --" ? styles.disabledBtn : ""}`}
                 onClick={handleCheckOut}
-                disabled={checkOut !== "-- : --"}   // ✅ 클릭도 막기
+                disabled={checkOut !== "-- : --"}   // 클릭도 막기
               >
                 퇴근
               </button>
@@ -431,8 +462,8 @@ function Home() {
             <div
               style={{
                 display: "flex",
-                flexDirection: "column", // ✅ 세로 배치로 변경
-                alignItems: "center", // ✅ 가운데 정렬
+                flexDirection: "column", // 세로 배치로 변경
+                alignItems: "center", // 가운데 정렬
                 gap: 16,
               }}
             >

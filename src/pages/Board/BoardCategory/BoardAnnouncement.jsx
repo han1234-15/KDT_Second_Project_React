@@ -13,7 +13,7 @@ const BoardAnnouncement = () => {
   const navigate = useNavigate();
   const handleRowClick = (record) => {
     navigate(`/board/detail/${record.key}`, {
-      state: { from: useLocation.pathname } // ✅ 현재 경로 저장
+      state: { from: useLocation.pathname } // 현재 경로 저장
     });
   };
   const [search, setSearch] = useState("");
@@ -47,7 +47,7 @@ useEffect(() => {
           date: formattedDate,
           importantYn: item.importantYn,
           hit: item.hit,
-          noticeYn: item.noticeYn, // ✅ 추가
+          noticeYn: item.noticeYn,
         };
       });
 

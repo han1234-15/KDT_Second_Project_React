@@ -11,6 +11,24 @@ const SECURITIES = ["A등급", "B등급", "C등급"];
 export default function EApprovalForm({ mode = "write", initialData = null, seq = null }) {
   const navigate = useNavigate();
 
+  const onChangeReferences = (e) => {
+  const value = e.target.value;
+
+  // 결재자 목록을 쉼표/공백 기준 분리 → 배열화
+  const approverList = formData.approvers.split(/[, ]+/).filter(v => v.trim());
+
+  // 참조 목록도 배열화
+  const refList = value.split(/[, ]+/).filter(v => v.trim());
+
+  // ✅ 결재자에 포함된 인원 제거
+  const filtered = refList.filter(v => !approverList.includes(v));
+
+  setFormData(prev => ({
+    ...prev,
+    references: filtered.join(", ")
+  }));
+};
+
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     // 기본 설정
@@ -181,10 +199,10 @@ if (firstApprover) {
             <div className="col label">결재</div>
             <div className="col value">
               <input
-                placeholder="클릭 후 입력"
-                value={formData.approvers}
-                onChange={onChange("approvers")}
-              />
+  placeholder="클릭 후 입력"
+  value={formData.references}
+  onChange={onChangeReferences}
+/>
             </div>
           </div>
 

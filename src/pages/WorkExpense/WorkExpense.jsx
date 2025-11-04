@@ -142,6 +142,11 @@ const WorkExpense = () => {
     fetchAttendanceCount();
     fetchRemainLeave();
     fetchWorkDays();
+
+    
+  caxios.get("/member/me")
+    .then(res => setLoginUser(res.data))
+    .catch(err => console.error(err));
   };
 
   useEffect(() => { refresh(); }, []);
@@ -158,6 +163,7 @@ const WorkExpense = () => {
   const handleCheckIn = async () => {
     if (!window.confirm("정말 출근하시겠습니까?")) return;
     await caxios.post("/attendance/checkin");
+     console.log("✅ 출근 요청 후 work_status 반영 확인:", loginUser?.work_status);
     refresh();
     alert("출근 처리되었습니다.");
   };
@@ -165,8 +171,10 @@ const WorkExpense = () => {
   const handleCheckOut = async () => {
     if (!window.confirm("정말 퇴근하시겠습니까?")) return;
     await caxios.post("/attendance/checkout");
+      console.log("✅ 퇴근 요청 후 work_status 반영 확인:", loginUser?.work_status);
     refresh();
     alert("퇴근 처리되었습니다.");
+     
   };
 
   return (

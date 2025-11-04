@@ -19,23 +19,16 @@ const rankNames = {
 const convertStatus = (raw) => {
   const s = (raw || "").toUpperCase();
   switch (s) {
-    case "PENDING":
-     return "PENDING";
+    case "PENDING": return "PENDING";
     case "APPROVED":
-    case "Y":
-      return "APPROVED";
+    case "Y": return "APPROVED";
     case "REJECTED":
-    case "R":
-      return "REJECTED";
+    case "R": return "REJECTED";
     case "WAIT":
-    case "N":
-      return "WAITING";
-    case "PROCESSING":
-      return "PROCESSING";
-    case "P":
-      return "PENDING";
-    default:
-      return "WAITING";
+    case "N": return "WAITING";
+    case "PROCESSING": return "PROCESSING";
+    case "P": return "PENDING";
+    default: return "WAITING";
   }
 };
 
@@ -73,10 +66,31 @@ function EApprovalDetail() {
 
   const currentOrder = nextApprover?.orderNo;
 
+  // ✅ 문서 상태로 버튼 노출 제어
+  const isDocFinished = doc.status === "REJECTED" || doc.status === "APPROVED";
+
   const renderStatusCell = (approver) => {
+    // ✅ 문서 종료 상태면 버튼 표시 X
+    if (isDocFinished) {
+      if (approver.status === "R") {
+        return (
+          <div style={{ textAlign: "center" }}>
+            <Tag color="red">반려</Tag>
+            {approver.rejectReason && (
+              <div style={{ marginTop: 4, fontSize: 12, color: "#d9534f" }}>
+                사유: {approver.rejectReason}
+              </div>
+            )}
+          </div>
+        );
+      }
+      if (approver.status === "Y") return <Tag color="green">승인</Tag>;
+      return <Tag color="gray">종료</Tag>;
+    }
+
     const st = approver.status;
+    const reason = approver.rejectReason;
     const order = approver.orderNo;
-    const reason = approver.rejectReason; // ✅ 여기 수정
 
     if (st === "Y") return <Tag color="green">승인</Tag>;
 
@@ -95,26 +109,16 @@ function EApprovalDetail() {
 
     if ((st === "N" || st === "P") && order === currentOrder && approver.id === loginUser.id) {
       return (
-        <Button
-          type="primary"
-          onClick={() => {
-            setDecisionTarget(approver);
-            setShowDecisionModal(true);
-          }}
-        >
+        <Button type="primary" onClick={() => {
+          setDecisionTarget(approver);
+          setShowDecisionModal(true);
+        }}>
           결재
         </Button>
       );
     }
 
-    if ((st === "N" || st === "P") && order === currentOrder) {
-      return <Tag color="gold">대기</Tag>;
-    }
-
-    if (st === "N" || st === "P") {
-      return <Tag color="gray">예정</Tag>;
-    }
-
+    if (st === "N" || st === "P") return <Tag color="gold">대기</Tag>;
     return <Tag>-</Tag>;
   };
 
@@ -128,8 +132,6 @@ function EApprovalDetail() {
     { title: "이름", dataIndex: "name" },
     { title: "직급", dataIndex: "rank_code", render: (v) => rankNames[v] },
   ];
-
-  const rejectedApprovers = approvers.filter(a => a.status === "R");
 
   const handleApprove = () => {
     caxios.post("/Eapproval/approve", { seq: doc.seq, userId: loginUser.id })
@@ -157,17 +159,8 @@ function EApprovalDetail() {
     <div className="approval-detail-container">
       <h2>
         문서 상세보기
-        <Tag color="blue" style={{ marginLeft: 10 }}>
-          {(() => {
-            const s = convertStatus(doc.myStatus || doc.status);
-            switch (s) {
-              case "PENDING": return "예정";
-              case "WAITING": return "대기";
-              case "APPROVED": return "승인";
-              case "REJECTED": return "반려";
-              default: return s;
-            }
-          })()}
+        <Tag color={doc.status === "REJECTED" ? "red" : doc.status === "APPROVED" ? "green" : "blue"} style={{ marginLeft: 10 }}>
+          {convertStatus(doc.myStatus || doc.status)}
         </Tag>
       </h2>
 
@@ -178,7 +171,6 @@ function EApprovalDetail() {
         rowKey="id"
         pagination={false}
         bordered
-        rowClassName={(row) => row.id === nextApprover?.id ? "current-approver-row" : ""}
         locale={{ emptyText: <Empty description="없음" /> }}
       />
 
@@ -203,25 +195,6 @@ function EApprovalDetail() {
         </tbody>
       </table>
 
-      {/* ✅ 반려 사유 표시 구간 추가 */}
-      {rejectedApprovers.length > 0 && (
-        <>
-          <h3>반려 사유</h3>
-          <table className="detail-table">
-            <tbody>
-              {rejectedApprovers.map((r, idx) => (
-                <tr key={idx}>
-                  <th>{r.name} ({rankNames[r.rank_code]})</th>
-                  <td style={{ color: "#d9534f", whiteSpace: "pre-wrap" }}>
-                    {r.rejectReason || "사유 없음"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
-
       <div className="button-area">
         <Button onClick={() => navigate(-1)}>← 목록으로</Button>
       </div>
@@ -237,8 +210,8 @@ function EApprovalDetail() {
         />
 
         <div className="action-buttons">
-          <Button type="primary" onClick={handleApprove}>✅ 승인</Button>
-          <Button danger onClick={handleReject}>❌ 반려</Button>
+          <Button type="primary" onClick={handleApprove} disabled={isDocFinished}>✅ 승인</Button>
+          <Button danger onClick={handleReject} disabled={isDocFinished}>❌ 반려</Button>
         </div>
       </Modal>
     </div>
