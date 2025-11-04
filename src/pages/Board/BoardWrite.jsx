@@ -75,7 +75,17 @@ const BoardWrite = () => {
     setFiles(Array.from(e.target.files));
   };
 
-  // ✅ 글 작성
+  // 알림
+    const sendTestNotice = async (receiver_id, type, message) => {
+    await caxios.post("/notification/send", {
+      receiver_id: receiver_id, // 실제 로그인 ID로 전달받을 사람.
+      type: type,
+      message: message,
+      created_at: new Date().toISOString(),
+    });
+  };
+
+  // 글 작성
   const handleSubmit = async () => {
     try {
       const boardResp = await caxios.post("/board", board);
@@ -94,8 +104,17 @@ const BoardWrite = () => {
         console.log("파일 업로드 완료");
       }
 
+       // 공지글일 때만 알림 발송
+    if (board.noticeYn === "Y") {
+      await sendTestNotice(
+        "All",                
+        "공지",           
+        `${board.title} 공지사항이 등록되었습니다.`  
+      );
+      console.log("공지 등록 알림 발송 완료 ");
+    }
+
       alert("게시글이 등록되었습니다!");
-      // ✅ 작성 후 원래 페이지로 돌아감
       navigate(fromPath);
     } catch (err) {
       console.error("등록 실패:", err);

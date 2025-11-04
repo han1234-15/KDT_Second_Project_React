@@ -9,6 +9,7 @@ import { color } from "framer-motion";
 const { Search } = Input;
 
 const BoardImportance = () => {
+
   const navigate = useNavigate();
   const location = useLocation();
   const [search, setSearch] = useState("");
@@ -37,10 +38,13 @@ const BoardImportance = () => {
 
           return {
             key: item.seq,
+            tag: "중요",
             title: item.title,
             author: item.writer_id,
             date: formattedDate,
             importantYn: item.importantYn,
+            hit: item.hit,
+            noticeYn: item.noticeYn,
           };
         });
         setData(mapped);
@@ -50,7 +54,67 @@ const BoardImportance = () => {
       });
   };
 
-  // ⭐ 중요 표시 토글
+    // 컬럼 정의
+  const columns = [
+    {
+      title: <StarFilled style={{ color: "#fadb14", fontSize: "16px" }} />,
+      key: "important", width: "10%",
+      render: (_, record) => (
+        <span
+          onClick={(e) => {
+            e.stopPropagation();
+            handleImportant(record);
+          }}
+          style={{
+            cursor: "pointer",
+            color: record.importantYn === "Y" ? "#fadb14" : "#ccc",
+            fontSize: "18px",
+          }}
+        >
+          {record.importantYn === "Y" ? <StarFilled /> : <StarOutlined />}
+        </span>
+      ),
+    },
+    {
+      title: "",
+      dataIndex: "notice",
+      key: "notice",
+      width: "10%",
+      render: (_, record) => (
+        record.noticeYn === "Y" && (
+          <span
+            style={{
+              backgroundColor: "#ffecb3",
+              color: "#d48806",
+              fontWeight: "bold",
+              borderRadius: "4px",
+              padding: "2px 6px",
+              alignItems: "center",
+              fontSize: "12px",
+            }}
+          >
+            공지
+          </span>
+        )
+      ),
+    },
+    {
+      title: "제목",
+      dataIndex: "title",
+      key: "title",
+      width: "40%",
+      align: "left",
+      className: "col-title",
+      render: (text) => (
+        <span style={{ marginLeft: "15px" }}>{text}</span>
+      ),
+    },
+    { title: "작성자", dataIndex: "author", key: "author", width: "20%" },
+    { title: "조회수", dataIndex: "hit", key: "hit", width: "10%" },
+    { title: "작성일", dataIndex: "date", key: "date", width: "20%" },
+  ];
+
+  // 중요 체크
   const handleImportant = async (record) => {
     try {
       await caxios.put(`/board/toggleImportant/${record.key}`);
@@ -68,32 +132,6 @@ const BoardImportance = () => {
     });
   };
 
-  // 컬럼 정의
-  const columns = [
-    {
-      title: <StarFilled style={{ color: "#fadb14", fontSize: "16px" }} />,
-      key: "important",
-      render: (_, record) => (
-        <span
-          onClick={(e) => {
-            e.stopPropagation(); // ⭐ 클릭 시 행 클릭 이벤트 막기
-            handleImportant(record);
-          }}
-          style={{
-            cursor: "pointer",
-            color: record.importantYn === "Y" ? "#fadb14" : "#ccc",
-            fontSize: "18px",
-          }}
-        >
-          {record.importantYn === "Y" ? <StarFilled /> : <StarOutlined />}
-        </span>
-      ),
-    },
-    { title: "제목", dataIndex: "title", key: "title" },
-    { title: "작성자", dataIndex: "author", key: "author" },
-    { title: "작성일", dataIndex: "date", key: "date" },
-  ];
-
   // 검색 필터
   const filteredData = data.filter((item) =>
     item.title.toLowerCase().includes(search.toLowerCase())
@@ -107,7 +145,7 @@ const BoardImportance = () => {
           allowClear
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ width: 300 , marginTop: 30 , marginBottom: 5}}
+          style={{ width: 300, marginTop: 30, marginBottom: 5 }}
         />
       </div>
 
@@ -122,7 +160,6 @@ const BoardImportance = () => {
             defaultPageSize: 10,
           }}
           rowClassName={() => styles.tableRow}
-          // ✅ 행 클릭 시 게시글 상세 이동
           onRow={(record) => ({
             onClick: () => handleRowClick(record),
           })}

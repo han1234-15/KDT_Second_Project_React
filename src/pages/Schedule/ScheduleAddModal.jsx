@@ -1,6 +1,6 @@
 import useAuthStore from "../../store/authStore";
 import React, { useEffect, useState } from "react";
-import {  Modal, Input,Button,Select,DatePicker,TimePicker, Alert,} from "antd";
+import { Modal, Input, Button, Select, DatePicker, TimePicker, Alert, } from "antd";
 import dayjs from "dayjs";
 import { caxios } from "../../config/config";
 import StarIcon from "@mui/icons-material/Star";
@@ -10,8 +10,8 @@ import styles from "./Schedule.module.css";
 const { Option } = Select;
 
 const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
-const { loginId } = useAuthStore();
-const [form, setForm] = useState({
+  const { loginId } = useAuthStore();
+  const [form, setForm] = useState({
     category: "1",
     title: "",
     content: "",
@@ -26,23 +26,23 @@ const [form, setForm] = useState({
   const [saving, setSaving] = useState(false);
 
   // 모달 열릴 때 초기값 세팅 및 에러 초기화
- useEffect(() => {
-  if (isOpen) {
-    setForm({
-      category: initialData?.category ?? "1",
-      title: "",
-      content: "",
-      startAt: initialData?.startAt ? dayjs(initialData.startAt) : dayjs(),
-      endAt: initialData?.endAt ? dayjs(initialData.endAt) : dayjs().add(1, "hour"),
-      place: "",
-      color: initialData?.color ?? "#6BB5FF",
-      importantYn: initialData?.importantYn ?? "N",
-      created_id: loginId || "testUser",
-    });
-    setErrorMsg("");
-    setSaving(false);
-  }
-}, [isOpen, initialData]);
+  useEffect(() => {
+    if (isOpen) {
+      setForm({
+        category: initialData?.category ?? "1",
+        title: "",
+        content: "",
+        startAt: initialData?.startAt ? dayjs(initialData.startAt) : dayjs(),
+        endAt: initialData?.endAt ? dayjs(initialData.endAt) : dayjs().add(1, "hour"),
+        place: "",
+        color: initialData?.color ?? "#6BB5FF",
+        importantYn: initialData?.importantYn ?? "N",
+        created_id: loginId || "testUser",
+      });
+      setErrorMsg("");
+      setSaving(false);
+    }
+  }, [isOpen, initialData]);
 
   const toggleImportant = () =>
     setForm((p) => ({ ...p, importantYn: p.importantYn === "Y" ? "N" : "Y" }));
@@ -72,45 +72,45 @@ const [form, setForm] = useState({
 
   // 일정 추가
   const handleAdd = async () => {
-  if (saving) return;
-  if (!validate()) return;
+    if (saving) return;
+    if (!validate()) return;
 
-  const payload = {
-    category: form.category,
-    title: form.title,
-    content: form.content || "",
-    startAt: dayjs(form.startAt).toISOString(),
-    endAt: dayjs(form.endAt).toISOString(),
-    place: form.place || "",
-    color: form.color || "#6BB5FF",
-    importantYn: form.importantYn || "N",
-    created_id: form.created_id || "testUser",
-  };
-
-  try {
-    setSaving(true);
-    const resp = await caxios.post("/schedule", payload);
-    const newEvent = {
-      ...payload,
-      id: resp.data,
-      start: payload.startAt,
-      end: payload.endAt,
+    const payload = {
+      category: form.category,
+      title: form.title,
+      content: form.content || "",
+      startAt: dayjs(form.startAt).toISOString(),
+      endAt: dayjs(form.endAt).toISOString(),
+      place: form.place || "",
+      color: form.color || "#6BB5FF",
+      importantYn: form.importantYn || "N",
+      created_id: form.created_id || "testUser",
     };
-    onSuccess(newEvent);
-    onClose();
-  } catch (e) {
-    setErrorMsg("일정 추가 실패. 입력값을 다시 확인해주세요.");
-    setSaving(false);
-  }
-};
+
+    try {
+      setSaving(true);
+      const resp = await caxios.post("/schedule", payload);
+      const newEvent = {
+        ...payload,
+        id: resp.data,
+        start: payload.startAt,
+        end: payload.endAt,
+      };
+      onSuccess(newEvent);
+      onClose();
+    } catch (e) {
+      setErrorMsg("일정 추가 실패. 입력값을 다시 확인해주세요.");
+      setSaving(false);
+    }
+  };
 
   return (
     <Modal
-    centered
+      centered
       open={isOpen}
       width={630}
       title="일정 추가"
-      destroyOnHidden 
+      destroyOnHidden
       onCancel={onClose}
       footer={
         <div className={styles.modalFooter}>
@@ -120,7 +120,7 @@ const [form, setForm] = useState({
                 type="warning"
                 message={errorMsg}
                 showIcon
-                 className={styles.alertBox}
+                className={styles.alertBox}
               />
             )}
           </div>
@@ -205,14 +205,13 @@ const [form, setForm] = useState({
             <TimePicker
               value={form.startAt}
               format="HH:mm"
-              getPopupContainer={(triggerNode) => triggerNode.parentNode} 
+              popupClassName="custom-timepicker-dropdown"
               onChange={(t) =>
                 setForm({
                   ...form,
                   startAt: t
                     ? dayjs(form.startAt).hour(t.hour()).minute(t.minute())
                     : form.startAt,
-                    
                 })
               }
             />
@@ -224,7 +223,7 @@ const [form, setForm] = useState({
             <TimePicker
               value={form.endAt}
               format="HH:mm"
-              getPopupContainer={(triggerNode) => triggerNode.parentNode}
+              popupClassName="custom-timepicker-dropdown"
               onChange={(t) =>
                 setForm({
                   ...form,
