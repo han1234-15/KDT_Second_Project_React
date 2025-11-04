@@ -75,7 +75,6 @@ const Sidebar = () => {
         console.log("어드민:" + res.data);
         setIsAdmin(res.data);
       } catch (err) {
-        console.error("권한 확인 실패", err);
         setIsAdmin(false);
       }
     };
