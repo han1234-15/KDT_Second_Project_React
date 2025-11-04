@@ -20,7 +20,6 @@ export default function Login() {
             alert("아이디와 비밀번호를 입력해주세요");
             return;
         }
-        console.log("로그인 시도:", form);
 
         caxios
             .post("/auth", form)
