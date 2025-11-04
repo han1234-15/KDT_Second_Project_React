@@ -289,8 +289,8 @@ const Mypage = () => {
                         <label>ID*</label>
                         <div style={{ paddingLeft: '2px' }}>{memberInfo.id}</div>
                     </div>
-                    <div><label>비밀번호 변경</label><Input placeholder="최소 8자리, 대문자, 소문자, 숫자, 특수문자" name='password' value={memberInfo.password} onChange={handleMemberInfoChange} /></div>
-                    <div><label>이름*</label><Input placeholder="한글 2~20자리" name='name' value={memberInfo.name} onChange={handleMemberInfoChange} /></div>
+                    <div><label>비밀번호 변경</label><Input.Password placeholder="최소 8자리, 대문자, 소문자, 숫자, 특수문자" name='password' value={memberInfo.password} onChange={handleMemberInfoChange} /></div>
+                    <div><label>이름*</label><div>{memberInfo.name}</div></div>
                     <div><label>영어 이름</label><Input placeholder="영문 이름 입력" name='englishName' value={memberInfo.englishName} onChange={handleMemberInfoChange} /></div>
 
                     <div>

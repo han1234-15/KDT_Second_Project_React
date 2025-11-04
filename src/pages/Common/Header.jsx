@@ -342,13 +342,13 @@ const Header = () => {
                     </Dropdown>
 
                     {/* 위젯 설정 */}
-                    <Dropdown menu={{ items: widgetSetMenu }} trigger={['click']}>
+                    {/* <Dropdown menu={{ items: widgetSetMenu }} trigger={['click']}>
                         <a onClick={e => { e.preventDefault(); fetchUserData(); }}>
                             <Space>
                                 <SettingOutlined style={{ fontSize: '28px', color: '#6d6d6dff', marginLeft: '10px', paddingTop: '4px' }} />
                             </Space>
                         </a>
-                    </Dropdown>
+                    </Dropdown> */}
                 </Space>
             </div>
         </div>
