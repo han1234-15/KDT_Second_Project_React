@@ -219,6 +219,7 @@ const Organization = () => {
 
             {/* Modal */}
             <Modal
+                style={{width:"450px" , height:"400px"}}
                 centered={false}
                 open={orgModalOpen}
                 onCancel={() => setOrgModalOpen(false)}
@@ -232,7 +233,7 @@ const Organization = () => {
                     xl: '50%',
                     xxl: '30%',
                 }}
-                modalRender={modal => <div style={{ marginTop: '100px' , width:"550px" }}>{modal}</div>}
+                modalRender={modal => <div style={{ marginTop: '100px'}}>{modal}</div>}
             >
                 <OrganizationView member={member} onClose={() => setOrgModalOpen(false)} />
             </Modal>
