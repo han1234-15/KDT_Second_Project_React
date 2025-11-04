@@ -1,0 +1,27 @@
+.eApporovalWrapper {
+    position: relative;
+}
+
+.writeBtn {
+    position: absolute;
+    top: 0px;
+    /* 탭 줄과 수직 맞춤 */
+    right: 50px;
+    /* 화면 오른쪽 여백 */
+    background: linear-gradient(45deg, #8e44ad, #2196f3);
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 15px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.writeBtn:hover {
+    opacity: 0.9;
+}

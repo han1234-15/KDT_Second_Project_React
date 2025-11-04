@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import ContentTap from "../Common/ContentTap";
-import "./styles/ApprovalPage.css";
+import styles from "./EApprovalTabs.module.css";
+
 
 const EApprovalTabs = () => {
   const navigate = useNavigate();
@@ -45,8 +46,8 @@ const EApprovalTabs = () => {
     : subTabsProgress;
 
   return (
-    <div className="wrapper">
-      <div className="headerRow">
+    <div className={styles.eApporovalWrapper}>
+      <div className={styles.headerRow}>
         <ContentTap
           mainTabs={mainTabs}
           subTabs={currentSubTabs}
@@ -57,10 +58,10 @@ const EApprovalTabs = () => {
         />
 
         <button
-          className="writeBtn"
+          className={styles.writeBtn}
           onClick={() => navigate("/Eapproval/write")}
         >
-          + 작성하기
+          + 기안하기
         </button>
       </div>
 
