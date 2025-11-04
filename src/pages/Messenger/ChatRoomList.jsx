@@ -19,30 +19,50 @@ const rankMap = {
 };
 
 export default function ChatRoomList() {
+  // 전체 채팅방 목록
   const [rooms, setRooms] = useState([]);
+
+  // 검색어 필터가 적용된 채팅방 목록
   const [filteredRooms, setFilteredRooms] = useState([]);
+
+  // 검색창 표시 여부
   const [showSearch, setShowSearch] = useState(false);
+
+  // 검색어 입력값
   const [searchTerm, setSearchTerm] = useState("");
+
+  // 현재 로그인한 사용자 ID
   const userId = sessionStorage.getItem("LoginID");
+
+  // STOMP 소켓 구독 훅
   const { subscribeRoom } = useSocket();
 
-  // 채팅방 목록 불러오기
+  /**
+   * 채팅방 목록을 서버에서 불러오는 함수
+   * - 각 방에 속한 멤버 정보를 추가로 조회함
+   * - 각 멤버의 프로필 이미지 및 이름, 직급 정보를 정리
+   */
   const fetchRooms = useCallback(async () => {
     try {
       const resp = await caxios.get("/api/chat/rooms");
       const roomList = resp.data || [];
 
+      // 모든 방에 대해 멤버 정보와 프로필 데이터를 비동기 병렬 처리
       const roomsWithMembers = await Promise.all(
         roomList.map(async (room) => {
           try {
+            // 해당 방의 참여자 목록 조회
             const res = await caxios.get(`/api/chat/members/${room.roomId}`);
             const members = res.data || [];
 
+            // 현재 로그인 사용자를 제외한 상대방 정보만 추출
             const others = members.filter((m) => m.memberId !== userId);
             const targetId = others.length === 1 ? others[0].memberId : null;
 
-            // 프로필 이미지 URL 가져오기
+            // 기본 프로필 이미지 설정
             let avatarUrl = "/defaultprofile.png";
+
+            // 상대방의 프로필 이미지가 존재하면 가져와서 설정
             if (targetId) {
               try {
                 const userResp = await caxios.get(`/member/info/${targetId}`);
@@ -55,10 +75,12 @@ export default function ChatRoomList() {
               }
             }
 
+            // 대화 상대 이름과 직급명 조합
             const names = others
               .map((m) => `${m.name}${m.rankName ? " " + m.rankName : ""}`)
               .join(", ");
 
+            // 방 정보를 가공하여 반환
             return {
               ...room,
               targetId,
@@ -78,6 +100,7 @@ export default function ChatRoomList() {
         })
       );
 
+      // 상태 업데이트
       setRooms(roomsWithMembers);
       setFilteredRooms(roomsWithMembers);
     } catch (err) {
@@ -85,40 +108,64 @@ export default function ChatRoomList() {
     }
   }, [userId]);
 
+  // 컴포넌트 마운트 시 채팅방 목록 최초 조회
   useEffect(() => {
     fetchRooms();
   }, [fetchRooms]);
 
-  // 방 목록 STOMP 구독
+  /**
+   * 각 채팅방에 대해 STOMP 구독을 설정
+   * - 서버에서 해당 방의 새 메시지를 실시간으로 수신할 수 있도록 함
+   */
   useEffect(() => {
     if (!rooms.length) return;
     rooms.forEach((r) => subscribeRoom(r.roomId));
   }, [rooms, subscribeRoom]);
 
-  // 이벤트 수신 시 목록 새로고침
+  /**
+   * chatRoomUpdated 이벤트를 수신했을 때
+   * - 특정 방의 unread(읽지 않은 메시지 수)를 0으로 초기화
+   * - 메시지 또는 새 채팅방 감지 시 전역 알림 이벤트(globalMessengerNotify) 발생
+   * - 일정 시간 후 채팅방 목록을 새로 불러옴
+   */
   useEffect(() => {
     const handleUpdate = (e) => {
       const updatedRoomId = e.detail?.roomId;
       if (updatedRoomId) {
+        // 선택된 방의 읽지 않은 메시지 수를 0으로 변경
         setRooms((prev) =>
           prev.map((r) =>
             r.roomId === updatedRoomId ? { ...r, unread: 0 } : r
           )
         );
       }
+
+      // 1초 뒤 목록 갱신
       setTimeout(fetchRooms, 1000);
     };
+
     window.addEventListener("chatRoomUpdated", handleUpdate);
     return () => window.removeEventListener("chatRoomUpdated", handleUpdate);
   }, [fetchRooms]);
 
+  /**
+   * refreshChatRooms 이벤트를 수신했을 때
+   * - 전체 채팅방 목록을 즉시 새로 불러옴
+   */
   useEffect(() => {
-    const handleRefresh = () => fetchRooms();
-    window.addEventListener("refreshChatRooms", handleRefresh);
-    return () => window.removeEventListener("refreshChatRooms", handleRefresh);
-  }, [fetchRooms]);
+  const handleRefresh = () => fetchRooms();
 
-  // 시간 포맷
+  // 중복 등록 방지
+  window.removeEventListener("refreshChatRooms", handleRefresh);
+  window.addEventListener("refreshChatRooms", handleRefresh);
+
+  return () => window.removeEventListener("refreshChatRooms", handleRefresh);
+}, [fetchRooms]);
+
+  /**
+   * 시간 포맷 함수
+   * - 마지막 메시지 시각을 "HH:MM" 형식으로 변환
+   */
   const formatTime = (value) => {
     if (!value) return "";
     const t = new Date(value);
@@ -128,20 +175,27 @@ export default function ChatRoomList() {
     });
   };
 
-  // 채팅방 열기
+  /**
+   * 채팅방 더블클릭 시 팝업 창으로 채팅창을 엶
+   * - 읽지 않은 메시지를 0으로 변경
+   * - 새로 열린 팝업 창에서는 /chatroom 경로로 진입
+   */
   const openChat = (room) => {
     const targetName = encodeURIComponent(room.displayName || "대화상대");
     const targetRank = encodeURIComponent(rankMap[room.targetRank] || "");
     const url = `${window.location.origin}/chatroom?room_id=${room.roomId}&target=${targetName}&rank=${targetRank}`;
 
+    // 선택된 방의 읽지 않은 메시지를 0으로 처리
     setRooms((prev) =>
       prev.map((r) => (r.roomId === room.roomId ? { ...r, unread: 0 } : r))
     );
 
+    // 이벤트를 발생시켜 목록 및 알림 갱신
     window.dispatchEvent(
       new CustomEvent("chatRoomUpdated", { detail: { roomId: room.roomId } })
     );
 
+    // 새 팝업 창으로 채팅방 열기
     window.open(
       url,
       `Chat_${room.roomId}`,
@@ -149,7 +203,11 @@ export default function ChatRoomList() {
     );
   };
 
-  // 검색어 입력 시 실시간 필터링
+  /**
+   * 검색어 입력 시 필터링
+   * - 검색어가 없으면 전체 목록 표시
+   * - 검색어가 있으면 displayName에 해당 문자열이 포함된 채팅방만 표시
+   */
   useEffect(() => {
     if (!searchTerm.trim()) {
       setFilteredRooms(rooms);
@@ -164,7 +222,7 @@ export default function ChatRoomList() {
 
   return (
     <div className={styles.container}>
-      {/* 상단 헤더 */}
+      {/* 상단 헤더: 타이틀 및 검색 아이콘 */}
       <div className={styles.header}>
         <span className={styles.title}>채팅</span>
         <i
@@ -173,10 +231,8 @@ export default function ChatRoomList() {
         ></i>
       </div>
 
-      {/* ✅ 검색창 (CSS 전환 방식으로 표시/숨김) */}
-      <div
-        className={`${styles.searchBox} ${showSearch ? styles.show : ""}`}
-      >
+      {/* 검색창: 검색어 입력창 표시/숨김 전환 */}
+      <div className={`${styles.searchBox} ${showSearch ? styles.show : ""}`}>
         <input
           type="text"
           placeholder="참여자 이름 검색..."
@@ -185,7 +241,7 @@ export default function ChatRoomList() {
         />
       </div>
 
-      {/* 채팅방 목록 */}
+      {/* 채팅방 목록 영역 */}
       <div className={styles.chatList}>
         {filteredRooms.length > 0 ? (
           filteredRooms.map((chat) => (
@@ -194,14 +250,14 @@ export default function ChatRoomList() {
               className={styles.chatItem}
               onDoubleClick={() => openChat(chat)}
             >
-              {/* 프로필 이미지 */}
+              {/* 프로필 이미지 표시 */}
               <img
                 src={chat.avatar || "/defaultprofile.png"}
                 className={styles.avatar}
                 alt="프로필"
               />
 
-              {/* 채팅방 정보 */}
+              {/* 채팅방 이름, 마지막 메시지, 시간 표시 */}
               <div className={styles.chatInfo}>
                 <div className={styles.chatHeader}>
                   <span className={styles.chatName}>
@@ -219,13 +275,14 @@ export default function ChatRoomList() {
                 </div>
               </div>
 
-              {/* 안 읽은 메시지 수 */}
+              {/* 읽지 않은 메시지 수 표시 뱃지 */}
               {chat.unread > 0 && (
                 <span className={styles.unreadBadge}>{chat.unread}</span>
               )}
             </div>
           ))
         ) : (
+          // 검색 결과가 없을 경우 표시되는 문구
           <div className={styles.noResult}>일치하는 채팅방이 없습니다.</div>
         )}
       </div>
