@@ -125,7 +125,7 @@ const BoardWrite = () => {
   return (
     <div className={styles.container}>
       <div className={styles.btns}>
-        <button onClick={handleSubmit}>확인</button>
+        <button onClick={handleSubmit}>등록</button>
         <button onClick={() => navigate(fromPath)}>취소</button>
       </div>
 
@@ -137,10 +137,9 @@ const BoardWrite = () => {
           style={{ width: 240 }}
           placeholder="게시판을 선택하세요"
         >
-          <Option value="1">공지사항</Option>
+          <Option value="1">사내게시판</Option>
           <Option value="2">자유게시판</Option>
           <Option value="3">익명게시판</Option>
-          <Option value="4">자료실</Option>
         </Select>
       </div>
 
@@ -171,13 +170,23 @@ const BoardWrite = () => {
         <div className={styles.file}>
           <label>파일 첨부</label>
         </div>
+        <div className={styles.fileList}>
         {files.length > 0 && (
           <ul className={styles.filePreview}>
             {files.map((file, i) => (
-              <li key={i}>{file.name}</li>
+              <li key={i}><span>{file.name}</span>
+              <button
+                className={styles.deleteBtn}
+                onClick={() =>
+                  setFiles((prev) => prev.filter((_, index) => index !== i))
+                }
+              >
+                x
+              </button></li>
             ))}
           </ul>
         )}
+        </div>
         <div className={styles.fileBtnBox}>
           <label htmlFor="file" className={styles.customFileLabel}>
             <span className={styles.labelText}>파일 선택</span>

@@ -75,7 +75,6 @@ const Sidebar = () => {
         console.log("어드민:" + res.data);
         setIsAdmin(res.data);
       } catch (err) {
-        console.error("권한 확인 실패", err);
         setIsAdmin(false);
       }
     };
@@ -141,7 +140,7 @@ const Sidebar = () => {
         >
           <Link to="/board/1/announcement">전체게시판</Link>
           <Link to="/board/important">중요게시물</Link>
-          <Link to="/board/1/dataroom">자료실</Link>
+          {/* <Link to="/board/1/dataroom">자료실</Link> */}
         </div>
 
         <div className={styles.menu} onClick={() => toggleMenu("schedule")}>

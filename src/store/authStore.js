@@ -15,6 +15,8 @@ const useAuthStore = create(
 
       logout: () => {
         console.log("로그아웃 실행됨");
+        localStorage.clear();
+        sessionStorage.clear();
         set({ token: "", loginId: "", isLogin: false });
       },
     }),

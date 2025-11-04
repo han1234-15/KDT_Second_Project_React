@@ -9,7 +9,7 @@ const BoardTabs = () => {
   const { category_id } = useParams();
 
   const mainTabs = [
-    { label: "게시판", path: "/board/1/announcement" },
+    { label: "게시판", path: "/board/1/" },
     { label: "중요게시물", path: "/board/important" },
   ];
 

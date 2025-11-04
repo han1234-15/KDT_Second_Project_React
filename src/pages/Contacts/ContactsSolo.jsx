@@ -2,10 +2,10 @@ import styles from "./Contacts.module.css";
 import { useEffect, useState } from 'react';
 import { caxios } from '../../config/config.js';
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, Modal } from 'antd';
+import { Button, Modal, Table, Input } from 'antd'; // ✅ Input(Search) 사용
 import ContactsAdd from "./ContactsAdd";
 import ContentTap from "../Common/ContentTap";
-import { Table, Pagination } from 'antd';
+const { Search } = Input; // ✅ Search 컴포넌트 구조분해
 
 const ContactsSolo = () => {
 
@@ -238,164 +238,175 @@ const ContactsSolo = () => {
 
 
         {/* 메인 주소록창 */}
-        <div className={styles.main}>
-
-            {/* 주소록 헤더  */}
-            <div className={styles.mainHeader}>
 
 
-
-                {/* 주소록 헤더 1 */}
-                <div className={styles.mainHeadertop} >
-
-                    개인 주소록 : {contacts.length} 명 <br></br>
-                    <button className={styles.createbtn} onClick={showModalSingleAdd}> 개인 주소록 추가 </button>
-                </div>
-
-                {/* 주소록 헤더 2 */}
-                <div className={styles.mainHeaderbottom} >
-                    {checkedList.length === 0 ? (
-                        <>
-                            <input type="text" placeholder="검색할 주소록 성함" style={{ float: "left", width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center", fontSize: "20px" }}
-                                onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
-                            <button className={styles.createbtn} style={{ width: "5%", marginLeft: "10px", float: "left" }} onClick={handleContactsList}>검색</button>
+        {/* 주소록 헤더  */}
+        <div className={styles.mainHeader}>
 
 
-                        </>) : (
-                        <>
-                            <button className={styles.btns} onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
-                            <button className={styles.btns} onClick={showUpdateModal} style={{ margin: "10px" }}> 수정 </button>
-                            <button className={styles.btns} onClick={handleContactsUpdateTypeMulti} style={{ margin: "10px" }}> 공용 주소록으로 이동</button>
-                            <button className={styles.btns} onClick={handleMail} style={{ margin: "10px" }}> 메일 쓰기 </button>
-                        </>
-                    )}
-                </div>
 
+            {/* 주소록 헤더 1 */}
+            <div className={styles.mainHeadertop} >
 
-            </div>  {/* 주소록 헤더  */}
+                개인 주소록 : {contacts.length} 명
+            </div>
+            <div className={styles.addBtns}>
+                <button className={styles.createbtn} onClick={showModalSingleAdd}> + 개인주소록 </button>
+            </div>
+        </div>  {/* 주소록 헤더  */}
 
-            {/* Ant Design Table */}
-
-            <Table
-                rowSelection={rowSelection}
-                columns={[
-                    { title: "성함", dataIndex: "name", key: "name" },
-                    { title: "전화번호", dataIndex: "phone", key: "phone" },
-                    {
-                        title: "이메일", dataIndex: "email", key: "email",
-                        render: (email) => email.includes('@') ? email : `${email}@Infinity.com`
-                    },
-                    { title: "직무", dataIndex: "job_code", key: "job_code" },
-                    { title: "직위", dataIndex: "rank_code", key: "rank_code" },
-                ]}
-                dataSource={contacts.map(c => ({ ...c, key: c.seq }))}
-                pagination={{
-                    current: currentPage,
-                    pageSize: pageSize,
-                    total: contacts.length,
-                    onChange: handlePageChange,
-                    showSizeChanger: false,
-                    position: ["bottomCenter"],
-                    hideOnSinglePage: true,
-                }}
-
-            />
-            <Modal
-
-                centered={false}
-                open={isSingleModalOpen}
-                onCancel={() => setIsSingleModalOpen(false)}
-                footer={null}
-                destroyOnHidden
-                width={{
-                    xs: '90%',  // 모바일
-                    sm: '80%',
-                    md: '70%',
-                    lg: '60%',
-                    xl: '50%',
-                    xxl: '40%', // 큰 화면
-                }}
-                modalRender={modal => (
-                    <div style={{ marginTop: '100px' }}> {/* 상단에서 50px 아래 */}
-                        {modal}
+        <div className={styles.mainHeaderbottom}>
+            {checkedList.length === 0 ? (
+                <>
+                    {/* ✅ Ant Design Search로 변경 */}
+                    <div className={styles.searchBox}>
+                        <Search
+                            placeholder="검색할 이름을 입력하세요"
+                            value={searchName}
+                            onChange={(e) => setSearchName(e.target.value)}
+                            onSearch={handleContactsList}
+                            enterButton="검색"
+                            style={{ width: "400px" }}
+                        />
                     </div>
-                )}
-            >
-                <ContactsAdd onClose={() => setIsSingleModalOpen(false)} handleContactsList={handleContactsList} />
-            </Modal>
-
-            {/* 수정 modal */}
-            <Modal
-
-                centered={false}
-                open={UpdateModalOpen}
-                onCancel={() => setUpdateModalOpen(false)}
-                footer={null}
-                destroyOnHidden
-                width={{
-                    xs: '90%',
-                    sm: '80%',
-                    md: '70%',
-                    lg: '60%',
-                    xl: '50%',
-                    xxl: '40%',
-                }}
-                modalRender={modal => (
-                    <div style={{ marginTop: '100px' }}> {/* 상단에서 50px 아래 */}
-                        {modal}
+                </>) : (
+                <>
+                    <div className={styles.btnBox}>
+                        <button className={styles.btns} onClick={handleContactsDelete} > 삭제 </button>
+                        <button className={styles.btns} onClick={showUpdateModal} > 수정 </button>
+                        <button className={styles.btns} onClick={handleContactsUpdateTypeMulti}> 공용 주소록으로 이동</button>
+                        <button className={styles.btns} onClick={handleMail} > 메일 쓰기 </button>
                     </div>
-                )}
-            >
-                <div style={{ fontSize: "16px" }}>
-                    <div className={styles.mainHeader} style={{ fontSize: "40px", textAlign: "center" }}>
-                        수정
-                    </div>
-                    <br></br>
-
-                    <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
-                        <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>성함  </div>
-                        <input type="text" className={styles.NewSharedMailbox2}
-                            style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
-                            onChange={handleUpdateChange} value={updateData.name} name="name" />
-                    </div>
-
-                    <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
-                        <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px", }}>전화번호  </div>
-                        <input type="text" className={styles.NewSharedMailbox2}
-                            style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
-                            onChange={handleUpdateChange} value={updateData.phone} name="phone" />
-                    </div>
-
-                    <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
-                        <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>이메일  </div>
-                        <input type="text" className={styles.NewSharedMailbox2}
-                            style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
-                            onChange={handleUpdateChange}
-                            value={updateData.email.includes("@") ? updateData.email : `${updateData.email}@Infinity.com`} name="email" readOnly />
-                    </div>
-                    <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
-                        <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>직무  </div>
-                        <input type="text" className={styles.NewSharedMailbox2}
-                            style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
-                            onChange={handleUpdateChange} value={updateData.job_code} name="job_code" />
-                    </div>
-                    <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
-                        <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>직위  </div>
-                        <input type="text" className={styles.NewSharedMailbox2}
-                            style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
-                            onChange={handleUpdateChange} value={updateData.rank_code} name="rank_code" />
-                    </div>
-                </div>
-                <button className={styles.btns} style={{ float: "right", marginLeft: "30px" }} onClick={handleContactsUpdateOut}>취소</button>
-                <button className={styles.btns} style={{ float: "right", marginLeft: "10px" }} onClick={handleContactsUpdate}>완료</button>
-
-            </Modal>
-
-
+                </>
+            )}
         </div>
 
 
+
+
+        {/* Ant Design Table */}
+
+        <Table
+           tableLayout="fixed"
+            rowSelection={rowSelection}
+            columns={[
+                { title: "성함", dataIndex: "name", key: "name" },
+                { title: "전화번호", dataIndex: "phone", key: "phone" },
+                {
+                    title: "이메일", dataIndex: "email", key: "email",
+                    render: (email) => email.includes('@') ? email : `${email}@Infinity.com`
+                },
+                { title: "직무", dataIndex: "job_code", key: "job_code" },
+                { title: "직위", dataIndex: "rank_code", key: "rank_code" },
+            ]}
+            dataSource={contacts.map(c => ({ ...c, key: c.seq }))}
+            pagination={{
+                current: currentPage,
+                pageSize: pageSize,
+                total: contacts.length,
+                onChange: handlePageChange,
+                showSizeChanger: false,
+                position: ["bottomCenter"],
+                hideOnSinglePage: true,
+            }}
+
+        />
+        <Modal
+
+            centered={false}
+            open={isSingleModalOpen}
+            onCancel={() => setIsSingleModalOpen(false)}
+            footer={null}
+            destroyOnHidden
+            width={{
+                xs: '90%',  // 모바일
+                sm: '80%',
+                md: '70%',
+                lg: '60%',
+                xl: '50%',
+                xxl: '40%', // 큰 화면
+            }}
+            modalRender={modal => (
+                <div style={{ marginTop: '100px' }}> {/* 상단에서 50px 아래 */}
+                    {modal}
+                </div>
+            )}
+        >
+            <ContactsAdd onClose={() => setIsSingleModalOpen(false)} handleContactsList={handleContactsList} />
+        </Modal>
+
+        {/* 수정 modal */}
+        <Modal
+
+            centered={false}
+            open={UpdateModalOpen}
+            onCancel={() => setUpdateModalOpen(false)}
+            footer={null}
+            destroyOnHidden
+            width={{
+                xs: '90%',
+                sm: '80%',
+                md: '70%',
+                lg: '60%',
+                xl: '50%',
+                xxl: '40%',
+            }}
+            modalRender={modal => (
+                <div style={{ marginTop: '100px' }}> {/* 상단에서 50px 아래 */}
+                    {modal}
+                </div>
+            )}
+        >
+            <div style={{ fontSize: "16px" }}>
+                <div className={styles.mainHeader} style={{ fontSize: "40px", textAlign: "center" }}>
+                    수정
+                </div>
+                <br></br>
+
+                <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
+                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>성함  </div>
+                    <input type="text" className={styles.NewSharedMailbox2}
+                        style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
+                        onChange={handleUpdateChange} value={updateData.name} name="name" />
+                </div>
+
+                <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
+                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px", }}>전화번호  </div>
+                    <input type="text" className={styles.NewSharedMailbox2}
+                        style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
+                        onChange={handleUpdateChange} value={updateData.phone} name="phone" />
+                </div>
+
+                <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
+                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>이메일  </div>
+                    <input type="text" className={styles.NewSharedMailbox2}
+                        style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
+                        onChange={handleUpdateChange}
+                        value={updateData.email.includes("@") ? updateData.email : `${updateData.email}@Infinity.com`} name="email" readOnly />
+                </div>
+                <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
+                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>직무  </div>
+                    <input type="text" className={styles.NewSharedMailbox2}
+                        style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
+                        onChange={handleUpdateChange} value={updateData.job_code} name="job_code" />
+                </div>
+                <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
+                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>직위  </div>
+                    <input type="text" className={styles.NewSharedMailbox2}
+                        style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
+                        onChange={handleUpdateChange} value={updateData.rank_code} name="rank_code" />
+                </div>
+            </div>
+            <button className={styles.btns} style={{ float: "right", marginLeft: "30px" }} onClick={handleContactsUpdateOut}>취소</button>
+            <button className={styles.btns} style={{ float: "right", marginLeft: "10px" }} onClick={handleContactsUpdate}>완료</button>
+
+        </Modal>
+
+
     </div>
+
+
+
 
 
     );

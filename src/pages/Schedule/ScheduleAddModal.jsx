@@ -1,6 +1,6 @@
 import useAuthStore from "../../store/authStore";
 import React, { useEffect, useState } from "react";
-import { Modal, Input, Button, Select, DatePicker, TimePicker, Alert, } from "antd";
+import { Modal, Input, Button, Select, DatePicker, Alert } from "antd";
 import dayjs from "dayjs";
 import { caxios } from "../../config/config";
 import StarIcon from "@mui/icons-material/Star";
@@ -9,8 +9,12 @@ import styles from "./Schedule.module.css";
 
 const { Option } = Select;
 
+const hours = Array.from({ length: 24 }, (_, i) => i);
+const minutes = Array.from({ length: 60 }, (_, i) => i);
+
 const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
   const { loginId } = useAuthStore();
+
   const [form, setForm] = useState({
     category: "1",
     title: "",
@@ -22,10 +26,10 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
     importantYn: "N",
     created_id: loginId,
   });
+
   const [errorMsg, setErrorMsg] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // 모달 열릴 때 초기값 세팅 및 에러 초기화
   useEffect(() => {
     if (isOpen) {
       setForm({
@@ -47,7 +51,6 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
   const toggleImportant = () =>
     setForm((p) => ({ ...p, importantYn: p.importantYn === "Y" ? "N" : "Y" }));
 
-  // 유효성 검사 (실패 시 서버 호출 차단)
   const validate = () => {
     const missing = [];
     if (!form.title?.trim()) missing.push("제목");
@@ -59,9 +62,7 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
       return false;
     }
 
-    const start = dayjs(form.startAt);
-    const end = dayjs(form.endAt);
-    if (end.isBefore(start)) {
+    if (dayjs(form.endAt).isBefore(dayjs(form.startAt))) {
       setErrorMsg("종료일시는 시작일시보다 이후여야 합니다.");
       return false;
     }
@@ -70,7 +71,6 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
     return true;
   };
 
-  // 일정 추가
   const handleAdd = async () => {
     if (saving) return;
     if (!validate()) return;
@@ -108,7 +108,7 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
     <Modal
       centered
       open={isOpen}
-      width={630}
+      width={700}
       title="일정 추가"
       destroyOnHidden
       onCancel={onClose}
@@ -141,7 +141,7 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
           <Select
             value={form.category}
             onChange={(v) => setForm({ ...form, category: v })}
-            style={{ width: 510 }}
+            style={{ width: 558 }}
           >
             <Option value="1">개인 일정</Option>
             <Option value="2">전사 일정</Option>
@@ -190,73 +190,137 @@ const ScheduleAddModal = ({ isOpen, onClose, onSuccess, initialData }) => {
             value={form.title}
             placeholder="제목을 입력하세요"
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            style={{ width: 510 }}
+            style={{ width: 558 }}
           />
         </div>
+          {/* 일시 */}
+          <div className={styles.row}>
+            <label>일시</label>
+            <div className={styles.datetimeRow}>
+              {/* 시작 */}
+              <DatePicker
+                value={form.startAt}
+                onChange={(d) => setForm({ ...form, startAt: d })}
+              />
 
-        {/* 일시 */}
-        <div className={styles.row}>
-          <label>일시</label>
-          <div className={styles.datetimeRow}>
-            <DatePicker
-              value={form.startAt}
-              onChange={(d) => setForm({ ...form, startAt: d })}
+              {/* 🔹 캐싱된 시/분 */}
+              {(() => {
+                const startHour = form.startAt ? form.startAt.hour() : 0;
+                const startMinute = form.startAt ? form.startAt.minute() : 0;
+                return (
+                  <>
+                    <Select
+                      value={startHour}
+                      style={{ width: 70 }}
+                      onChange={(h) =>
+                        setForm({
+                          ...form,
+                          startAt: form.startAt.clone().hour(h),
+                        })
+                      }
+                    >
+                      {hours.map((h) => (
+                        <Option key={h} value={h}>
+                          {h.toString().padStart(2, "0")}시
+                        </Option>
+                      ))}
+                    </Select>
+
+                    <Select
+                      value={startMinute}
+                      style={{ width: 70 }}
+                      onChange={(m) =>
+                        setForm({
+                          ...form,
+                          startAt: form.startAt.clone().minute(m),
+                        })
+                      }
+                    >
+                      {minutes.map((m) => (
+                        <Option key={m} value={m}>
+                          {m.toString().padStart(2, "0")}분
+                        </Option>
+                      ))}
+                    </Select>
+                  </>
+                );
+              })()}
+
+              <span className={styles.tilde}>~</span>
+
+              {/* 종료 */}
+              <DatePicker
+                value={form.endAt}
+                onChange={(d) => setForm({ ...form, endAt: d })}
+              />
+
+              {(() => {
+                const endHour = form.endAt ? form.endAt.hour() : 0;
+                const endMinute = form.endAt ? form.endAt.minute() : 0;
+                return (
+                  <>
+                    <Select
+                      value={endHour}
+                      style={{ width: 70 }}
+                      onChange={(h) =>
+                        setForm({
+                          ...form,
+                          endAt: form.endAt.clone().hour(h),
+                        })
+                      }
+                    >
+                      {hours.map((h) => (
+                        <Option key={h} value={h}>
+                          {h.toString().padStart(2, "0")}시
+                        </Option>
+                      ))}
+                    </Select>
+
+                    <Select
+                      value={endMinute}
+                      style={{ width: 70 }}
+                      onChange={(m) =>
+                        setForm({
+                          ...form,
+                          endAt: form.endAt.clone().minute(m),
+                        })
+                      }
+                    >
+                      {minutes.map((m) => (
+                        <Option key={m} value={m}>
+                          {m.toString().padStart(2, "0")}분
+                        </Option>
+                      ))}
+                    </Select>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+
+
+          {/* 내용 */}
+          <div className={styles.rowTopAlign}>
+            <label>내용</label>
+            <Input.TextArea
+              value={form.content}
+              placeholder="내용을 입력하세요"
+              onChange={(e) => setForm({ ...form, content: e.target.value })}
+              style={{ width: 558, height: 80 }}
             />
-            <TimePicker
-              value={form.startAt}
-              format="HH:mm"
-              popupClassName="custom-timepicker-dropdown"
-              onChange={(t) =>
-                setForm({
-                  ...form,
-                  startAt: t
-                    ? dayjs(form.startAt).hour(t.hour()).minute(t.minute())
-                    : form.startAt,
-                })
-              }
-            />
-            <span className={styles.tilde}>~</span>
-            <DatePicker
-              value={form.endAt}
-              onChange={(d) => setForm({ ...form, endAt: d })}
-            />
-            <TimePicker
-              value={form.endAt}
-              format="HH:mm"
-              popupClassName="custom-timepicker-dropdown"
-              onChange={(t) =>
-                setForm({
-                  ...form,
-                  endAt: dayjs(form.endAt).hour(t.hour()).minute(t.minute()),
-                })
-              }
+          </div>
+
+          {/* 장소 */}
+          <div className={styles.row}>
+            <label>장소</label>
+            <Input
+              value={form.place}
+              placeholder="장소를 입력하세요"
+              onChange={(e) => setForm({ ...form, place: e.target.value })}
+              style={{ width: 558 }}
             />
           </div>
         </div>
-
-        {/* 내용 */}
-        <div className={styles.rowTopAlign}>
-          <label>내용</label>
-          <Input.TextArea
-            value={form.content}
-            placeholder="내용을 입력하세요"
-            onChange={(e) => setForm({ ...form, content: e.target.value })}
-            style={{ width: 510, height: 80 }}
-          />
-        </div>
-
-        {/* 장소 */}
-        <div className={styles.row}>
-          <label>장소</label>
-          <Input
-            value={form.place}
-            placeholder="장소를 입력하세요"
-            onChange={(e) => setForm({ ...form, place: e.target.value })}
-            style={{ width: 510 }}
-            className={styles.hr}
-          />
-        </div>
-      </div>
     </Modal>
   );
 };

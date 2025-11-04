@@ -221,6 +221,7 @@ const Contacts = () => {
 
             {/* Ant Design Table */}
             <Table
+               tableLayout="fixed"
                 rowSelection={rowSelection}
                 columns={[
                     { title: "성함", dataIndex: "name", key: "name" },
