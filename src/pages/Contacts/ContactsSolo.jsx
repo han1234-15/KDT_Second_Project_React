@@ -82,19 +82,7 @@ const ContactsSolo = () => {
         }
     };
 
-    // const handleContactsUpdateTypeMulti = () => {
-    //     caxios.put("/contacts", { seqList: checkedList, type: "multi" }, { withCredentials: true })
-    //         .then(resp => {
-    //             setContacts(prev => prev.map(contact =>
-    //                 checkedList.includes(contact.seq)
-    //                     ? { ...contact, type: "multi" }
-    //                     : contact
-    //             ));
-    //         });
-    //     setCheckedList([]);
-    //     setAllChecked(false);
-    //     handleContactsList();
-    // }
+
 
     // 전체 체크박스를 클릭하면(true) 아래 체크박스 전체 적용
     useEffect(() => {
@@ -191,6 +179,23 @@ const ContactsSolo = () => {
     }
 
     const handleContactsUpdate = () => {
+        //레직스
+        const name = updateData.name.trim();
+        let phone = updateData.phone.trim();
+
+
+        const nameRegex = /^[가-힣a-zA-Z\s]{2,6}$/;
+        const phoneRegex = /^010-\d{4}-\d{4}$/;
+        if (!nameRegex.test(name)) {
+            alert("이름에는 숫자나 특수문자를 포함할 수 없습니다 (최소 2글자 ~ 최대 6글자).");
+            return;
+        }
+
+        if (!phoneRegex.test(phone)) {
+            alert("전화번호 형식이 올바르지 않습니다. 예: 010-1234-5678");
+            return;
+        }
+
         caxios.put("/contacts/update", { dto: updateData, seqList: checkedList }, { withCredentials: true }
         ).then(resp => {
             setUpdateModalOpen(false);
@@ -251,16 +256,17 @@ const ContactsSolo = () => {
                 <div className={styles.mainHeaderbottom} >
                     {checkedList.length === 0 ? (
                         <>
-                            <input type="text" placeholder="검색할 주소록 성함" style={{ width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center", fontSize: "20px" }}
+                            <input type="text" placeholder="검색할 주소록 성함" style={{ float: "left", width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center", fontSize: "20px" }}
                                 onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
-                            <button onClick={handleContactsList}>검색</button>
+                            <button className={styles.createbtn} style={{ width: "5%", marginLeft: "10px", float: "left" }} onClick={handleContactsList}>검색</button>
+
 
                         </>) : (
                         <>
-                            <button onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
-                            <button onClick={showUpdateModal} style={{ margin: "10px" }}> 수정 </button>
-                            <button onClick={handleContactsUpdateTypeMulti} style={{ margin: "10px" }}> 공용 주소록으로 이동</button>
-                            <button onClick={handleMail} style={{ margin: "10px" }}> 메일쓰기 </button>
+                            <button className={styles.btns} onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
+                            <button className={styles.btns} onClick={showUpdateModal} style={{ margin: "10px" }}> 수정 </button>
+                            <button className={styles.btns} onClick={handleContactsUpdateTypeMulti} style={{ margin: "10px" }}> 공용 주소록으로 이동</button>
+                            <button className={styles.btns} onClick={handleMail} style={{ margin: "10px" }}> 메일 쓰기 </button>
                         </>
                     )}
                 </div>
@@ -365,7 +371,7 @@ const ContactsSolo = () => {
                         <input type="text" className={styles.NewSharedMailbox2}
                             style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px", textAlign: "left", verticalAlign: "top", color: "black" }}
                             onChange={handleUpdateChange}
-                           value={updateData.email.includes("@")? updateData.email : `${updateData.email}@Infinity.com`} name="email" readOnly />
+                            value={updateData.email.includes("@") ? updateData.email : `${updateData.email}@Infinity.com`} name="email" readOnly />
                     </div>
                     <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
                         <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>부서  </div>
@@ -380,8 +386,8 @@ const ContactsSolo = () => {
                             onChange={handleUpdateChange} value={updateData.rank_code} name="rank_code" />
                     </div>
                 </div>
-                <button style={{ float: "right", marginLeft: "30px" }} onClick={handleContactsUpdateOut}>취소</button>
-                <button style={{ float: "right", marginLeft: "10px" }} onClick={handleContactsUpdate}>완료</button>
+                <button className={styles.btns} style={{ float: "right", marginLeft: "30px" }} onClick={handleContactsUpdateOut}>취소</button>
+                <button className={styles.btns} style={{ float: "right", marginLeft: "10px" }} onClick={handleContactsUpdate}>완료</button>
 
             </Modal>
 

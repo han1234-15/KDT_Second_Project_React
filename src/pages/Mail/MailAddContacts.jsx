@@ -27,7 +27,7 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
     // 주소록 검색 +리스트 
     const handleContactsList = () => {
         const params = {};
-
+if (view !== "all") params.type = view;
         if (searchName) params.name = searchName;
         caxios.get("/contacts", { params, withCredentials: true }).then(resp => {
             setContacts(prev => resp.data);
@@ -119,17 +119,18 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} style={{ textAlign: "center" }}>
 
-                    <button onClick={handleContactsAll} className={styles.headerbutton}>전체 주소록</button>
-                    <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button>
-                    <button onClick={handleContactsMulti} className={styles.headerbutton}>공유 주소록</button>
+                    <button className={styles.btns} onClick={handleContactsAll} style={{marginLeft:"10px"}}>전체 </button>
+                    <button className={styles.btns} onClick={handleContactsSolo}  style={{marginLeft:"10px"}}>개인 </button>
+                    <button className={styles.btns} onClick={handleContactsMulti}  style={{marginLeft:"10px"}}>공용 </button>
                 </div>
 
                 {/* 주소록 헤더 2 */}
                 <div className={styles.mainHeaderbottom} >
 
-                    <input type="text" placeholder="주소록 성함" style={{ width: "81%", height: "50%", borderRadius: "5px", border: "none", justifyContent: "center" }}
+                    <input type="text" placeholder="주소록 성함" 
+                    style={{ width: "81%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center" }}
                         onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
-                    <button onClick={handleContactsList}>검색</button>
+                    <button className={styles.createbtn} style={{marginRight:"50px"}} onClick={handleContactsList}>검색</button>
                 </div>
 
             </div> {/* 주소록 헤더  */}
@@ -221,12 +222,12 @@ const MailAddContacts = ({ onSelect, onCancel }) => {
 
             {checkedList.length === 0 ? (
                 <>
-                    <button onClick={handleContactsOut} style={{ margin: "10px", float: "right" }}> 취소 </button>
+                    <button className={styles.btns} onClick={handleContactsOut} style={{ margin: "10px", float: "right" }}> 취소 </button>
 
                 </>) : (
                 <>
 
-                    <button onClick={handleAddContacts} style={{ margin: "10px", float: "right" }}> 추가 </button>
+                    <button className={styles.btns} onClick={handleAddContacts} style={{ margin: "10px", float: "right" }}> 추가 </button>
 
                 </>
             )}

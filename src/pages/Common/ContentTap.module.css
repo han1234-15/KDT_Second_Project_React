@@ -2,6 +2,7 @@
 .boardContainer {
   background-color: ffffff;
   padding: 0 8px 2px 8px;
+  position: relative;
 }
 
 /* 콘텐츠 헤더 */

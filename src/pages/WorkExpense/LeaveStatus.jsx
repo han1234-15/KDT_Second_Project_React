@@ -2,14 +2,26 @@ import { useEffect, useState } from "react";
 import { Table, Modal, Button, Tag, Input } from "antd";
 import { caxios } from "../../config/config";
 
-const rankOrder = ["사원", "대리", "과장", "차장", "부장", "이사", "부사장", "사장"];
-
 function LeaveStatus() {
   const [list, setList] = useState([]);
   const [loginUser, setLoginUser] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+
+
+  const rankMap = {
+  J001: "사원",
+  J002: "주임",
+  J003: "대리",
+  J004: "과장",
+  J005: "차장",
+  J006: "부장",
+  J007: "이사",
+  J008: "부사장",
+  J009: "사장",
+};
+
 
   const leaveCodeMap = {
     half_pm: "반차(오후)",
@@ -18,12 +30,22 @@ function LeaveStatus() {
     sick: "병가",
   };
 
-  const statusMap = {
-    WAITING: "결재대기",
+  const docStatusMap = {
+    WAIT: "결재대기",
+    PROCESSING: "진행중",
     APPROVED: "승인",
     REJECTED: "반려",
-    CHECKING: "확인중",
   };
+
+  // ✅ 결재선 status 매핑 (approval_line.status)
+ const lineStatusMap = {
+  CHECKING: "진행중",   // <-- 첫 결재자 표시
+  WAITING: "대기",
+  APPROVED: "승인",
+  REJECTED: "반려",
+  REFERENCE: "참조"
+};
+
 
   const fetchData = () => {
     caxios.get("/leave/status").then(res => setList(res.data));
@@ -44,43 +66,56 @@ function LeaveStatus() {
   };
 
   const openModal = async (row) => {
-    const res = await caxios.get(`/Eapproval/line/${row.approvalId}`);
-    setSelectedRow({ ...row, approvalLine: res.data });
-    setModalOpen(true);
-  };
+  const res = await caxios.get(`/Eapproval/doc/line/${row.approvalId}`);
+  console.log("🔥 전체 결재선 데이터:", res.data);
+
+  // ✅ 반려자 있는지 확인
+  const rejected = res.data.find(a => a.STATUS === "REJECTED");
+  console.log("🛑 반려자 데이터:", rejected);
+
+  setSelectedRow({ ...row, approvalLine: res.data });
+  setModalOpen(true);
+};
 
   const closeModal = () => {
     setModalOpen(false);
     setRejectReason("");
   };
 
-  const approveHandler = () => {
-    caxios.post(`/leave/approve`, { seq: selectedRow.seq }).then(() => {
-      Modal.success({ content: "✅ 승인 완료!" });
-      closeModal();
-      fetchData();
-    });
-  };
+  const approveHandler = async () => {
+  await caxios.post(`/leave/approve`, { seq: selectedRow.seq });
+  const res = await caxios.get(`/Eapproval/doc/line/${selectedRow.approvalId}`);
+  setSelectedRow(prev => ({ ...prev, approvalLine: res.data }));
+  Modal.success({ content: "✅ 승인 완료!" });
+  closeModal();
+  fetchData();
+};
 
-  const rejectHandler = () => {
-    if (!rejectReason.trim()) return Modal.warning({ content: "반려 사유를 입력하세요." });
-    caxios.post(`/leave/reject`, { seq: selectedRow.seq, reason: rejectReason }).then(() => {
-      Modal.error({ content: "❌ 반려 처리 완료" });
-      closeModal();
-      fetchData();
-    });
-  };
+const rejectHandler = async () => {
+  if (!rejectReason.trim()) return Modal.warning({ content: "반려 사유를 입력하세요." });
+  await caxios.post(`/leave/reject`, { seq: selectedRow.seq, reason: rejectReason });
+  const res = await caxios.get(`/Eapproval/doc/line/${selectedRow.approvalId}`);
+  setSelectedRow(prev => ({ ...prev, approvalLine: res.data }));
+  Modal.error({ content: "❌ 반려 처리 완료" });
+  closeModal();
+  fetchData();
+};
 
-  const isAdmin =
-    loginUser && rankOrder.indexOf(loginUser.rank_code) >= rankOrder.indexOf("과장");
+  // ✅ 현재 결재 차례자인 사람 찾기 (STATUS = 'N' + 최소 order)
+ const getCurrentApprover = () => {
+  if (!selectedRow?.approvalLine) return null;
 
-  const getCurrentApprover = () =>
-    selectedRow?.approvalLine?.find(a => a.STATUS === "WAITING")?.ID;
+  const current = selectedRow.approvalLine.find(a => a.STATUS === "CHECKING");
+
+  console.log("🔥 현재 결재자:", current?.ID, " / 로그인:", loginUser?.id);
+
+  return current?.ID ?? null;
+};
 
   const columns = [
     {
       title: "신청자",
-      render: (row) => `${row.memberName} (${row.rankCode})`,
+     render: (row) => `${row.memberName} (${rankMap[row.rankCode] || row.rankCode})`,
       align: "center",
     },
     { title: "휴가종류", dataIndex: "leaveCode", render: c => leaveCodeMap[c], align: "center" },
@@ -91,13 +126,14 @@ function LeaveStatus() {
       dataIndex: "status",
       align: "center",
       render: (v) => (
-        <Tag color={
-          v === "WAITING" ? "gold" :
-          v === "APPROVED" ? "green" :
-          v === "REJECTED" ? "red" :
-          "blue"
-        }>
-          {statusMap[v]}
+        <Tag
+          color={
+            v === "WAIT" ? "gold" :
+            v === "APPROVED" ? "green" :
+            v === "REJECTED" ? "red" :
+            "blue"
+          }>
+          {docStatusMap[v] || v}
         </Tag>
       ),
     },
@@ -122,45 +158,50 @@ function LeaveStatus() {
         rowKey="seq"
         bordered
         pagination={false}
-        locale={{ emptyText: "표시할 휴가 내역이 없습니다." }}
       />
 
-      <Modal open={modalOpen} onCancel={closeModal} footer={null} width={500} centered>
+      <Modal open={modalOpen} onCancel={closeModal} footer={null} width={520} centered>
         {selectedRow && (
           <>
-            <h3>휴가 상세</h3>
-            <p><b>신청자:</b> {selectedRow.memberName} ({selectedRow.rankCode})</p>
-            <p><b>휴가종류:</b> {leaveCodeMap[selectedRow.leaveCode]}</p>
-            <p><b>기간:</b> {formatLeaveRange(selectedRow)}</p>
-            <p><b>사유:</b> {selectedRow.reason}</p>
+           <h3>휴가 상세</h3>
+<p><b>신청자:</b> {selectedRow.memberName} ({rankMap[selectedRow.rankCode] || selectedRow.rankCode})</p>
+<p><b>휴가종류:</b> {leaveCodeMap[selectedRow.leaveCode]}</p>
+<p><b>기간:</b> {formatLeaveRange(selectedRow)}</p>
+<p><b>사유:</b> {selectedRow.reason}</p>
 
-            {selectedRow.approvalLine && (
-              <>
-                <b>결재선</b>
-                <table style={lineTable}>
-                  <tbody>
-                    <tr>
-                      {selectedRow.approvalLine.filter(a => a.STATUS !== "REFERENCE").map(a =>
-                        <td key={a.ID}>{a.NAME} ({a.RANK_CODE})</td>
-                      )}
-                    </tr>
-                    <tr>
-                      {selectedRow.approvalLine.filter(a => a.STATUS !== "REFERENCE").map(a =>
-                        <td key={a.ID}>{statusMap[a.STATUS] || "-"}</td>
-                      )}
-                    </tr>
-                  </tbody>
-                </table>
-              </>
-            )}
+{selectedRow.approvalLine.some(a => a.STATUS === "REJECTED") && (
+  <p style={{ color: "red", marginTop: "8px" }}>
+    <b>반려 사유:</b>{" "}
+    {selectedRow.approvalLine.find(a => a.STATUS === "REJECTED")?.REJECT_REASON || "사유 없음"}
+  </p>
+)}
 
-            {/* 승인/반려 버튼 조건 */}
-            {isAdmin && getCurrentApprover() === loginUser?.id && (
+<b>결재선</b>
+<table style={lineTable}>
+  <tbody>
+    <tr>
+      {selectedRow.approvalLine
+        .filter(a => a.STATUS !== "REFERENCE")
+        .map(a =>
+          <td key={a.ID}>
+            {a.NAME} ({rankMap[a.RANK_CODE] || a.RANK_CODE})
+          </td>
+      )}
+    </tr>
+    <tr>
+      {selectedRow.approvalLine
+        .filter(a => a.STATUS !== "REFERENCE")
+        .map(a =>
+          <td key={a.ID}>{lineStatusMap[a.STATUS]}</td>
+      )}
+    </tr>
+  </tbody>
+</table>
+
+            {/* ✅ 승인/반려 버튼 표시 조건: 지금 내 차례일 때만 */}
+            {getCurrentApprover() === loginUser?.id && (
               <div style={{ marginTop: "15px", textAlign: "center" }}>
                 <Button type="primary" onClick={approveHandler}>✅ 승인</Button>
-                <Button danger style={{ marginLeft: "8px" }} onClick={() => {}}>
-                  ❌ 반려
-                </Button>
                 <Input.TextArea
                   placeholder="반려 사유"
                   value={rejectReason}
@@ -168,7 +209,7 @@ function LeaveStatus() {
                   style={{ marginTop: "10px" }}
                 />
                 <Button danger block style={{ marginTop: "8px" }} onClick={rejectHandler}>
-                  반려 확정
+                  ❌ 반려 확정
                 </Button>
               </div>
             )}

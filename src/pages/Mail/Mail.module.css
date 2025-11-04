@@ -22,7 +22,7 @@
 
 .mainHeader {
     width: 100%;
-    height: 10%;
+    height: 5%;
 }
 
 .mainHeadertop {
@@ -306,7 +306,7 @@
     border: none !important;
     color: white !important;
     font-weight: 500 !important;
-    width: 60px !important;
+    width: auto !important;
     height: 30px !important;
     border-radius: 5px !important;
     font-size: 15px !important;

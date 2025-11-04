@@ -96,3 +96,27 @@ button {
   text-align: left  ;         
   margin-Top: 25px;
 }  
+
+
+/* Header.module.css */
+
+.noticeContainer {
+  position: relative;
+  cursor: pointer;
+}
+
+.noticeIcon {
+  font-size: 26px;
+  color: #555;
+}
+
+.noticeBadge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background-color: #ff3b30; /* 예쁜 iOS 빨간색 느낌 */
+  border-radius: 50%;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}

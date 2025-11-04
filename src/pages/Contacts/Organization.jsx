@@ -75,24 +75,7 @@ const Organization = () => {
     }
 
 
-    // 공유 주소록으로 이동
-    const handleContactsUpdateTypeMulti = async () => {
-        await caxios.put("/contacts/orgType", { idList: checkedList, type: "multi" }, { withCredentials: true });
 
-        setCheckedList([]);
-        setAllChecked(false);
-        handleOrganizationList();
-    }
-
-
-    // // 개인 주소록으로 이동
-    // const handleContactsUpdateTypeSingle = async () => {
-    //     caxios.put("/contacts/orgType", { idList: checkedList, type: "solo" }, { withCredentials: true });
-
-    //     setCheckedList([]);
-    //     setAllChecked(false);
-    //     handleOrganizationList();
-    // }
 
 
 
@@ -117,28 +100,18 @@ const Organization = () => {
                     ? `조직도 총 ${organization.filter(e => e.dept_code === selectedTeam).length}명`
                     : `조직도 총 ${organization.length}명`}
                 <div className={styles.mainHeaderbottom} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    {checkedList.length === 0 ? (
-                        <>
-                            <div style={{ display: "flex", gap: "10px", width: "50%" }}>
+                  
+                       
+                            <div style={{ display: "flex", gap: "10px", width: "60%" }}>
                                 <input type="text" placeholder="검색할 조직도 성함"
-                                    style={{flex: 1, borderRadius: "10px", border: "1px solid lightgrey",fontSize: "20px"}}
+                                    style={{ flex: 1, borderRadius: "10px", border: "1px solid lightgrey", fontSize: "20px" }}
                                     onChange={(e) => setSearchName(e.target.value)}
                                     onKeyDown={(e) => { if (e.key === "Enter") handleOrganizationList(); }}
                                 />
-                                <button onClick={handleOrganizationList} style={{ fontSize: "15px" }}>
-                                    검색
-                                </button>
+                                <button className={styles.createbtn} style={{ width: "10%", marginLeft: "10px" }} onClick={handleOrganizationList}>검색</button>
+
                             </div>
-                        </>) : (
-                        <>
-                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                <span style={{ fontSize: "25px" }}>선택된 {checkedList.length}명</span>
-                                <Button type="primary" size="small" onClick={handleContactsUpdateTypeMulti} style={{ marginLeft: "50px", fontSize: "20px" }}>
-                                    공용 주소록으로
-                                </Button>
-                            </div>
-                        </>
-                    )}
+
                 </div>
 
             </div>
@@ -191,7 +164,7 @@ const Organization = () => {
                 {/* Organization Table */}
                 <div style={{ flex: 1, overflowY: "auto", borderRadius: "6px", border: "1px solid #d9d9d9" }}>
                     <div style={{ display: "flex", backgroundColor: "#fafafa", padding: "10px", borderBottom: "1px solid #d9d9d9", textAlign: "center" }}>
-                        <div style={{ flex: 0.5 }}><input type="checkbox" onClick={handleAllcheckbox} /></div>
+                        
                         <div style={{ flex: 1 }}>부서</div>
                         <div style={{ flex: 1 }}>성함</div>
                         <div style={{ flex: 1 }}>직위</div>
@@ -210,9 +183,7 @@ const Organization = () => {
                             transition: "all 0.2s",
                             textAlign: "center"
                         }}>
-                            <div style={{ flex: 0.5 }}>
-                                <input type="checkbox" checked={checkedList.includes(e.id)} onChange={() => handleSingleCheck(e.id)} />
-                            </div>
+                         
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.dept_code}</div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{e.name}</div>
                             <div style={{ flex: 1 }} onClick={() => showOrgModal(e)}>{ranks[e.rank_code]}</div>

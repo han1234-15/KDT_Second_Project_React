@@ -23,8 +23,8 @@ const ContactsTabs = () => {
   };
 
   return (
-    <div >
-      <div >
+    <div className={styles.boardWrapper}>
+      <div className={styles.headerRow}>
         {/* 왼쪽 탭 영역 */}
         <ContentTap
           mainTabs={mainTabs}

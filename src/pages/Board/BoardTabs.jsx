@@ -11,7 +11,6 @@ const BoardTabs = () => {
   const mainTabs = [
     { label: "게시판", path: "/board/1/announcement" },
     { label: "중요게시물", path: "/board/important" },
-    { label: "자료실", path: "/board/1/dataroom" },
   ];
 
   const subTabs = [
@@ -33,7 +32,6 @@ const BoardTabs = () => {
       announcement: "1",
       freedom: "2",
       anonymity: "3",
-      dataroom: "4",
     };
 
     // 중요게시물은 category_id가 없으니 별도 처리
@@ -46,7 +44,7 @@ const BoardTabs = () => {
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.boardWrapper}>
       <div className={styles.headerRow}>
         <ContentTap
           mainTabs={mainTabs}

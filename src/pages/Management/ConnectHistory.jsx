@@ -100,7 +100,12 @@ const ConnectHistory = () => {
                     columns={columns}
                     dataSource={logs}
                     rowKey={(record, index) => record.seq || index}
-                    pagination={{ pageSize: 15 }}
+                    pagination={{
+                        pageSize: 15,
+                        showSizeChanger: false, // ✅ 이 위치가 맞습니다
+                        showTotal: () => null,  // (선택) 총 개수 문구 제거
+                    }}
+
                 />
             </div>
         </div>

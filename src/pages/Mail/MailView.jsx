@@ -41,38 +41,6 @@ const MailView = () => {
 
 
 
-
-    // const [addedFiles, setAddedFiles] = useState([]);
-
-    // // 원본 파일 불러오기
-    // useEffect(() => {
-    //   if (mail.originalSeq) { // location.state에 originalSeq 있으면
-    //     caxios.get(`/files/fileList?module_type=mail&module_seq=${mail.originalSeq}`)
-    //       .then(res => setOriginalFiles(res.data))
-    //       .catch(err => console.error(err));
-    //   }
-    // }, [mail]);
-
-
-    //     // 답장 후 원본 파일 출력 (view용)
-    //     useEffect(() => {
-    //         if (location.state) {
-    //             const originalMail = location.state;
-    //             setMailState(prev => ({
-    //                 ...prev,
-    //                 seq: originalMail.seq,
-    //                 recipientId: originalMail.senderId,
-    //                 recipientName: originalMail.senderName,
-    //                 title: `RE: ${originalMail.title}`,
-    //                 content: `[원본 메시지]${originalMail.content}`
-    //             }));
-    //             // 원본 메일 첨부파일 가져오기
-    //             caxios.get(`/files/fileList?module_type=mail&module_seq=${originalMail.seq}`)
-    //                 .then(res => setOriginalFiles(res.data))
-    //                 .catch(err => console.error(err));
-    //         }
-    //     }, [location.state]);
-
     // 파일 리스트 출력
     const [List, setList] = useState([]);
 
@@ -111,7 +79,15 @@ const MailView = () => {
 
 
     // 안전하게 HTML 정화 npm install dompurify 필요
-    const safeContent = DOMPurify.sanitize(mail.content);
+    const safeContent = DOMPurify.sanitize(mail.content, {
+        ALLOWED_TAGS: [
+            'p', 'b', 'strong', 'i', 'em', 'u', 'br', 'img', 'ul', 'ol', 'li', 'span',
+            'blockquote', 'pre', 'code', 'table', 'thead', 'tbody', 'tr', 'td', 'th'
+        ],
+        ALLOWED_ATTR: ['src', 'alt', 'style', 'class', 'data-type', 'data-id']
+    });
+
+
 
     // 답장기능
     const handleMailResponse = () => {
@@ -137,7 +113,7 @@ const MailView = () => {
                         style={{ borderRadius: "6px", backgroundColor: "#f8f9fa" }}
                         value={
                             mail.recipientName && mail.recipientId
-                                ? `${mail.recipientName} (${mail.recipientId})`
+                                ? `${mail.recipientName} (${mail.recipientId.includes('@') ? mail.recipientId : `${mail.recipientId}@Infinity.com`})`
                                 : mail.recipientName || ""
                         }
                     />
@@ -161,25 +137,27 @@ const MailView = () => {
             <div className={styles.mainBody}>
                 <div
                     className={styles.mainBodyViewContent}
+
                     dangerouslySetInnerHTML={{ __html: safeContent }}
                 />
             </div>
             <hr style={{ width: "96%", marginLeft: "20px", marginBottom: "20px" }} />
             {/* 파일 업로드 (출력용) */}
             <div className={styles.fileUploadBox}>
-                <div className={styles.fileTitle} style={{width:"8%"}}>파일 첨부</div>
-                <div className={styles.fileList} style={{width:"90%"}}>
+                <div className={styles.fileTitle} style={{ width: "8%" }}>파일 첨부</div>
+                <div className={styles.fileList} style={{ width: "90%" }}>
                     <ul>
                         {files.map((file, i) => (
                             <li key={i}>
                                 {file.orgname || file.sysname}
                                 <Button
-                            
+
                                     size="small"
-                                    style={{ marginLeft: "10px", background: "linear-gradient(45deg, #8e44ad, #2196f3)", color: "white", border: "none", 
-                                        display: "flex" , justifyContent:"flex-end"
+                                    style={{
+                                        marginLeft: "10px", background: "linear-gradient(45deg, #8e44ad, #2196f3)", color: "white", border: "none",
+                                        display: "flex", justifyContent: "flex-end"
                                     }}
-                                    onClick={() => handleDownload(file.sysname, file.orgname)} 
+                                    onClick={() => handleDownload(file.sysname, file.orgname)}
                                 >
                                     다운로드
                                 </Button>
