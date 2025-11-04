@@ -40,7 +40,7 @@ const UserRegister = () => {
         englishName: "",
         employmentType: "일반직",
         hire_date: "",
-        dept_code: "연구&개발",
+        dept_code: "연구개발",
         rank_code: "사원",
         job_code: "기획",
         personalEmail: "",
@@ -319,7 +319,7 @@ const UserRegister = () => {
                         <label>부서*</label>
                         <Space wrap>
                             <Select
-                                defaultValue="연구&개발"
+                                defaultValue="연구개발"
                                 style={{ width: 288 }}
                                 onChange={(value) =>                     // 선택하면 state 업데이트
                                     setMemberInfo(prev => ({ ...prev, dept_code: value }))
