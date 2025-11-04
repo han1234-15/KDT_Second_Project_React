@@ -4,7 +4,6 @@ import styles from "./MailWrite.module.css"; // ✅ MailWrite UI 그대로 사�
 import { caxios } from '../../config/config.js';
 import { useEffect, useState } from 'react';
 import { Button, Input, Space } from "antd";
-import TipTapEditor from "../Common/TipTapEditor"; // ✅ 출력 전용
 
 const MailView = () => {
 
@@ -81,10 +80,10 @@ const MailView = () => {
     // 안전하게 HTML 정화 npm install dompurify 필요
     const safeContent = DOMPurify.sanitize(mail.content, {
         ALLOWED_TAGS: [
-            'p', 'b', 'strong', 'i', 'em', 'u', 'br', 'img', 'ul', 'ol', 'li', 'span',
-            'blockquote', 'pre', 'code', 'table', 'thead', 'tbody', 'tr', 'td', 'th'
+            'a','p', 'b', 'strong', 'i', 'em', 'u', 'br', 'img', 'ul', 'ol', 'li', 'span',
+            'blockquote', 'pre', 'code', 'table', 'thead', 'tbody', 'tr', 'td', 'th','hr'
         ],
-        ALLOWED_ATTR: ['src', 'alt', 'style', 'class', 'data-type', 'data-id']
+        ALLOWED_ATTR: ["href", 'src', 'alt', 'style', 'class', 'data-type', 'data-id']
     });
 
 
@@ -137,7 +136,6 @@ const MailView = () => {
             <div className={styles.mainBody}>
                 <div
                     className={styles.mainBodyViewContent}
-
                     dangerouslySetInnerHTML={{ __html: safeContent }}
                 />
             </div>
