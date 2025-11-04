@@ -1,6 +1,6 @@
 export const departmentOptions = [
   { value: '연구개발', label: '연구개발' },
-  { value: '사업관리팀', label: '사업관리팀' },
+  { value: '사업관리', label: '사업관리' },
   { value: 'AI센터', label: 'AI센터' },
   { value: '인사관', label: '인사관' },
   { value: '재무/회계', label: '재무/회계' },
