@@ -95,6 +95,7 @@ const MailView = () => {
 
     return (
         <div className={styles.container} style={{ width: "100%", margin: "auto", marginTop: "20px" }}>
+
             {/* 상단 버튼 영역 */}
             <div className={styles.btnOption}>
                 <Button className={styles.btns} onClick={handleMailReturn}>뒤로가기</Button>
@@ -102,14 +103,14 @@ const MailView = () => {
             </div>
 
             {/* 수신인 영역 */}
-            <div className={styles.inputRow}>
+            <div className={styles.inputRow} >
                 <label className={styles.label}>수신인</label>
-                <Space.Compact style={{ width: "80%" }}>
-                    <Input
+                <Space.Compact style={{ width: "80%"}}>
+                    <Input 
                         type="text"
                         readOnly
                         className={styles.containerhalf}
-                        style={{ borderRadius: "6px", backgroundColor: "#f8f9fa" }}
+                        style={{ borderRadius: "6px", backgroundColor: "#f8f9fa" , marginTop:"-10px" }}
                         value={
                             mail.recipientName && mail.recipientId
                                 ? `${mail.recipientName} (${mail.recipientId.includes('@') ? mail.recipientId : `${mail.recipientId}@Infinity.com`})`
@@ -137,6 +138,7 @@ const MailView = () => {
                 <div
                     className={styles.mainBodyViewContent}
                     dangerouslySetInnerHTML={{ __html: safeContent }}
+                    style={{minHeight: "400px"}}
                 />
             </div>
             <hr style={{ width: "96%", marginLeft: "20px", marginBottom: "20px" }} />

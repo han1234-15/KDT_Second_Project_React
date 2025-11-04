@@ -23,6 +23,7 @@
 .mainHeader {
     width: 100%;
     height: 5%;
+    margin-top: 30px;
 }
 
 .mainHeadertop {
@@ -39,12 +40,6 @@
 
 .containertop {
     width: 100%;
-    height: 50%;
-    border: none;
-}
-
-.containerhalf {
-    width: 50%;
     height: 50%;
     border: none;
 }
@@ -94,8 +89,8 @@
     width: 100%;
     height: 95%;
     float: left;
-   border: 1px solid lightgrey;
-   border-radius: 5px;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
 }
 
 .mainBodylistbox {
@@ -186,9 +181,6 @@
     float: left;
 }
 
-
-
-
 .createbtn {
     width: 10%;
     height: 50%;
@@ -219,89 +211,17 @@
     float: left;
 }
 
-
-/* api 에디터 */
-
-
-/* 에디터 전체 */
-:global(.ck.ck-editor) {
-    background: white !important;
-    color: black !important;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-
-}
-
-/* 툴바 전체 */
-:global(.ck.ck-toolbar) {
-    background: #f5f5f5 !important;
-    border-bottom: 1px solid #ddd !important;
-    color: black !important;
-    /* 텍스트 색 */
-}
-
-/* 툴바 버튼 */
-:global(.ck.ck-toolbar .ck-button) {
-    color: black !important;
-    /* 버튼 텍스트 */
-    fill: black !important;
-    /* SVG 아이콘 */
-}
-
-/* 툴바 버튼 hover */
-:global(.ck.ck-toolbar .ck-button:hover) {
-    background: #e0e0e0 !important;
-}
-
-:global(.ck.ck-toolbar .ck-button:hover .ck-icon) {
-    fill: #007bff !important;
-    /* hover 시 아이콘 파란색 */
-    color: #007bff !important;
-    /* hover 텍스트 */
-}
-
-/* 본문 영역 */
-:global(.ck-content) {
-    background: white !important;
-    color: black !important;
-    min-height: 600px;
-    /* 본문 내용 크기 */
-    max-height: 600px;
-    overflow-y: auto;
-}
-
-.ck-content img {
-    max-width: 100%;
-    height: auto;
-}
-
 .search {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  top:10px;
-  margin-bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    top: 10px;
+    margin-bottom: 10px;
 }
 
-/* ✅ Search clear 아이콘(X) 스타일 */
-:global(.ant-input-clear-icon) {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 12px !important;
-  width: 20px !important;
-  height: 20px !important;
-  color: #fff !important;
-  background: linear-gradient(90deg, #8e2de2, #4a00e0) !important;
-  border-radius: 50% !important;
-}
 
-/* ✅ 돋보기 아이콘 색상 */
-:global(.ant-input-search-button .anticon) {
-  color: #7a7979 !important;
-}
 
-.btns{
+.btns {
     background: linear-gradient(45deg, #8e44ad, #2196f3) !important;
     border: none !important;
     color: white !important;
@@ -311,3 +231,148 @@
     border-radius: 5px !important;
     font-size: 15px !important;
 }
+
+/* ✅ 라벨-인풋 정렬용 */
+.formRow {
+    display: flex;
+    align-items: flex-start;
+    /* 첫 글자 기준 세로 정렬 */
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.formRow label {
+    width: 80px;
+    text-align: left;
+    line-height: 32px;
+    /* Input 높이에 맞춤 */
+    font-weight: 500;
+}
+
+.formRow .ant-input {
+    flex: 1;
+    min-width: 300px;
+}
+
+.fileBox {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    background: #fffdfd;
+    height: 100px;
+    font-weight: 500;
+    font-size: 15px;
+    overflow: hidden;
+    padding: 0;
+    /* ✅ 내부 여백 제거 */
+    margin-bottom: 20px;
+}
+
+/* 제목 10% */
+.fileTitle {
+    flex: 0 0 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #d9d9d9;
+}
+
+/* 리스트 80% */
+.fileList {
+    flex: 1 1 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 10px 8px;
+    overflow-y: auto;
+}
+
+.fileList ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+}
+
+.fileList li {
+    text-align: left;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ✅ 버튼 10% — 오른쪽 끝 라인에 정확히 붙음 */
+.fileAddBtn {
+    flex: 0 0 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    /* ✅ 추가 */
+    padding: 0;
+    /* ✅ 추가 */
+}
+
+/* ✅ 답장 + 버튼 한 줄 정렬 */
+.headerRow {
+    display: flex;
+    align-items: center;
+    /* 세로 가운데 정렬 */
+    justify-content: space-between;
+    /* 좌: 답장 / 우: 버튼 */
+    margin-top: 10px;
+    margin-bottom: 4px;
+    /* ✅ hr 위쪽 여백 줄이기 */
+}
+
+/* "답장" 텍스트 스타일 */
+.replyTitle {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* 전송 / 뒤로가기 버튼 묶음 */
+.actionBtns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* 버튼 간격 */
+}
+
+/* hr 간격 최소화 */
+.divider {
+    margin-top: 4px;
+    margin-bottom: 30px;
+    /* 아래쪽 여백도 줄이기 */
+}
+
+/* ✅ 모달 하단 버튼 영역 */
+.footerBtns {
+    display: flex;
+    justify-content: flex-end;
+    /* 오른쪽 끝 정렬 */
+    align-items: center;
+    gap: 10px;
+    /* 버튼 간 간격 */
+    margin-top: 20px;
+    padding-right: 10px;
+    /* 약간 오른쪽 여백 */
+    position: relative;
+    bottom: 0;
+    /* 하단 정렬 */
+}
+
+.routerBtn {
+    background: linear-gradient(45deg, #8e44ad, #2196f3);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.2s;
+}
+
