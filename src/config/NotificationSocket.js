@@ -33,14 +33,21 @@ const NotificationSocket = () => {
         const data = JSON.parse(msg.body);
         console.log("📩 새 알림:", data);
 
-          window.dispatchEvent(new CustomEvent("new-notification", { detail: data }));
-       
+        window.dispatchEvent(new CustomEvent("new-notification", { detail: data }));
+
       });
-      
+
+      // 전체 알림 구독
+      client.subscribe(`/notice/all`, (msg) => {
+        const data = JSON.parse(msg.body);
+        console.log("📢 전체 알림:", data);
+        window.dispatchEvent(new CustomEvent("new-notification", { detail: data }));
+      });
+
     });
 
     return () => {
-      if (client.connected) client.disconnect();
+       client.deactivate();
     };
   }, [myInfo]);
 
