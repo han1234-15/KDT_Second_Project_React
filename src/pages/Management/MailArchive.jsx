@@ -71,7 +71,7 @@ const MailArchive = () => {
       // 각 created_at 포맷팅
       const formattedData = res.data.map(item => ({
         ...item,
-        created_at: dayjs(item.created_at).format('YYYY-MM-DD HH:mm:ss')
+        sendDate: dayjs(item.sendDate).format('YYYY-MM-DD HH:mm:ss')
       }));
 
 
