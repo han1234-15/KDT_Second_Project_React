@@ -184,7 +184,7 @@ const TaskGroupAdd = ({ onClose }) => {
                             onFocus={() => {                     // 클릭 시 전체 표시
                                 const all = members
                                     .filter(m => m.id != manager)
-                                    .slice(0, 10)
+                                    .slice(0, 50)
                                     .map(m => ({
                                         value: m.name,
                                         label: (
