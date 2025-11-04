@@ -84,13 +84,29 @@ const Manager = () => {
                 )
         },
     ];
+    console.log(users);
+    
+    // const filteredUsers = users
+    //     .filter(user =>
+    //         user.name.includes(search) ||
+    //         user.id.includes(search)
+    //     )
+    //     .map(user => ({ ...user, key: user.id })); // key 추가
+
 
     const filteredUsers = users
-        .filter(user =>
-            user.name.includes(search) ||
-            user.id.includes(search)
-        )
-        .map(user => ({ ...user, key: user.id })); // key 추가
+        .filter(user => {
+            const name = user.name ?? "탈퇴 유저";
+            const id = user.id ?? "";
+            return name.includes(search) || id.includes(search);
+        })
+        .map(user => ({
+            ...user,
+            name: user.name ?? "탈퇴 유저",
+            id: user.id ?? "",
+            key: user.id ?? user.tempId ?? Math.random().toString(36).slice(2),
+        }));
+
 
     const closeModal = () => {
         if (openModal === 'admin') setAdminId(null);
