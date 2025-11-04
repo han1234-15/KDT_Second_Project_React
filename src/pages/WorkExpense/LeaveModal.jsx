@@ -28,7 +28,7 @@ const LeaveModal = ({ open, onClose, refresh, applicant }) => {
   const [referenceList, setReferenceList] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isCEO = applicant?.rank_code === "사장";
+  const isCEO = applicant?.rank_code === "J009";
   const today = new Date().toISOString().split("T")[0];
 
   const handleDateClick = (info) => {
