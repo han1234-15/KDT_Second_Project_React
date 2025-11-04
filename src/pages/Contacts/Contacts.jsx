@@ -229,7 +229,7 @@ const Contacts = () => {
                         title: "이메일", dataIndex: "email", key: "email",
                         render: (email) => email.includes('@') ? email : `${email}@Infinity.com`
                     },
-                    { title: "부서", dataIndex: "job_code", key: "job_code" },
+                    { title: "직무", dataIndex: "job_code", key: "job_code" },
                     { title: "직위", dataIndex: "rank_code", key: "rank_code" },
                 ]}
                 dataSource={contacts.map(c => ({ ...c, key: c.seq }))}
@@ -317,7 +317,7 @@ const Contacts = () => {
                         value={updateData.email.includes("@") ? updateData.email : `${updateData.email}@Infinity.com`} name="email" readOnly />
                 </div>
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
-                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>부서  </div>
+                    <div className={styles.NewSharedMailbox1} style={{ marginLeft: "30px" }}>직무  </div>
                     <input type="text" className={styles.NewSharedMailbox2} style={{ marginLeft: "20px", border: "1px solid lightgrey", borderRadius: "10px" }} onChange={handleUpdateChange} value={updateData.job_code} name="job_code" />
                 </div>
                 <div className={styles.mainBodybox} style={{ display: "flex", marginBottom: "30px" }}>
