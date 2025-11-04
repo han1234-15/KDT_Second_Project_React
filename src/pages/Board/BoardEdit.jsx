@@ -120,10 +120,9 @@ const BoardEdit = () => {
           style={{ width: 240 }}
           placeholder="게시판을 선택하세요"
         >
-          <Option value="1">공지사항</Option>
+          <Option value="1">사내게시판</Option>
           <Option value="2">자유게시판</Option>
           <Option value="3">익명게시판</Option>
-          <Option value="4">자료실</Option>
         </Select>
       </div>
 
@@ -151,7 +150,7 @@ const BoardEdit = () => {
         </div>
 
         {/* 파일 목록*/}
-        <ul className={styles.filePreview}>
+        <ul className={styles.filePreview} style={{overflow:"scroll"}}>
           {originFiles.map((file) => (
             <li key={file.sysname}>
               <span>{file.orgname}</span>

@@ -1,245 +1,172 @@
 import styles from "./Mail.module.css";
-import { useEffect, useState } from 'react';
-import { caxios } from '../../config/config.js';
-import { useNavigate } from "react-router-dom";
-import { Pagination } from 'antd'; // antd Pagination 임포트
+import { useEffect, useState } from "react";
+import { caxios } from "../../config/config.js";
+import { Button, Input, Table, Pagination } from "antd";
+const { Search } = Input;
 
 const MailAddContacts = ({ onSelect, onCancel }) => {
-
-    const Navigate = useNavigate();
-
-    const [contacts, setContacts] = useState([]); // 주소록 데이터 관리
-    const [searchName, setSearchName] = useState(""); // 검색어 상태
-    const [checkedList, setCheckedList] = useState([]); // 체크 상태 관리
-    const [allChecked, setAllChecked] = useState(false); // 전체 체크 상태
-
-    // 페이징 상태 추가
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize] = useState(5); // 페이지당 5개 고정
-
-    // 모달 내부 이동
+    const [contacts, setContacts] = useState([]);
+    const [searchName, setSearchName] = useState("");
+    const [checkedList, setCheckedList] = useState([]);
     const [view, setView] = useState("all");
 
-    const handleContactsAll = () => setView("all");
-    const handleContactsSolo = () => setView("solo");
-    const handleContactsMulti = () => setView("multi");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize] = useState(5);
 
-    // 주소록 검색 +리스트 
+    // ✅ 주소록 조회
     const handleContactsList = () => {
         const params = {};
-if (view !== "all") params.type = view;
+        if (view !== "all") params.type = view;
         if (searchName) params.name = searchName;
-        caxios.get("/contacts", { params, withCredentials: true }).then(resp => {
-            setContacts(prev => resp.data);
-            setCurrentPage(1); // 검색 시 페이지 초기화
-            setCheckedList([]);
-            setAllChecked(false);
-        });
-    }
 
-    // 페이지 로딩시 리스트 출력
+        caxios
+            .get("/contacts", { params })
+            .then((resp) => {
+                setContacts(resp.data || []);
+                setCheckedList([]);
+            })
+            .catch((err) => console.error("주소록 불러오기 실패:", err));
+    };
+
     useEffect(() => {
         handleContactsList();
-    }, []);
+    }, [view]);
 
-    // 전체 체크박스를 클릭하면(true) 아래 체크박스 전체 적용
-    useEffect(() => {
-        if (contacts.length > 0 && checkedList.length === contacts.length) {
-            setAllChecked(true);
-        } else {
-            setAllChecked(false);
-        }
-    }, [checkedList, contacts]);
+    // ✅ 테이블 컬럼 정의
+    const columns = [
+        { title: "성함", dataIndex: "name", key: "name", align: "center" },
+        { title: "전화번호", dataIndex: "phone", key: "phone", align: "center" },
+        {
+            title: "이메일",
+            dataIndex: "email",
+            key: "email",
+            align: "center",
+            render: (text) => (text.includes("@") ? text : `${text}@Infinity.com`),
+        },
+        { title: "부서", dataIndex: "job_code", key: "job_code", align: "center" },
+        { title: "직위", dataIndex: "rank_code", key: "rank_code", align: "center" },
+    ];
 
-    // 전체 체크박스 선택
-    const handleAllcheckbox = () => {
-        if (!allChecked) {
-            setCheckedList(filteredContacts.map(contact => contact.seq));
-            setAllChecked(true);
-        } else {
-            setCheckedList([]);
-            setAllChecked(false);
-        }
-    }
+    // ✅ 여러명 선택 가능 (checkbox)
+    const rowSelection = {
+        selectedRowKeys: checkedList,
+        onChange: (selectedRowKeys) => setCheckedList(selectedRowKeys),
+        type: "checkbox", // ✅ 멀티 선택
+    };
 
-    // 개별 체크박스 선택
-    const handleSingleCheck = (seq) => {
+    // ✅ 테이블 표시용 데이터
+    const filteredContacts = contacts.filter((c) =>
+        view === "all" ? true : c.type === view
+    );
 
-        if (checkedList.includes(seq)) {
-            setCheckedList(checkedList.filter(id => id !== seq));
-        } else {
-            setCheckedList([seq]); // 하나만 선택
-        }
-    }
-
-    // 주소록 불러오기
-    const handleAddContacts = () => {
-        if (checkedList.length === 0) return;
-
-        const selectedContacts = contacts
-            .filter(contact => checkedList.includes(contact.seq))
-            .map(contact => ({ email: contact.email, name: contact.name })); // 이메일 + 이름 객체
-
-        onSelect(selectedContacts); // 배열 그대로 보내기
-        setCheckedList([]);
-        setAllChecked(false);
-        onCancel();
-    }
-
-    const handleContactsOut = () => {
-        onCancel();
-    }
-
-    // 현재 뷰에 따른 필터링된 주소록
-    const filteredContacts = contacts.filter(contact => {
-        if (view === "all") return true;
-        return contact.type === view;
-    });
-
-    // 페이징 처리 (slice)
     const indexOfLast = currentPage * pageSize;
     const indexOfFirst = indexOfLast - pageSize;
     const currentContacts = filteredContacts.slice(indexOfFirst, indexOfLast);
 
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
+    // ✅ 추가 버튼 클릭 시
+    const handleAddContacts = () => {
+        if (checkedList.length === 0) return;
+        const selected = contacts.filter((c) => checkedList.includes(c.seq));
+        const selectedContacts = selected.map((c) => ({
+            email: c.email,
+            name: c.name,
+        }));
+        onSelect(selectedContacts);
         setCheckedList([]);
-        setAllChecked(false);
+        onCancel();
     };
 
-    return (<div className={styles.container} style={{ fontSize: "20px", marginTop: "20px" }}>
-
-
-        {/* 메인 주소록창 */}
-        <div className={styles.main}>
-
-            {/* 주소록 헤더  */}
-            <div className={styles.mainHeader}>
-
-                {/* 주소록 헤더 1 */}
-                <div className={styles.mainHeadertop} style={{ textAlign: "center" }}>
-
-                    <button className={styles.btns} onClick={handleContactsAll} style={{marginLeft:"10px"}}>전체 </button>
-                    <button className={styles.btns} onClick={handleContactsSolo}  style={{marginLeft:"10px"}}>개인 </button>
-                    <button className={styles.btns} onClick={handleContactsMulti}  style={{marginLeft:"10px"}}>공용 </button>
+    return (
+        <div className={styles.container} style={{ fontSize: "18px" }}>
+            <div className={styles.main}>
+                {/* 필터 버튼 */}
+                <div 
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "10px",
+                        marginBottom: "15px",
+                    }}
+                >
+                    <Button className={styles.routerBtn}
+                        type={view === "all" ? "primary" : "default"}
+                        onClick={() => setView("all")}
+                    >
+                        전체
+                    </Button>
+                    <Button className={styles.routerBtn}
+                        type={view === "solo" ? "primary" : "default"}
+                        onClick={() => setView("solo")}
+                    >
+                        개인
+                    </Button> 
+                    <Button className={styles.routerBtn}
+                        type={view === "multi" ? "primary" : "default"}
+                        onClick={() => setView("multi")}
+                    >
+                        공용
+                    </Button>
                 </div>
 
-                {/* 주소록 헤더 2 */}
-                <div className={styles.mainHeaderbottom} >
-
-                    <input type="text" placeholder="주소록 성함" 
-                    style={{ width: "81%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center" }}
-                        onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
-                    <button className={styles.createbtn} style={{marginRight:"50px"}} onClick={handleContactsList}>검색</button>
+                {/* 검색창 */}
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        marginBottom: "10px",
+                    }}
+                >
+                    <Search
+                        placeholder="주소록 이름 검색"
+                        allowClear
+                        onSearch={handleContactsList}
+                        onChange={(e) => setSearchName(e.target.value)}
+                        style={{ width: "80%", maxWidth: "400px", display: "flex", justifyItems: "flex-end" }}
+                    />
                 </div>
 
-            </div> {/* 주소록 헤더  */}
+                {/* ✅ 테이블 */}
+                <Table
+                    rowKey="seq"
+                    columns={columns}
+                    dataSource={currentContacts}
+                    rowSelection={rowSelection}
+                    pagination={false}
+                    bordered
+                    size="middle"
+                    style={{ background: "#fff", borderRadius: "8px" }}
+                />
 
-
-            {/* 주소록 바디 여기가 계속 변하는곳 Route */}
-            <div className={styles.mainBody} style={{ marginTop: "20px" }}>
-                <div className={styles.mainBodyHeader} style={{ fontSize: "20px" }}>
-                    <div className={styles.mainBodycheckbox} >
-                       선택
-                    </div>
-                    <div className={styles.mainBodytag}>성함</div>
-                    <div className={styles.mainBodytag}>전화번호</div>
-                    <div className={styles.mainBodytag}>이메일</div>
-                    <div className={styles.mainBodytag}>부서</div>
-                    <div className={styles.mainBodytag}>직위</div>
-                    <br></br>
-
+                {/* ✅ 페이지네이션 */}
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        marginTop: "15px",
+                    }}
+                >
+                    <Pagination
+                        current={currentPage}
+                        pageSize={pageSize}
+                        total={filteredContacts.length}
+                        onChange={(page) => setCurrentPage(page)}
+                        showSizeChanger={false}
+                    />
                 </div>
 
-
-                {/* 주소록 출력  */}
-
-                <div className={styles.mainBodylist} style={{ fontSize: "18px" }}>
-
-                    {view === "all" && currentContacts.map(e => // 전체출력
-                        <div key={e.seq} >
-                            <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
-                            <div className={styles.mainBodytag}>{e.name}</div>
-                            <div className={styles.mainBodytag}>{e.phone}</div>
-                            <div className={styles.mainBodytag}>
-                                  {e.email.includes("@") ? e.email : `${e.email}@Infinity.com`}
-                            </div>
-                            <div className={styles.mainBodytag}>{e.job_code}</div>
-                            <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
-                            <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
-                        </div>
-
-                    )}
-
-
-                    {view === "solo" && currentContacts
-                        .filter(contact => contact.type === "solo") // 개인 주소록만
-                        .map(e => (
-                            <div key={e.seq}  >
-                                <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
-                                <div className={styles.mainBodytag}>{e.name}</div>
-                                <div className={styles.mainBodytag}>{e.phone}</div>
-                                <div className={styles.mainBodytag}>{e.email}</div>
-                                <div className={styles.mainBodytag}>{e.job_code}</div>
-                                <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
-                               <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
-                            </div>
-                        ))}
-
-                    {view === "multi" && currentContacts
-                        .filter(contact => contact.type === "multi") // 공용 주소록만
-                        .map(e => (
-                            <div key={e.seq} >
-                                <div className={styles.mainBodycheckbox}><input type="checkbox" checked={checkedList.includes(e.seq)} onChange={() => handleSingleCheck(e.seq)} /></div>
-                                <div className={styles.mainBodytag}>{e.name}</div>
-                                <div className={styles.mainBodytag}>{e.phone}</div>
-                                <div className={styles.mainBodytag}>
-                                  {e.email.includes("@") ? e.email : `${e.email}@Infinity.com`}
-                                    </div>
-                                <div className={styles.mainBodytag}>{e.job_code}</div>
-                                <div className={styles.mainBodytag}>{e.rank_code}</div><br></br>
-                              <hr style={{ clear: "both", border: "none", borderTop: "1px solid black", margin: "0.1px 0" }} />
-                            </div>
-
-                        ))}
-                    <br></br>
-                    {/* 페이징 추가 */}
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                        <Pagination
-                            current={currentPage}
-                            pageSize={pageSize}
-                            total={filteredContacts.length}
-                            onChange={handlePageChange}
-                            showSizeChanger={false}
-                        />
-                    </div>
-
+                <div className={styles.footerBtns}>
+                    <Button onClick={onCancel} style={{borderColor:"red"}}>취소</Button>
+                    <Button
+                        type="primary"
+                        onClick={handleAddContacts}
+                        disabled={checkedList.length === 0}
+                    >
+                        추가 ({checkedList.length})
+                    </Button>
                 </div>
-
-
-
-            </div>{/* 주소록 바디 */}
-
-            {checkedList.length === 0 ? (
-                <>
-                    <button className={styles.btns} onClick={handleContactsOut} style={{ margin: "10px", float: "right" }}> 취소 </button>
-
-                </>) : (
-                <>
-
-                    <button className={styles.btns} onClick={handleAddContacts} style={{ margin: "10px", float: "right" }}> 추가 </button>
-
-                </>
-            )}
-
-        </div> {/* 메인 주소록창  */}
-
-
-    </div>
-
-
-
+            </div>
+        </div>
     );
-}
+};
 
 export default MailAddContacts;

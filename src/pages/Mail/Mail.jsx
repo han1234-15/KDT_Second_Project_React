@@ -98,9 +98,8 @@ const Mail = () => {
                             <>
                                 <div className={styles.search}>
                                     <Search
-                                        placeholder="검색할 발신자 이름"
+                                        placeholder="검색할 이름을 입력하세요"
                                         allowClear
-                                        enterButton="검색"
                                         style={{ width: 400 }}
                                         value={searchName}
                                         onChange={(e) => setSearchName(e.target.value)}
