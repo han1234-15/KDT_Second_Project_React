@@ -172,36 +172,36 @@ const BoardDetail = () => {
 
   return (
     <div className={styles.container}>
-    {/* 옵션 버튼 */}
-<div className={styles.option}>
-  {/* 작성자 본인일 때만 수정/삭제 버튼 노출 */}
-  {loginId === board.writer_id && (
-    <>
-      <button onClick={() => navigate(`/board/edit/${board.seq}?from=${location.state?.from || "/board/1/announcement"}`)}>
-        수정
-      </button>
-      <button
-        onClick={async () => {
-          if (window.confirm("게시글을 삭제하시겠습니까?")) {
-            try {
-              await caxios.delete(`/board/${board.seq}`);
-              alert("게시글이 삭제되었습니다.");
-              navigate(location.state?.from || "/board/1/announcement");
-            } catch (err) {
-              console.error("게시글 삭제 실패:", err);
-              alert("삭제 중 오류가 발생했습니다.");
-            }
-          }
-        }}
-      >
-        삭제
-      </button>
-    </>
-  )}
-  <button onClick={() => navigate(location.state?.from || "/board/1/announcement")}>
-    목록
-  </button>
-</div>
+      {/* 옵션 버튼 */}
+      <div className={styles.option}>
+        {/* 작성자 본인일 때만 수정/삭제 버튼 노출 */}
+        {loginId === board.writer_id && (
+          <>
+            <button onClick={() => navigate(`/board/edit/${board.seq}?from=${location.state?.from || "/board/1/announcement"}`)}>
+              수정
+            </button>
+            <button
+              onClick={async () => {
+                if (window.confirm("게시글을 삭제하시겠습니까?")) {
+                  try {
+                    await caxios.delete(`/board/${board.seq}`);
+                    alert("게시글이 삭제되었습니다.");
+                    navigate(location.state?.from || "/board/1/announcement");
+                  } catch (err) {
+                    console.error("게시글 삭제 실패:", err);
+                    alert("삭제 중 오류가 발생했습니다.");
+                  }
+                }
+              }}
+            >
+              삭제
+            </button>
+          </>
+        )}
+        <button onClick={() => navigate(location.state?.from || "/board/1/announcement")}>
+          목록
+        </button>
+      </div>
 
       {/* 헤더 */}
       <div className={styles.detailHeader}>
@@ -287,7 +287,6 @@ const BoardDetail = () => {
       >
         <div className={styles.writeReply}>
           <div className={styles.replyProfile}>
-            {/* ✅ 로그인한 사용자 프로필 표시 */}
             <img
               src={
                 board.category_id === 3
@@ -311,8 +310,10 @@ const BoardDetail = () => {
             <Input.TextArea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              placeholder="댓글을 입력하세요"
+              placeholder="댓글을 입력하세요. ( 최대 1000자 )"
               rows={3}
+              maxLength={1000}  
+              showCount         
               style={{ width: "97%", resize: "none", marginLeft: "13px" }}
             />
           </div>
@@ -360,18 +361,18 @@ const BoardDetail = () => {
                   </div>
                   <div className={styles.commentBody}>{c.comments}</div>
                 </div>
-                 {loginId === c.writer_id && (
-                      <button
-                        className={
-                          board.category_id === 3
-                            ? styles.commentDeleteAnonymous
-                            : styles.commentDelete
-                        }
-                        onClick={() => handleDeleteComment(c.seq)}
-                      >
-                        X
-                      </button>
-                    )}
+                {loginId === c.writer_id && (
+                  <button
+                    className={
+                      board.category_id === 3
+                        ? styles.commentDeleteAnonymous
+                        : styles.commentDelete
+                    }
+                    onClick={() => handleDeleteComment(c.seq)}
+                  >
+                    X
+                  </button>
+                )}
               </div>
             ))
           ) : (

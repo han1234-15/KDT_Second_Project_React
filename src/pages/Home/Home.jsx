@@ -7,6 +7,8 @@ import defaultProfile from "../../assets/images/defaultProfile.png";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import dayjs from "dayjs";
+import "dayjs/locale/ko";
+import locale from "antd/es/calendar/locale/ko_KR";      
 
 import { Card, Button, Calendar, List, message, Divider, Table, Tag } from "antd";
 import {
@@ -25,6 +27,7 @@ import {
 import styles from "./Home.module.css";
 import LeaveModal from "../WorkExpense/LeaveModal";
 
+dayjs.locale("ko");   
 const ResponsiveGridLayout = WidthProvider(GridLayout);
 
 /* ---------------------- 시간 포맷팅 ---------------------- */
@@ -357,6 +360,7 @@ function Home() {
           >
             <Calendar
               fullscreen={false}
+              locale={locale} 
               dateCellRender={(value) => {
                 const dateStr = value.format("YYYY-MM-DD");
                 const daySchedules = mySchedules.filter(
