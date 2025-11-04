@@ -11,7 +11,8 @@ const BoardEdit = () => {
   const navigate = useNavigate();
   const { seq } = useParams();
   const [searchParams] = useSearchParams();
-  const fromPath = searchParams.get("from") || "/board/1/announcement";
+  // const fromPath = searchParams.get("from") || "/board/1/announcement";
+  const [deleteQueue, setDeleteQueue] = useState([]);
 
   const [board, setBoard] = useState({
     title: "",
@@ -23,7 +24,7 @@ const BoardEdit = () => {
   const [files, setFiles] = useState([]);
   const [originFiles, setOriginFiles] = useState([]);
 
-  // ✅ 기존 게시글 / 파일 불러오기
+  // 기존 게시글 / 파일 불러오기
   useEffect(() => {
     const fetchBoard = async () => {
       try {
@@ -46,7 +47,7 @@ const BoardEdit = () => {
     fetchBoard();
   }, [seq]);
 
-  // ✅ 입력 변경
+  // 입력 변경
   const handleChange = (e) => {
     const { name, value } = e.target;
     setBoard((prev) => ({ ...prev, [name]: value }));
@@ -67,14 +68,23 @@ const BoardEdit = () => {
     setFiles(Array.from(e.target.files));
   };
 
-  // ✅ 수정 저장
+  // 수정 저장
   const handleUpdate = async () => {
     try {
-      // 1️⃣ 본문 수정
+      // 본문 수정
       await caxios.put(`/board/${seq}`, board);
       console.log("게시글 수정 완료");
 
-      // 2️⃣ 새 파일 업로드
+      // 삭제 예약된 파일들 실제 삭제
+      for (const sysname of deleteQueue) {
+        try {
+         await caxios.delete(`/files?sysname=${encodeURIComponent(sysname)}`);
+        } catch (err) {
+          console.error("파일 삭제 실패:", sysname, err);
+        }
+      }
+
+      // 새 파일 업로드
       if (files.length > 0) {
         const formData = new FormData();
         formData.append("module_type", "board");
@@ -88,7 +98,7 @@ const BoardEdit = () => {
       }
 
       alert("게시글이 수정되었습니다!");
-      navigate(fromPath);
+      navigate(`/board/detail/${seq}`);
     } catch (err) {
       console.error("수정 실패:", err);
       alert("수정 중 오류가 발생했습니다.");
@@ -99,7 +109,7 @@ const BoardEdit = () => {
     <div className={styles.container}>
       <div className={styles.btns}>
         <button onClick={handleUpdate}>수정 완료</button>
-        <button onClick={() => navigate(fromPath)}>취소</button>
+        <button onClick={() => navigate(`/board/detail/${seq}`)}>취소</button>
       </div>
 
       <div className={styles.boardGroup}>
@@ -140,23 +150,39 @@ const BoardEdit = () => {
           <label>파일 첨부</label>
         </div>
 
-        {/* ✅ 기존 파일 목록 */}
-        {originFiles.length > 0 && (
-          <ul className={styles.filePreview}>
-            {originFiles.map((file, i) => (
-              <li key={i}>{file.orgname}</li>
-            ))}
-          </ul>
-        )}
+        {/* 파일 목록*/}
+        <ul className={styles.filePreview}>
+          {originFiles.map((file) => (
+            <li key={file.sysname}>
+              <span>{file.orgname}</span>
+              <button
+                className={styles.deleteBtn}
+                onClick={() => {
+                  // UI에서는 파일 제거
+                  setOriginFiles(prev => prev.filter(f => f.sysname !== file.sysname));
+                  // 실제 삭제는 나중에 수행하기 위해 예약
+                  setDeleteQueue(prev => [...prev, file.sysname]);
+                }}
+              >
+                x
+              </button>
+            </li>
+          ))}
 
-        {/* ✅ 새로 선택한 파일 */}
-        {files.length > 0 && (
-          <ul className={styles.filePreview}>
-            {files.map((file, i) => (
-              <li key={i}>{file.name}</li>
-            ))}
-          </ul>
-        )}
+          {files.map((file, i) => (
+            <li key={`new-${i}`}>
+              <span>{file.name}</span>
+              <button
+                className={styles.deleteBtn}
+                onClick={() =>
+                  setFiles((prev) => prev.filter((_, index) => index !== i))
+                }
+              >
+                x
+              </button>
+            </li>
+          ))}
+        </ul>
 
         <div className={styles.fileBtnBox}>
           <label htmlFor="file" className={styles.customFileLabel}>
@@ -166,13 +192,12 @@ const BoardEdit = () => {
             type="file"
             id="file"
             multiple
-            onChange={handleFileSelect}
+            onChange={(e) => setFiles(Array.from(e.target.files))}
             className={styles.fileBtn}
           />
         </div>
       </div>
 
-      {/* ✅ TipTap 에디터로 변경 */}
       <div style={{ marginTop: 20 }}>
         <TiptapEditor
           value={board.content}

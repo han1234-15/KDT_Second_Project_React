@@ -161,7 +161,7 @@ const handleImportant = async (record) => {
           allowClear
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ width: 300 }}
+          style={{ width: 400 }}
         />
       </div>
       <div className={styles.boardHeader}>
