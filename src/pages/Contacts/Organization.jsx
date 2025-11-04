@@ -16,8 +16,8 @@ const Organization = () => {
 
     const teams = [
 
-        { name: "연구&개발" },
-        { name: "사업관리팀" },
+        { name: "연구개발" },
+        { name: "사업관리" },
         { name: "AI센터", },
         { name: "인사관" },
         { name: "재무/회계" },
