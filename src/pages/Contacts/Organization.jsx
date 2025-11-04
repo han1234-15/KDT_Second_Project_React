@@ -3,8 +3,11 @@ import { useEffect, useState } from 'react';
 import { caxios } from '../../config/config.js';
 import { useNavigate } from "react-router-dom";
 import OrganizationView from "./OrganizationView.jsx";
-import { Button, Modal } from 'antd';
+import { Button, Flex,Table, Modal, Input } from 'antd';
 import { ranks } from "../../config/options.js";
+const { Search } = Input; // ✅ Search 컴포넌트 구조분해
+
+
 const Organization = () => {
 
     const [organization, setOrganization] = useState([]);
@@ -94,12 +97,33 @@ const Organization = () => {
     return (
         <div className={styles.container} style={{ height: "700px", display: "flex", flexDirection: "column", gap: "20px" }}>
 
-            {/* Header */}
-            <div className={styles.mainHeader} style={{ fontSize: "35px" }}>
+            {/* Header */} <br></br>
+            <div className={styles.mainHeader} style={{ fontSize: "20px" }}>
+                <div style={{width:"20%"}}>
+                   
                 {selectedTeam
                     ? `조직도 총 ${organization.filter(e => e.dept_code === selectedTeam).length}명`
                     : `조직도 총 ${organization.length}명`}
-                <div className={styles.mainHeaderbottom} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    </div>
+                
+                  {/* 주소록 헤더 2 */}
+                <div className={styles.mainHeaderbottom}>
+                  
+                       
+                            {/* ✅ Ant Design Search로 변경 */}
+                            <div className={styles.searchBox}>
+                                <Search
+                                    placeholder="검색할 이름을 입력하세요"
+                                    value={searchName}
+                                   onChange={(e) => setSearchName(e.target.value)}
+                                    onSearch={handleOrganizationList}
+                                    enterButton="검색"
+                                    style={{ width: "400px" }}
+                                />
+                            </div>
+                      
+                
+                {/* <div className={styles.mainHeaderbottom} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   
                        
                             <div style={{ display: "flex", gap: "10px", width: "60%" }}>
@@ -112,10 +136,10 @@ const Organization = () => {
 
                             </div>
 
-                </div>
-
+                </div> */}
+</div>
             </div>
-
+                        <br></br>
             {/* Body */}
             <div style={{ flex: 1, display: "flex", overflow: "hidden", gap: "10px", fontSize: "20px" }}>
 

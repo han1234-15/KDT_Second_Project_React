@@ -4,8 +4,10 @@ import { caxios } from '../../config/config.js';
 import { useNavigate, useLocation } from "react-router-dom";
 import ContactsAddMulti from "./ContactsAddMulti";
 import ContentTap from "../Common/ContentTap";
-import { Button, Flex, Modal } from 'antd';
-import { Table, Pagination } from 'antd';
+import { Button, Flex,Table, Modal, Input } from 'antd';
+
+
+const { Search } = Input; // ✅ Search 컴포넌트 구조분해
 
 const ContactsMulti = () => {
 
@@ -192,11 +194,9 @@ const ContactsMulti = () => {
 
 
 
-    return (<div className={styles.container}>
+    return (
+        <div className={styles.container}>
 
-
-        {/* 메인 주소록창 */}
-        <div className={styles.main}>
 
             {/* 주소록 헤더  */}
             <div className={styles.mainHeader}>
@@ -206,44 +206,50 @@ const ContactsMulti = () => {
                 {/* 주소록 헤더 1 */}
                 <div className={styles.mainHeadertop} >
 
-                    공용 주소록 : {contacts.length} 명 <br></br>
-                    {/* <button onClick={handleContacts} className={styles.headerbutton}>전체 주소록</button>
-                    <button onClick={handleContactsSolo} className={styles.headerbutton}>개인 주소록</button> */}
-                    <button className={styles.createbtn} onClick={showModalMultiAdd}> 공용 주소록 추가 </button>
-
+                    공용 주소록 : {contacts.length} 명
                 </div>
+                <div className={styles.addBtns}>
+                    <button className={styles.createbtn} onClick={showModalMultiAdd}> + 공용주소록 </button>
+                </div>
+   </div> {/* 주소록 헤더  */}
 
                 {/* 주소록 헤더 2 */}
-                <div className={styles.mainHeaderbottom} >
+                <div className={styles.mainHeaderbottom}>
                     {checkedList.length === 0 ? (
                         <>
-                            <input type="text" placeholder="검색할 주소록 성함"
-                                style={{ float: "left", width: "50%", height: "50%", borderRadius: "5px", border: "1px solid lightgrey", justifyContent: "center", fontSize: "20px" }}
-                                onChange={(e) => setSearchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { handleContactsList(); } }}></input>
-                            <button className={styles.createbtn} style={{ width: "5%", marginLeft: "10px", float: "left" }} onClick={handleContactsList}>검색</button>
-
-
+                            {/* ✅ Ant Design Search로 변경 */}
+                            <div className={styles.searchBox}>
+                                <Search
+                                    placeholder="검색할 이름을 입력하세요"
+                                    value={searchName}
+                                    onChange={(e) => setSearchName(e.target.value)}
+                                    onSearch={handleContactsList}
+                                    enterButton="검색"
+                                    style={{ width: "400px" }}
+                                />
+                            </div>
                         </>) : (
                         <>
+                            <div className={styles.btnBox}>
+                                <button className={styles.btns} onClick={handleContactsDelete} > 삭제 </button>
+                                <button className={styles.btns} onClick={showUpdateModal} > 수정 </button>
+                                <button className={styles.btns} onClick={handleCopyToSolo}> 개인 주소록으로 복사</button>
 
-                            <button className={styles.btns} onClick={handleContactsDelete} style={{ margin: "10px" }}> 삭제 </button>
-                            <button className={styles.btns} onClick={showUpdateModal} style={{ margin: "10px" }}> 수정 </button>
-                            <button className={styles.btns} onClick={handleCopyToSolo} style={{ margin: "10px" }}> 개인 주소록으로 복사</button>
-
-                            {/* <button className={styles.btns} onClick={handleContactsUpdateTypeSingle} style={{ margin: "10px" }}> 개인 주소록으로 이동</button> */}
-                            <button className={styles.btns} onClick={handleMail} style={{ margin: "10px" }}> 메일 쓰기 </button>
-
+                                {/* <button className={styles.btns} onClick={handleContactsUpdateTypeSingle} style={{ margin: "10px" }}> 개인 주소록으로 이동</button> */}
+                                <button className={styles.btns} onClick={handleMail}> 메일 쓰기 </button>
+                            </div>
                         </>
                     )}
                 </div>
 
 
-            </div> {/* 주소록 헤더  */}
+         
             {/* 주소록 헤더  */}
 
             {/* Ant Design Table */}
 
             <Table
+               tableLayout="fixed"
                 rowSelection={rowSelection}
                 columns={[
                     { title: "성함", dataIndex: "name", key: "name" },
@@ -363,7 +369,7 @@ const ContactsMulti = () => {
         </div>
 
 
-    </div>
+
 
 
 
