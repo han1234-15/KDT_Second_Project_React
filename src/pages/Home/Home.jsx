@@ -294,7 +294,7 @@ function Home() {
             className={styles.card}
           >
             <List
-              dataSource={["공지 전사 워크숍 일정 안내 ", "공지 보안 정책 변경 사전 안내", "공지 휴가 신청 시스템 개편 공지"]}
+              dataSource={["공지 2025년 상반기 인사평가 일정 공지","공지 연말 휴무 및 정산 일정 안내",  "공지 2025년 11월 전사 일정 안내"]}
               renderItem={(item) => {
                 const parts = item.split("공지"); 
                 return (

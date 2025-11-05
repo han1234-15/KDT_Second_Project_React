@@ -210,8 +210,8 @@ function EApprovalDetail() {
         />
 
         <div className="action-buttons">
-          <Button type="primary" onClick={handleApprove} disabled={isDocFinished}>✅ 승인</Button>
-          <Button danger onClick={handleReject} disabled={isDocFinished}>❌ 반려</Button>
+          <Button type="primary" onClick={handleApprove} disabled={isDocFinished}>승인</Button>
+          <Button danger onClick={handleReject} disabled={isDocFinished}>반려</Button>
         </div>
       </Modal>
     </div>

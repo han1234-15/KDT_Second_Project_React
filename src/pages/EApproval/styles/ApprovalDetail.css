@@ -105,6 +105,13 @@
   align-items: center; /* ✅ 버튼 중앙 배치 */
 }
 
+.action-buttons {
+  display: flex;
+  justify-content: center;  /* ✅ 가운데 정렬 */
+  gap: 12px;                /* 버튼 간 간격 */
+  margin-top: 20px;         /* 위쪽 공간 */
+}
+
 
 
 /* ✅ 애니메이션 */
