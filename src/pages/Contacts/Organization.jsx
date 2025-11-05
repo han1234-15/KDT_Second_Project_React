@@ -98,7 +98,7 @@ const Organization = () => {
         <div className={styles.container} style={{ height: "700px", display: "flex", flexDirection: "column", gap: "20px" }}>
 
             {/* Header */} <br></br>
-            <div className={styles.mainHeader} style={{ fontSize: "20px" }}>
+            <div className={styles.mainHeader} style={{ fontSize: "20px" ,marginTop:"-14px"}}>
                 <div style={{width:"20%"}}>
                    
                 {selectedTeam
@@ -117,7 +117,6 @@ const Organization = () => {
                                     value={searchName}
                                    onChange={(e) => setSearchName(e.target.value)}
                                     onSearch={handleOrganizationList}
-                                    enterButton="검색"
                                     style={{ width: "400px" }}
                                 />
                             </div>
@@ -220,6 +219,7 @@ const Organization = () => {
 
             {/* Modal */}
             <Modal
+                style={{width:"450px" , height:"400px"}}
                 centered={false}
                 open={orgModalOpen}
                 onCancel={() => setOrgModalOpen(false)}
@@ -233,7 +233,7 @@ const Organization = () => {
                     xl: '50%',
                     xxl: '30%',
                 }}
-                modalRender={modal => <div style={{ marginTop: '100px' }}>{modal}</div>}
+                modalRender={modal => <div style={{ marginTop: '100px'}}>{modal}</div>}
             >
                 <OrganizationView member={member} onClose={() => setOrgModalOpen(false)} />
             </Modal>

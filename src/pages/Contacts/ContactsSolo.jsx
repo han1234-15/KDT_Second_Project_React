@@ -265,7 +265,6 @@ const ContactsSolo = () => {
                             value={searchName}
                             onChange={(e) => setSearchName(e.target.value)}
                             onSearch={handleContactsList}
-                            enterButton="검색"
                             style={{ width: "400px" }}
                         />
                     </div>

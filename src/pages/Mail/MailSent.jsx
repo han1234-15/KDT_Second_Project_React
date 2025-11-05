@@ -85,7 +85,6 @@ const MailSent = () => {
                                     <Search
                                         placeholder="검색할 수신인 이름"
                                         allowClear
-                                        enterButton="검색"
                                         style={{ width: 400 }}
                                         value={searchName}
                                         onChange={(e) => setSearchName(e.target.value)}
@@ -106,9 +105,9 @@ const MailSent = () => {
                 <Table
                     rowSelection={rowSelection} // 체크박스 기능
                     columns={[
-                        { title: "수신자", dataIndex: "recipientName", key: "recipientName" },
+                        { title: "수신인", dataIndex: "recipientName", key: "recipientName" },
                         {
-                            title: "수신자 이메일", dataIndex: "recipientId", key: "recipientId",
+                            title: "수신인 이메일", dataIndex: "recipientId", key: "recipientId",
                             render: (recipientId) => recipientId.includes('@') ? recipientId : `${recipientId}@Infinity.com`
                         },
 

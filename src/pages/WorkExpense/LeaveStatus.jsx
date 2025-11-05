@@ -29,8 +29,8 @@ function LeaveStatus() {
   };
 
   const docStatusMap = {
-    WAIT: "결재대기",
-    PROCESSING: "진행중",
+    WAITING: "결재대기",
+    CHECKING: "진행중",  
     APPROVED: "승인",
     REJECTED: "반려",
   };
@@ -78,7 +78,7 @@ function LeaveStatus() {
     const res = await caxios.get(`/Eapproval/doc/line/${selectedRow.approvalId}`);
     setSelectedRow(prev => ({ ...prev, approvalLine: res.data }));
 
-    Modal.success({ content: "✅ 승인 완료!" });
+    Modal.success({ content: "승인 완료!" });
     closeModal();
     fetchData();
   };
@@ -87,19 +87,23 @@ function LeaveStatus() {
   if (!rejectReason.trim())
     return Modal.warning({ content: "반려 사유를 입력하세요." });
 
- const approverId = loginUser.id; // ✅ 로그인한 결재자 ID
+ const approverId = loginUser.id; 
+  console.log("ddddd",rejectReason);
+  console.log("dddddfsdfsdfd",approverId);
+  console.log("dddsdfsdfsdfdsgewtgewdd",selectedRow);
+
 
   await caxios.post(`/leave/reject`, { 
     seq: selectedRow.seq,
     approvalId: selectedRow.approvalId,
-   approverId,                     // ✅ 추가 (핵심)
+        approver_id: loginUser.ID,                   
     reason: rejectReason 
   });
 
   const res = await caxios.get(`/Eapproval/doc/line/${selectedRow.approvalId}`);
   setSelectedRow(prev => ({ ...prev, approvalLine: res.data }));
 
-  Modal.error({ content: "❌ 반려 처리 완료" });
+  Modal.error({ content: " 반려 처리 완료" });
   closeModal();
   fetchData();
 };
@@ -124,7 +128,7 @@ function LeaveStatus() {
       dataIndex: "status",
       align: "center",
       render: (v) => (
-        <Tag color={v === "WAIT" ? "gold" : v === "APPROVED" ? "green" : v === "REJECTED" ? "red" : "blue"}>
+        <Tag color={v === "CHECKING" ? "gold" : v === "APPROVED" ? "green" : v === "REJECTED" ? "red" : "blue"}>
           {docStatusMap[v]}
         </Tag>
       ),
@@ -183,7 +187,7 @@ function LeaveStatus() {
 
             {getCurrentApprover() === loginUser?.id && (
               <div style={{ marginTop: "15px", textAlign: "center" }}>
-                <Button type="primary" onClick={approveHandler}>✅ 승인</Button>
+                <Button type="primary" onClick={approveHandler}> 승인</Button>
                 <Input.TextArea
                   placeholder="반려 사유"
                   value={rejectReason}
@@ -191,7 +195,7 @@ function LeaveStatus() {
                   style={{ marginTop: "10px" }}
                 />
                 <Button danger block style={{ marginTop: "8px" }} onClick={rejectHandler}>
-                  ❌ 반려 확정
+                   반려 확정
                 </Button>
               </div>
             )}

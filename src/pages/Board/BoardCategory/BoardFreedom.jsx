@@ -10,6 +10,10 @@ const BoardFreedom = () => {
 
   const navigate = useNavigate();
   const handleRowClick = (record) => {
+    //조회수 증가
+    caxios.post(`/board/detail/${record.key}/increment-view`);
+
+
     navigate(`/board/detail/${record.key}`, {
       state: { from: useLocation.pathname } // 현재 경로 저장
     });
@@ -108,7 +112,7 @@ const BoardFreedom = () => {
       key: "title",
       width: "40%",
       align: "left",
-      className: "col-title", 
+      className: "col-title",
       render: (text) => (
         <span style={{ marginLeft: "15px" }}>{text}</span>
       ),
@@ -135,56 +139,56 @@ const BoardFreedom = () => {
     }
   };
 
-    // 페이지 변경 시 실행 함수
-    const handlePageChange = (page, pageSize) => {
-      console.log("현재 페이지:", page);
-      console.log("페이지당 항목 수:", pageSize);
-      setSelectedRowKeys([]);
-    };
+  // 페이지 변경 시 실행 함수
+  const handlePageChange = (page, pageSize) => {
+    console.log("현재 페이지:", page);
+    console.log("페이지당 항목 수:", pageSize);
+    setSelectedRowKeys([]);
+  };
 
-    // 행 선택 기능
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: (keys) => setSelectedRowKeys(keys),
-    };
+  // 행 선택 기능
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (keys) => setSelectedRowKeys(keys),
+  };
 
-    // 검색 필터
-    const filteredData = data.filter((item) =>
-      item.title.toLowerCase().includes(search.toLowerCase())
-    );
+  // 검색 필터
+  const filteredData = data.filter((item) =>
+    item.title.toLowerCase().includes(search.toLowerCase())
+  );
 
-    return (
-      <div className={styles.container}>
-        <div className={styles.search}>
-          <Search
-            placeholder="검색어를 입력하세요"
-            allowClear
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ width: 400 }}
-          />
-        </div>
-        <div className={styles.boardHeader}>
-          <Table
-            rowSelection={rowSelection}
-            columns={columns}
-            dataSource={filteredData}
-            pagination={{
-              position: ["bottomCenter"],
-              hideOnSinglePage: true,
-              pageSizeOptions: ["5", "10", "20"],
-              defaultPageSize: 10,
-              onChange: handlePageChange,
-            }}
-            onRow={(record) => ({
-              onClick: () => handleRowClick(record),
-            })}
-            rowClassName={() => styles.tableRow}
-          />
-        </div>
+  return (
+    <div className={styles.container}>
+      <div className={styles.search}>
+        <Search
+          placeholder="검색어를 입력하세요"
+          allowClear
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ width: 400 }}
+        />
       </div>
-    );
-  }
+      <div className={styles.boardHeader}>
+        <Table
+          rowSelection={rowSelection}
+          columns={columns}
+          dataSource={filteredData}
+          pagination={{
+            position: ["bottomCenter"],
+            hideOnSinglePage: true,
+            pageSizeOptions: ["5", "10", "20"],
+            defaultPageSize: 10,
+            onChange: handlePageChange,
+          }}
+          onRow={(record) => ({
+            onClick: () => handleRowClick(record),
+          })}
+          rowClassName={() => styles.tableRow}
+        />
+      </div>
+    </div>
+  );
+}
 
 
 export default BoardFreedom;
