@@ -22,8 +22,7 @@ export default function ChatRoom() {
   const room_id = params.get("room_id") || params.get("roomId");
 
   // 소켓 관련 훅
-  const { messages, sendMessage, subscribeRoom, setMessages, sendRead } =
-    useSocket();
+  const { messages, sendMessage, subscribeRoom, setMessages, sendRead } = useSocket();
 
   const userId = sessionStorage.getItem("LoginID");
 
@@ -274,39 +273,60 @@ export default function ChatRoom() {
     }
   };
 
-  // 전역 드래그 파일 업로드
-  const handleGlobalDrop = useCallback(
-    async (e) => {
-      e.preventDefault();
-      const files = Array.from(e.dataTransfer.files);
-      if (!files.length || !room_id) return;
-      try {
-        const token = sessionStorage.getItem("token");
-        for (const file of files) {
-          const formData = new FormData();
-          formData.append("file", file);
-          formData.append("roomId", room_id);
-          const resp = await caxios.post("/api/chat/upload", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          const uploaded = resp.data;
-          sendMessage(room_id, {
-            sender: userId,
-            content: uploaded.originalName,
-            fileUrl: uploaded.sysName,
-            type: "FILE",
-          });
-        }
-        fetchFileList();
-      } catch (err) {
-        console.error("드래그앤드롭 파일 업로드 실패:", err);
+ 
+ // 드래그 앤 드롭 파일 업로드 핸들러
+const handleGlobalDrop = useCallback(
+  async (e) => {
+    e.preventDefault(); // 기본 드롭 동작(파일이 브라우저 새 탭으로 열리는 것 등)을 막음
+
+    // 드래그로 전달된 파일 목록을 배열 형태로 변환
+    const files = Array.from(e.dataTransfer.files);
+
+    // 파일이 없거나(room_id가 없으면) 업로드 중단
+    if (!files.length || !room_id) return;
+
+    try {
+      // 로그인 토큰을 세션에서 가져옴
+      const token = sessionStorage.getItem("token");
+
+      // 여러 파일이 드롭된 경우 순차적으로 업로드 수행
+      for (const file of files) {
+        // multipart/form-data 전송을 위한 FormData 객체 생성
+        const formData = new FormData();
+        formData.append("file", file);      // 파일 데이터 첨부
+        formData.append("roomId", room_id); // 업로드 대상 채팅방 ID 첨부
+
+        // 서버에 파일 업로드 요청 (axios로 POST 전송)
+        const resp = await caxios.post("/api/chat/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",  // 파일 업로드용 Content-Type
+            Authorization: `Bearer ${token}`,       // 인증 토큰 추가
+          },
+        });
+
+        // 업로드 완료 후 서버 응답 데이터 (파일 이름, 저장 경로 등)
+        const uploaded = resp.data;
+
+        // 업로드된 파일 정보를 STOMP를 통해 해당 채팅방에 전송
+        // → 다른 참가자들에게 “파일 메시지”로 전달됨
+        sendMessage(room_id, {
+          sender: userId,                   // 보낸 사람 ID
+          content: uploaded.originalName,   // 파일 원래 이름
+          fileUrl: uploaded.sysName,        // 서버에 저장된 실제 파일명(경로)
+          type: "FILE",                     // 메시지 타입(FILE로 지정)
+        });
       }
-    },
-    [room_id, userId, sendMessage, fetchFileList]
-  );
+
+      // 파일 업로드 후, 채팅방의 파일 목록을 새로 불러옴
+      fetchFileList();
+    } catch (err) {
+      // 업로드 중 예외가 발생했을 때 콘솔에 출력
+      console.error("드래그앤드롭 파일 업로드 실패:", err);
+    }
+  },
+  // useCallback 의존성 배열 — 이 값들 중 하나라도 변경되면 함수가 다시 생성됨
+  [room_id, userId, sendMessage, fetchFileList]
+);
 
   useEffect(() => {
     const preventDefault = (e) => e.preventDefault();

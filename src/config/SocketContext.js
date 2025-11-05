@@ -10,6 +10,7 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 // 전역 소켓 컨텍스트 생성
+// 리액트앱 전역 데이터 공유 통로 (파이프라인)
 const SocketContext = createContext();
 
 /**
@@ -31,6 +32,8 @@ function SocketProvider({ children }) {
   useEffect(() => {
     // 서버 주소는 환경에 맞게 설정
     const sock = new SockJS("http://10.10.55.97/ws-chat");
+    //const sock = new SockJS("http://192.168.219.108/ws-chat");
+    
 
     // STOMP 클라이언트 인스턴스 생성
     clientRef.current = new Client({
@@ -286,7 +289,7 @@ function SocketProvider({ children }) {
       }}
     >
       {children}
-    </SocketContext.Provider>
+    </SocketContext.Provider> 
   );
 }
 

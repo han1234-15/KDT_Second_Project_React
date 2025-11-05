@@ -180,28 +180,35 @@ export default function ChatRoomList() {
    * - 읽지 않은 메시지를 0으로 변경
    * - 새로 열린 팝업 창에서는 /chatroom 경로로 진입
    */
-  const openChat = (room) => {
-    const targetName = encodeURIComponent(room.displayName || "대화상대");
-    const targetRank = encodeURIComponent(rankMap[room.targetRank] || "");
-    const url = `${window.location.origin}/chatroom?room_id=${room.roomId}&target=${targetName}&rank=${targetRank}`;
+ const openChat = (room) => {
+  const targetName = encodeURIComponent(room.displayName || "대화상대");
+  const targetRank = encodeURIComponent(rankMap[room.targetRank] || "");
+  const url = `${window.location.origin}/chatroom?room_id=${room.roomId}&target=${targetName}&rank=${targetRank}`;
 
-    // 선택된 방의 읽지 않은 메시지를 0으로 처리
-    setRooms((prev) =>
-      prev.map((r) => (r.roomId === room.roomId ? { ...r, unread: 0 } : r))
-    );
+  // 선택된 방의 읽지 않은 메시지를 0으로 처리
+  setRooms((prev) =>
+    prev.map((r) => (r.roomId === room.roomId ? { ...r, unread: 0 } : r))
+  );
 
-    // 이벤트를 발생시켜 목록 및 알림 갱신
-    window.dispatchEvent(
-      new CustomEvent("chatRoomUpdated", { detail: { roomId: room.roomId } })
-    );
+  // 이벤트를 발생시켜 목록 및 알림 갱신
+  window.dispatchEvent(
+    new CustomEvent("chatRoomUpdated", { detail: { roomId: room.roomId } })
+  );
 
-    // 새 팝업 창으로 채팅방 열기
-    window.open(
-      url,
-      `Chat_${room.roomId}`,
-      "width=400,height=550,resizable=no,scrollbars=no,status=no"
-    );
-  };
+  // 팝업 위치 설정 (사용자 지정)
+  const width = 400;
+  const height = 550;
+  const left = window.screen.width - width - 300;  // 오른쪽 여백 300px
+  const top = window.screen.height - height - 1400; // 아래쪽 여백 1400px
+
+  // 새 팝업 창으로 채팅방 열기
+  window.open(
+    url,
+    `Chat_${room.roomId}`,
+    `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no,status=no`
+  );
+};
+
 
   /**
    * 검색어 입력 시 필터링

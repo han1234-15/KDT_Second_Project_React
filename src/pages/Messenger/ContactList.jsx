@@ -74,7 +74,7 @@ const ContactList = () => {
   caxios
     .get("/messenger/member")
     .then((resp) => {
-      console.log("📦 서버 응답 데이터:", resp.data); // ✅ 여기에 콘솔 추가
+      console.log(" 서버 응답 데이터:", resp.data); //  여기에 콘솔 추가
       setMember(resp.data);
     })
     .catch((err) => console.error("데이터 요청 실패:", err));
@@ -106,45 +106,67 @@ const ContactList = () => {
     [member, searchTerm]
   );
 
-  // 더블클릭 시 채팅방 오픈
-  const openChatPopup = async (member) => {
-    const myId = sessionStorage.getItem("LoginID");
-    if (!myId) {
-      alert("로그인 정보가 없습니다. 다시 로그인 해주세요.");
-      return;
-    }
+  // 특정 사원을 더블클릭했을 때 채팅 팝업창을 여는 함수
+const openChatPopup = async (member) => {
 
-    const targetId = member.id;
-    const targetName = member.name;
-    const targetRank = ranks[member.rank_code] || "";
+  // 현재 로그인한 사용자의 ID를 세션 스토리지에서 불러옴
+  const myId = sessionStorage.getItem("LoginID");
 
-    const roomMembersKey = [myId, targetId].sort().join("_");
+  // 로그인 정보가 없을 경우 경고 메시지 출력 후 함수 종료
+  if (!myId) {
+    alert("로그인 정보가 없습니다. 다시 로그인 해주세요.");
+    return;
+  }
 
-    try {
-      const resp = await caxios.post(
-        `/api/chat/room?key=${encodeURIComponent(roomMembersKey)}`
-      );
-      const roomId = resp.data.roomId;
+  // 채팅 대상(상대방)의 기본 정보 추출
+  const targetId = member.id;                              // 상대방의 사용자 ID
+  const targetName = member.name;                          // 상대방 이름
+  const targetRank = ranks[member.rank_code] || "";         // 상대방 직급명 (rank_code 매핑, 없으면 빈 문자열)
 
-      const url = `${window.location.origin}/chatroom?room_id=${roomId}&target=${encodeURIComponent(
-        targetName
-      )}&rank=${encodeURIComponent(targetRank)}`;
+  // 나와 상대방의 ID를 정렬하여 하나의 고유한 채팅방 키 생성
+  // 예: user01과 user02 → "user01_user02" (정렬하여 순서 관계없이 동일한 키 사용)
+  const roomMembersKey = [myId, targetId].sort().join("_");
 
-      const width = 400;
-      const height = 550;
-      const left = window.screen.width - width - 40;
-      const top = window.screen.height - height - 100;
+  try {
+    // 서버에 채팅방 생성 또는 기존 방 조회 요청
+    // key 파라미터로 두 사용자 조합 키를 전달
+    const resp = await caxios.post(
+      `/api/chat/room?key=${encodeURIComponent(roomMembersKey)}`
+    );
 
-      window.open(
-        url,
-        `ChatWith_${targetId}`,
-        `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no,status=no`
-      );
-    } catch (err) {
-      console.error("채팅방 생성 또는 조회 실패:", err);
-      alert("채팅방 생성에 실패했습니다.");
-    }
-  };
+    // 서버 응답에서 채팅방 ID 추출
+    const roomId = resp.data.roomId;
+
+    // 팝업창에서 열릴 채팅방 URL 생성
+    // 대상 이름과 직급을 쿼리 파라미터로 함께 전달 (한글 깨짐 방지를 위해 encodeURIComponent 사용)
+    const url = `${window.location.origin}/chatroom?room_id=${roomId}&target=${encodeURIComponent(
+      targetName
+    )}&rank=${encodeURIComponent(targetRank)}`;
+
+    // 팝업창 크기와 화면 위치 설정
+    // width, height는 창 크기 지정
+    // left, top은 화면 오른쪽 아래에 배치하기 위한 좌표 계산
+    const width = 400;
+    const height = 550;
+    const left = window.screen.width - width - 300;  // 오른쪽 여백 40px
+    const top = window.screen.height - height - 1400; // 아래쪽 여백 100px
+
+    // 실제 팝업창을 여는 명령
+    // 첫 번째 인자: URL
+    // 두 번째 인자: 팝업 이름 (같은 이름의 창이 있으면 새로 안 열고 기존 창을 재활용)
+    // 세 번째 인자: 창의 속성 지정 (크기, 위치, 스크롤, 상태바 등)
+    window.open(
+      url,
+      `ChatWith_${targetId}`, // 팝업 이름 (상대방 ID 기반)
+      `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no,status=no`
+    );
+
+  } catch (err) {
+    // 서버 요청 또는 팝업 열기 중 오류가 발생한 경우
+    console.error("채팅방 생성 또는 조회 실패:", err); // 콘솔에 에러 로그 출력
+    alert("채팅방 생성에 실패했습니다.");               // 사용자에게 오류 알림
+  }
+};
 
   return (
     <div className={styles.contactContainer}>
@@ -182,7 +204,7 @@ const ContactList = () => {
           {departments.map((dept, idx) => {
             const deptMembers = getDeptMembers(dept);
             return (
-              <Accordion.Item eventKey={String(idx)} key={dept}>
+              <Accordion.Item eventKey={String(idx)} key={dept}> {/* 열림/닫힘을 식별하는 키(문자열 권장). Header와 Body를 서로 매칭*/} 
                 <Accordion.Header>
                   {dept}
                   <Badge bg="info" className="ms-2">
@@ -193,11 +215,11 @@ const ContactList = () => {
                 <Accordion.Body>
                   {deptMembers.length > 0 ? (
                     <ListGroup variant="flush">
-                      {deptMembers.map((m) => (
+                      {deptMembers.map((m) => ( // 사원들 출력 행하나하나
                         <ListGroup.Item
                           key={m.seq || m.id}
                           className="d-flex justify-content-between align-items-center"
-                          onDoubleClick={() => openChatPopup(m)}
+                          onDoubleClick={() => openChatPopup(m)} // 더블클릭 시 채팅 팝업을 여는 핸들러. 현재 사원 m을 인자로 전달
                           style={{ cursor: "pointer" }}
                         >
                           {/* 이름 + 직급 */}
