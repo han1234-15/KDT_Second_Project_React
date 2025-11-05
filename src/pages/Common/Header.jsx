@@ -20,7 +20,7 @@ const Header = () => {
     const navigate = useNavigate();
     const logout = useAuthStore(state => state.logout);
     const [userProfile, setUserProfile] = useState(null); //프로필용 useState
-    const token = useAuthStore(state => state.token);   // ✅ 메신저 팝업용 토큰
+    const token = useAuthStore(state => state.token);   //  메신저 팝업용 토큰
 
     const [memberInfo, setMemberInfo] = useState({
         name: "",
@@ -35,20 +35,26 @@ const Header = () => {
         logout();
     };
 
-    // ✅ 메신저 팝업 열기 함수
-    const openMessenger = () => {
-        const width = 400;
-        const height = 550;
-        const left = window.screen.width - width - 40;
-        const top = window.screen.height - height - 100;
+   // 메신저 팝업 함수 
+const openMessenger = () => {
+    const width = 400;
+    const height = 550;
+    const left = window.screen.width - width - -200;
+    const top = window.screen.height - height - 1300;
 
-        const url = `${window.location.origin}/messenger-popup?token=${token}`;
-        window.open(
-            url,
-            "MessengerPopup",
-            `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no,status=no`
-        );
-    };
+    // 팝업으로 열 URL 구성: 현재 도메인(origin)에 "/messenger-popup" 경로를 붙이고, token을 쿼리스트링으로 전달
+    const url = `${window.location.origin}/messenger-popup?token=${token}`;
+
+    // window.open()으로 새 창을 열어 메신저 실행
+    // - 첫 번째 인자: URL
+    // - 두 번째 인자: 창 이름 ("MessengerPopup") → 같은 이름이면 새로 열지 않고 기존 창 재사용
+    // - 세 번째 인자: 창 옵션(크기, 위치, 스크롤바, 리사이즈 가능 여부 등)
+    window.open(
+        url,                                     // 열 주소
+        "MessengerPopup",                        // 팝업창 이름
+        `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=no,status=no`
+    );
+};
 
     const frofileMenu = [
         {
@@ -135,7 +141,7 @@ const Header = () => {
         }
     };
 
-    // ✅ 알림 드롭다운 메뉴 구성
+    //  알림 드롭다운 메뉴 구성
     const notificationMenu = notifications.length
         ? notifications.map((noti, index) => ({
             key: index,
@@ -225,7 +231,7 @@ const Header = () => {
         }
     };
 
-    // ✅ 알림 목록 불러오기
+    //  알림 목록 불러오기
     const getNotificationList = async () => {
         try {
             const notiResp = await caxios.get(`/notification`);

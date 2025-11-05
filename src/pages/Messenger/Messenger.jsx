@@ -15,7 +15,7 @@ const Messenger = () => {
   const location = useLocation();
   const [user, setUser] = useState(null);
 
-  /**  이름 / 직급 / 근무 상태 */
+  /** 이름 / 직급 / 근무 상태 */
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -59,7 +59,7 @@ const Messenger = () => {
 
   const isChatPage = location.pathname.includes("chat");
 
-  /**  새 방 생성 시 ChatRoomList에도 즉시 갱신 신호 전달 */
+  /** 새 방 생성 시 ChatRoomList에도 즉시 갱신 신호 전달 */
   useEffect(() => {
     const handleRefresh = () => {
       console.log("📡 Messenger: 새 방 생성 신호 감지 → ChatRoomList 리프레시");
@@ -69,6 +69,31 @@ const Messenger = () => {
     window.addEventListener("refreshChatRooms", handleRefresh);
     return () => window.removeEventListener("refreshChatRooms", handleRefresh);
   }, []);
+
+  /** 근무 상태 변경 함수 */
+  const handleStatusChange = async (e) => {
+    const newStatus = e.target.value;
+
+    // 오프라인 상태는 사용자가 직접 변경할 수 없게 제한
+    if (newStatus === "offline") {
+      alert("오프라인은 메인 그룹웨어에서 퇴근 시 자동으로 변경됩니다.");
+      return;
+    }
+
+    // 선택된 상태를 화면에 즉시 반영
+    setUser((prev) => ({ ...prev, work_status: newStatus }));
+
+    try {
+      // 서버에 상태 변경 요청
+      await caxios.put("/messenger/status/self", {
+        work_status: newStatus,
+      });
+      console.log("상태 변경 완료:", newStatus);
+    } catch (err) {
+      console.error("상태 변경 실패:", err);
+      alert("상태 변경에 실패했습니다.");
+    }
+  };
 
   return (
     <SocketProvider>
@@ -83,10 +108,10 @@ const Messenger = () => {
           <span className={styles.brand}>INFINITY</span>
         </header>
 
-        {/*  프로필 카드 */}
+        {/* 프로필 카드 */}
         <div className={styles.profileCard}>
           <div className={styles.profileImg}>
-            {/*  공통 컴포넌트로 교체 */}
+            {/* 공통 컴포넌트로 교체 */}
             <UserProfileImage size={60} />
           </div>
 
@@ -98,40 +123,33 @@ const Messenger = () => {
             </div>
             <div className={styles.profileStatus}>
               <div className={styles.statusWrapper}>
+                {/* 상태 점 색상 표시 */}
                 <span
                   className={`${styles.statusDot} ${
                     styles[user?.work_status || "offline"]
                   }`}
                 ></span>
+
+                {/* 근무 상태 선택 드롭다운 */}
                 <select
                   className={styles.statusSelect}
                   value={user?.work_status || ""}
-                  onChange={async (e) => {
-                    const newStatus = e.target.value;
-                    setUser((prev) => ({ ...prev, work_status: newStatus }));
-
-                    try {
-                      await caxios.put("/messenger/status/self", {
-                        work_status: newStatus,
-                      });
-                      console.log("상태 변경 완료:", newStatus);
-                    } catch (err) {
-                      console.error("상태 변경 실패:", err);
-                      alert("상태 변경에 실패했습니다.");
-                    }
-                  }}
+                  onChange={handleStatusChange}
                 >
                   <option value="working">근무중</option>
                   <option value="busy">다른용무중</option>
                   <option value="away">자리비움</option>
-                
+                  {/* 오프라인은 비활성화된 표시만 보여줌 */}
+                  <option value="offline" disabled>
+                    오프라인
+                  </option>
                 </select>
               </div>
             </div>
           </div>
         </div>
 
-        {/*  사이드 메뉴 */}
+        {/* 사이드 메뉴 */}
         <aside className={styles.sidebar}>
           <Link
             to="/messenger-popup/contacts"
@@ -164,7 +182,7 @@ const Messenger = () => {
           </Link>
         </aside>
 
-        {/*  본문 */}
+        {/* 본문 */}
         <main
           className={`${styles.chatList} ${
             isChatPage ? styles.chatNoPadding : ""
